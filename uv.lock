@@ -1,0 +1,12 @@
+version = 1
+revision = 3
+requires-python = ">=3.14"
+
+[options]
+exclude-newer = "2026-05-31T23:25:42.510445149Z"
+exclude-newer-span = "P1W"
+
+[[package]]
+name = "raven-matrix"
+version = "0.1.0"
+source = { virtual = "." }

@@ -1,0 +1,3 @@
+[submodule "upstream/Matrices"]
+	path = upstream/Matrices
+	url = https://github.com/sandialabs/Matrices.git

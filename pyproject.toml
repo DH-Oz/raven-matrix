@@ -1,0 +1,7 @@
+[project]
+name = "raven-matrix"
+version = "0.1.0"
+description = "Python 3.14 port of the Sandia Generated Matrix Tool — generates Raven-style progressive-matrix puzzles with normed difficulty"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
