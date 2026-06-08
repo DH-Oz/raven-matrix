@@ -10,11 +10,6 @@ browser via WebAssembly (Pyodide or MicroPython-WASM) — wanted if feasible.
 Requested by Mark (via Brian). Upstream is Sandia/DOE under BSD-3 — free to port
 with attribution.
 
-## Status
-
-Setup only. No port written yet. Next step is brainstorming → design (see
-Workflow). The upstream Java source is vendored read-only as a submodule.
-
 ## Provenance
 
 - Software: Sandia Generated Matrix Tool (SGMT) v1.0.0, first open-source
@@ -132,28 +127,20 @@ structure + correct-answer position + difficulty, per the decision above.
 - Never edit `upstream/Matrices/` — it is the immutable source we port FROM.
 - Don't commit unless Brian asks.
 
-## Open design questions (resolve in brainstorming — do not pre-decide)
+## Design decisions
 
-Decided:
+Locked constraints the port must honour (rationale, not task state):
 
-- Replication bar = data/logic equivalence (see QA target).
+- Replication bar = data/logic equivalence, not pixel reproduction (see QA
+  target).
 - Rendering = SVG is canonical; rasterise ("render down") to PNG when a bitmap
-  is needed. Favours a pure-Python renderer that also works in the browser.
-- Interface must expose the same generation options as upstream SGMT — relation
-  types, directions, layer composition, logic transforms, and answer/difficulty
-  settings (the controls in `ui/SGMBuilderFrame`). The interface *form* stays
-  open; option parity is required.
-- Browser-via-WebAssembly is wanted if feasible.
+  is needed. Favours a dependency-light, pure-Python renderer.
+- Option parity = whatever its form, the interface must expose the same
+  generation options as upstream SGMT: relation types, directions, layer
+  composition, logic transforms, and answer/difficulty settings (the controls
+  in `ui/SGMBuilderFrame`).
 
-1. Runtime split: a pure-Python functional core that runs under CPython 3.14 and
-   in the browser via WASM. Pyodide (CPython-on-WASM) ships numpy/Pillow but is
-   heavy; MicroPython-WASM is tiny but pure-Python only. SVG keeps the core
-   dependency-light, favouring the lighter path; the numpy-leaning difficulty
-   classifier is the main tension.
-2. Interface form: library + CLI, GUI, or web app (subject to the option-parity
-   requirement above).
-3. v1 scope: the full relation/surface/fillpattern catalogue, or a vertical
-   slice first.
+Design state, aspirations, and still-open questions live in `.notes/`, not here.
 
 ## Workflow
 

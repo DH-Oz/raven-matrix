@@ -11,3 +11,6 @@ wheels/
 
 # Local throwaway working area (extracted upstream zips, probes, etc.)
 scratch/
+
+# Rendered/working paper copies (canonical copies live in Zotero/zettelkasten)
+docs/papers/
