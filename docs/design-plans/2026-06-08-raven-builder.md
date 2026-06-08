@@ -151,7 +151,7 @@ phase.
 - **`value_equals()`**: an explicit value comparison on `SurfaceFeature`, used only where the upstream hand-rolls a value check — separating identity from value semantics deliberately.
 - **compat toggle / CompatFlags**: named flags exposing known divergences between upstream code and design intent. Default `faithful-to-code`; `line_shape_enabled` is the only flag known at design time.
 - **JavaRandom / `java.util.Random`**: the JVM's 48-bit LCG PRNG, used by SGMT to draw shapes/sizes/fills, re-implemented in Python (`nextInt(bound)`, `nextBoolean`) for identical seeded sequences.
-- **Labeller**: `label.py`, which reads a completed `Matrix` back to its `Structure` code (ported from `SGMMatrixDifficultyClassifier.java:308–382`). Inverse: `parse_code()`.
+- **Labeller**: `label.py`, which reads a completed `Matrix` back to its `Structure` code (ported from `SGMMatrixDifficultyClassifier.java:208–389` — the full `sb`-build: letter ladder 232–289, digit map 308–382, trailing-`_` delete 389; the narrower `308–382` omits the letter ladder). Inverse: `parse_code()`.
 - **Round-trip / structural oracle**: takes each published `Structure` code, parses → builds → labels, and checks the label matches. Necessary but not sufficient — a consistency check on the parser/labeller pair.
 - **Hand-derived label table**: a ~12-entry mapping from representative configs to expected `Structure` codes; the primary correctness anchor (DR6) because the round-trip alone is circular.
 - **Matzen et al. (2010) norming spreadsheet**: the published QA oracle — 840 stimuli with `Structure` codes, correct-answer positions, and empirical % correct.
@@ -333,7 +333,7 @@ criteria below).
 <!-- START_PHASE_5 -->
 ### Phase 5: Labeller, parser, structural oracle
 **Goal:** matrix↔code and the oracle harness.
-**Components:** `label.py` `label()` (ported `sb`-logic with the `1`/`2` swap and `6`/`7` rules; cite `SGMMatrixDifficultyClassifier.java:308–382`) + `parse_code()`; the hand-derived label table (~12 configs); the 840-code round-trip harness reading `data/ravens_oracle.csv`.
+**Components:** `label.py` `label()` (ported `sb`-logic with the `1`/`2` swap and `6`/`7` rules; cite `SGMMatrixDifficultyClassifier.java:208–389` — the whole `sb`-build incl. the letter ladder at 232–289, not just the `308–382` digit map) + `parse_code()`; the hand-derived label table (~12 configs); the 840-code round-trip harness reading `data/ravens_oracle.csv`.
 **Dependencies:** Phase 4.
 **Done when:** the hand-derived table (begun in Phase 4) is complete and matches the paper/published-code rules (`raven-builder.AC2.1`, primary anchor); all 840 round-trip outside the documented exclusion list (`raven-builder.AC2.2`); logic codes parse/label (`raven-builder.AC2.3`); property tests (`parse∘label`) pass.
 <!-- END_PHASE_5 -->
