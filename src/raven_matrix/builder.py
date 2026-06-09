@@ -37,7 +37,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from raven_matrix.compat import CompatFlags
+from raven_matrix.compat import DEFAULT_FLAGS, CompatFlags
 from raven_matrix.fillpattern import (
     CHANGE_FILL_CYCLE,
     FILL_REP_CYCLE,
@@ -50,6 +50,7 @@ from raven_matrix.model import (
     Fill,
     Layer,
     Location,
+    Matrix,
     MatrixSize,
     Supplemental,
     SurfaceFeature,
@@ -80,6 +81,11 @@ from raven_matrix.transforms.logic import LogicLocationTransform
 # Pinned upstream constants (option-surface parity with SGMBuilderFrame).
 MAX_SUPPLEMENTALS_PER_LAYER = 3       # SGMBuilderFrame.java:1030 (max - 1 base).
 NUM_ANSWER_CHOICES = 8                # SGMBuilderFrame.java:1031.
+MATRIX_SIZE = MatrixSize(3, 3)        # SGMBuilderFrame.java:1028 (the only size).
+# The GUI's default cell pixel size (SGMBuilderFrame.java:41). Only scales the
+# absolute width/height pixel values; structure and determinism are size-agnostic
+# (the bar is data/logic equivalence, not pixels), so a default suffices.
+CELL_PIXEL_SIZE = 100
 ROTATE_AMOUNT = 45                    # SupplementalGenerator.java:235.
 SCALE_AMOUNT = 0.66                   # SupplementalGenerator.java:213.
 
@@ -768,3 +774,68 @@ def generate_answer_choices(
 
     finalised = [_require_cell(choice) for choice in answer_choices]
     return finalised, correct_position_0 + 1  # 0-based -> 1-based.
+
+
+# ---------------------------------------------------------------------------
+# build() — the end-to-end entry point
+# ---------------------------------------------------------------------------
+
+def build(
+    config: BuilderConfig,
+    seed: int,
+    flags: CompatFlags = DEFAULT_FLAGS,
+) -> Matrix:
+    """Build a complete 3x3 matrix with 8 answer choices from a config + seed.
+
+    The single pure entry point. Validates the config, then uses ONE
+    ``JavaRandom(seed)`` to drive every stochastic draw in order: each layer's
+    surfaces/structure (``build_layer``), then the distractor mutation
+    (``generate_answer_choices``). The upstream's config-level draws (numLayers,
+    correctAnswerPosition, relation/direction choice) are replaced by ``config``
+    (DR1), so the first draw is the first layer's first base surface feature --
+    which is why two seeds yield the same relations but different surfaces
+    (AC4.3).
+
+    Determinism (AC4.1) follows from the deterministic ``JavaRandom`` and the
+    absence of any other entropy. ``flags.relocate_correct_answer`` (default
+    ``False``) honours ``config.correct_answer_position`` and skips the upstream
+    relocation draw; ``line_shape_enabled`` (default ``False``) keeps Line out of
+    the shape draw.
+
+    Parameters
+    ----------
+    config : BuilderConfig
+        The validated option surface: 1-2 layers + a 1-based correct position.
+    seed : int
+        The ``java.util.Random`` seed; the sole source of stochasticity.
+    flags : CompatFlags, optional
+        Compat toggles; defaults to faithful-to-code / faithful-to-design mix.
+
+    Returns
+    -------
+    Matrix
+        The 3x3 grid, the 8 answer choices, the (possibly relocated) 1-based
+        correct-answer position, and the per-layer structures.
+    """
+    validate_config(config)
+    rng = JavaRandom(seed)
+
+    layers = [
+        build_layer(layer_config, MATRIX_SIZE, CELL_PIXEL_SIZE, rng, flags)
+        for layer_config in config.layers
+    ]
+    cells = compose_layers(layers, MATRIX_SIZE)
+    answer_choices, correct_position = generate_answer_choices(
+        cells,
+        layers,
+        config.correct_answer_position,
+        MATRIX_SIZE,
+        rng,
+        flags,
+    )
+    return Matrix(
+        cells=cells,
+        answer_choices=answer_choices,
+        correct_answer_position=correct_position,
+        layers=layers,
+    )
