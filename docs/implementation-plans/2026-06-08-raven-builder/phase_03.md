@@ -27,7 +27,7 @@
 
 - **TopLeftCornerOut sequences are the TDD anchor** — ported as the first failing test (AC3.1).
 - **Constraints raise at construction** (Python `ValueError`), matching the Java constructor `IllegalArgumentException`: diagonals require odd-AND-square (`rows % 2 == 0 or rows != cols` → reject); Logic requires `rows >= 3 and cols >= 3`.
-- **`Vertical.parent_location` upstream bug is replicated verbatim (faithful-to-code), NO compat flag** (per decision — it's untested by the all-3×3 oracle and not worth a registry entry). A code comment documents it as a known divergence.
+- **`Vertical.parent_location` is fixed-to-paper** (per decision, Brian 2026-06-09, superseding the earlier "replicate verbatim" plan): the port wraps the row to `num_rows-1`, correcting the upstream `numColumns-1` bug (`VerticalSGMLocationTransform.java:108`; bug-catalog `loc-vertical-parent-wrap`: "fix-to-paper. Use `numRows`"). The bug is inert on the all-3×3 square oracle (`numColumns-1 == numRows-1`); the fix only differs on non-square grids. Record the divergence as a code comment + a non-square regression test (the Grey10/40 precedent — no separate ADR file; the bug-catalog entry is the decision record).
 - Direction-digit → transform map: `1→Horizontal, 2→Vertical, 3→DiagonalBL→TR, 4→DiagonalTL→BR, 5→TopLeftCornerOut`.
 
 ---
@@ -143,7 +143,7 @@ git commit -m "feat(transforms): LocationTransform base + value-pinned TopLeftCo
 <!-- END_TASK_1 -->
 
 <!-- START_TASK_2 -->
-### Task 2: Horizontal + Vertical (incl. the faithful Vertical bug)
+### Task 2: Horizontal + Vertical (fix-to-paper Vertical parent-wrap)
 
 **Verifies:** raven-builder.AC3.2
 
@@ -153,22 +153,24 @@ git commit -m "feat(transforms): LocationTransform base + value-pinned TopLeftCo
 
 **Implementation (literal ports):**
 - `Horizontal`: base = first column of every row (`Location(row, 0)` for each row); `next` = column+1 wrapping to 0; `parent` = column-1 wrapping to `cols-1`.
-- `Vertical`: base = first row of every column (`Location(0, col)` for each col); `next` = row+1 wrapping to 0; `parent` = row-1 wrapping **to `cols-1`** — this is the upstream bug, ported verbatim. Add a code comment:
+- `Vertical`: base = first row of every column (`Location(0, col)` for each col); `next` = row+1 wrapping to 0; `parent` = row-1 wrapping **to `num_rows-1`** — fixed-to-paper, correcting the upstream `numColumns-1` bug. Add a code comment:
   ```python
-  # Faithful-to-code: upstream wraps to numColumns-1 here, not numRows-1
-  # (VerticalSGMLocationTransform.java:108). A real bug, invisible on square
-  # grids; the all-3x3 oracle never exercises it. No compat flag (by decision).
+  # Fix-to-paper: upstream wraps to numColumns-1 here
+  # (VerticalSGMLocationTransform.java:108), a bug masked on the all-3x3 square
+  # oracle where numColumns == numRows. Per CLAUDE.md spec-precedence (the Matzen
+  # paper is the spec) we wrap to num_rows-1. bug-catalog: loc-vertical-parent-wrap
+  # (fix-to-paper). No compat flag.
   ```
 
 **Testing (describe):**
-- Horizontal/Vertical `base_locations`, full `next` traversal, and `parent` round-trips on a 3×3 (square — where Vertical's wrap value is coincidentally correct), pinned by hand from the upstream logic.
-- One explicit **bug-witness** test: on a non-square grid (e.g. `MatrixSize(4, 2)`), `Vertical.parent_location(Location(0, c))` returns the buggy row `cols-1 == 1`, documenting the faithful-to-code behaviour. (This asserts the bug is reproduced, not that it is "right".)
+- Horizontal/Vertical `base_locations`, full `next` traversal, and `parent` round-trips on a 3×3 (square — where the wrap value is unambiguous), pinned by hand from the upstream logic (with the Vertical parent corrected to `num_rows-1`).
+- One explicit **fix-witness / regression** test: on a non-square grid (e.g. `MatrixSize(4, 2)`), `Vertical.parent_location(Location(0, c))` returns the correct row `num_rows-1 == 3` (NOT the buggy `num_columns-1 == 1`). This test fails against the upstream `numColumns-1` code, proving the fix.
 
 **Verification + commit:**
 ```bash
 uv run pytest tests/test_transforms_axis.py -v && uv run ty check . && uv run ruff check .
 git add src/raven_matrix/transforms/geometric.py tests/test_transforms_axis.py
-git commit -m "feat(transforms): Horizontal + Vertical (faithful upstream parent-wrap bug)"
+git commit -m "feat(transforms): Horizontal + Vertical (fix-to-paper parent-wrap)"
 ```
 <!-- END_TASK_2 -->
 
@@ -231,7 +233,7 @@ git commit -m "feat(transforms): Logic transform + direction factory"
 ## Phase 3 completion check
 
 - [ ] TopLeftCornerOut reproduces the pinned base/traversal/parent sequences for all 8 sizes, cross-checked against the JUnit source (AC3.1).
-- [ ] Horizontal, Vertical, both diagonals produce correct base/next/parent (AC3.2); Vertical's upstream parent-wrap bug reproduced verbatim with a bug-witness test and no flag.
+- [ ] Horizontal, Vertical, both diagonals produce correct base/next/parent (AC3.2); Vertical's upstream parent-wrap bug fixed-to-paper (wraps to `num_rows-1`) with a non-square regression test and a divergence comment.
 - [ ] Diagonals reject even/non-square; Logic rejects `<3×3` (AC3.3).
 - [ ] `make_location_transform` maps directions 1–5 correctly.
 - [ ] `uv run pytest`, `uv run ty check .`, `uv run ruff check .` all clean.
