@@ -89,6 +89,30 @@ def test_build_returns_three_by_three_with_eight_choices() -> None:
     assert len(matrix.layers) == 1
 
 
+def test_build_output_is_list_based_no_set_fitness() -> None:
+    """Fitness function (DR7): build() output is list-based, never set.
+
+    Ordered lists are determinism-critical -- a set anywhere in the cell/feature
+    output path would reorder or drop features. This asserts the invariant at
+    runtime rather than relying on a recurring eyeball review. Internal
+    bookkeeping sets (shape-uniqueness, the logic-assignment id/index sets) are
+    not output paths and are intentionally exempt.
+    """
+    matrix = build(_single(position=4), seed=1)
+    assert isinstance(matrix.cells, list)
+    assert isinstance(matrix.answer_choices, list)
+    assert isinstance(matrix.layers, list)
+    for choice in matrix.answer_choices:
+        assert isinstance(choice.surface_features, list)
+    grids = [matrix.cells] + [layer.cells for layer in matrix.layers]
+    for grid in grids:
+        assert isinstance(grid, list)
+        for row in grid:
+            assert isinstance(row, list)
+            for cell in row:
+                assert isinstance(cell.surface_features, list)
+
+
 def test_build_two_layer_config_composes_both_layers() -> None:
     config = BuilderConfig(
         layers=(
