@@ -137,17 +137,40 @@ class LogicOperation(BaseStructureFeature):
         upstream guards a repeat-add with ``list.contains(featureIndex)``
         (AbstractLogicOperationSGMStructureFeature.java:97-99) on a feature list —
         an int-vs-feature type mismatch that is always false, so a location could
-        collect the same feature twice and corrupt the set into a multiset. The
-        intent was "don't add feature #i to this location if feature #i is already
-        there"; features are picked by index from a fixed list of shared
-        instances, so the faithful fix is IDENTITY membership (is THIS instance
-        already here), not value. DR7 reserves identity for the logic path (value
-        equality is only for distractor dedup). The distinction is observable:
-        base features share rotation=0/scale=1.0/centre, so two draws can be
-        value-equal-but-distinct, and identity dedup admits both (matching the
-        index intent) where value dedup would wrongly drop one. The guard gates
-        only the *add*, never a draw, so the RNG stream is unchanged.
+        collect the same feature twice and corrupt the set into a multiset. We
+        dedup by VALUE, matching the upstream's own stated intent for surface-
+        feature distinctness: ``BaseSGMStructureFeatureGenerator.containsCheck``
+        (l.306-323) deliberately avoids the built-in identity ``contains`` —
+        "don't want that it contains the same object reference, but rather that
+        there is some surface feature that fundamentally _equals_ this surface
+        feature in terms of its properties". The paper requires figures to be
+        distinguishable; value distinctness is how that is honoured.
+
+        Note (moot in practice): the base pool handed to this relation is itself
+        generated value-distinct (the ``containsCheck`` loop at l.210-219, ported
+        in the builder), so no two pool features are value-equal and value- and
+        identity-membership coincide here. The value guard simply states the
+        intent plainly. The guard gates only the *add*, never a draw, so the RNG
+        stream is unchanged. Identity is reserved for the AND/OR/XOR *combine*
+        (tracking the same shared instance flowing across cells), not for dedup.
         """
+        # Precondition (defense-in-depth): the base pool MUST be value-distinct,
+        # or this loop cannot terminate — a value-equal feature can be blocked
+        # from every location yet never counted as placed, so ``done`` never
+        # becomes true. The upstream guarantees distinctness by generating the
+        # pool through a value-dedup loop (BaseSGMStructureFeatureGenerator
+        # .containsCheck, l.210-219/306-323). We assert it here so a violating
+        # pool fails fast with a clear error instead of hanging.
+        seen: list[SurfaceFeature] = []
+        for feature in base_surface_features:
+            if _contains_by_value(seen, feature):
+                raise ValueError(
+                    "logic base pool must be value-distinct; got a value-"
+                    "duplicate feature (the assignment loop cannot terminate "
+                    "otherwise)"
+                )
+            seen.append(feature)
+
         num_features = len(base_surface_features)
         num_locations = len(location_transform.base_locations())
         assignments: dict[int, list[SurfaceFeature]] = {}
@@ -169,8 +192,8 @@ class LogicOperation(BaseStructureFeature):
                         assignments[location_index] = [feature]
                         populated_locations.add(location_index)
                         assigned_feature_ids.add(id(feature))
-                    elif not _contains_by_identity(bucket, feature):
-                        # FIX-TO-PAPER identity guard (DR7; see docstring).
+                    elif not _contains_by_value(bucket, feature):
+                        # FIX-TO-PAPER value guard (upstream distinctness intent).
                         bucket.append(feature)
                         populated_locations.add(location_index)
                         assigned_feature_ids.add(id(feature))
@@ -202,6 +225,18 @@ class LogicOperation(BaseStructureFeature):
         cell_two: list[SurfaceFeature],
     ) -> list[SurfaceFeature]:
         """Derive features from two prior cells (the two-arg variant, l.177-179)."""
+
+
+def _contains_by_value(
+    features: list[SurfaceFeature], item: SurfaceFeature
+) -> bool:
+    """Value membership for the assignment dedup (upstream distinctness intent).
+
+    Mirrors ``BaseSGMStructureFeatureGenerator.containsCheck`` (l.306-323), which
+    deliberately compares by ``equals`` (properties), not object reference, so
+    figures stay distinguishable per the paper.
+    """
+    return any(f.value_equals(item) for f in features)
 
 
 def _contains_by_identity(

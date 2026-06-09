@@ -150,7 +150,7 @@ def test_logic_assignment_no_duplicate_feature_per_location() -> None:
     the per-location add with ``list.contains(featureIndex)`` on a
     ``List<SGMSurfaceFeature>`` (an int vs feature-list type mismatch that is
     always false), so a location could receive the same feature twice. The port
-    checks feature membership by identity, so no location holds a duplicate.
+    checks feature membership by value, so no location holds a duplicate.
     """
     transform = LogicLocationTransform(MatrixSize(3, 3))
     features = [_feature(Shape.ELLIPSE), _feature(Shape.RECTANGLE), _feature(Shape.TEE)]
@@ -162,46 +162,22 @@ def test_logic_assignment_no_duplicate_feature_per_location() -> None:
         assert len(ids) == len(set(ids)), f"duplicate feature at base location {i}"
 
 
-def test_logic_assignment_dedup_is_by_identity_not_value() -> None:
-    """The per-location dedup guard is by IDENTITY, not value (DR7).
+def test_logic_pool_must_be_value_distinct_or_raises() -> None:
+    """A value-duplicate base pool fails fast (ValueError), not hangs.
 
-    bug-catalog base-logic-dedup-typemismatch (FIX-TO-PAPER): the upstream guard
-    ``list.contains(featureIndex)`` (AbstractLogicOperationSGMStructureFeature.java
-    :97-99) checks an int index against a feature list — always false. Its intent
-    was "don't add feature #i to this location if feature #i is already there";
-    features are picked by index from a fixed list of shared instances, so the
-    faithful realisation is identity membership (is THIS instance already here),
-    NOT value. DR7 reserves identity for the logic path. This is observable: base
-    features share rotation=0/scale=1.0/centre, so value-equality collapses to
-    shape+fill+size and value-equal-but-distinct features are realistic; identity
-    dedup keeps BOTH, value dedup would wrongly drop one.
-
-    Witness: two value-equal-but-distinct features, both index-pickable, can both
-    be assigned to the same base location (a value guard would drop the second).
+    The assignment loop only terminates once every feature is placed. With value
+    dedup, a value-equal feature can be blocked from every location yet never
+    placed, so the loop would spin forever. The real generator never produces a
+    value-duplicate pool (BaseSGMStructureFeatureGenerator.containsCheck), but the
+    precondition is asserted at the boundary so a violation is a clear error
+    rather than a hang.
     """
     transform = LogicLocationTransform(MatrixSize(3, 3))
     twin_a = _feature(Shape.ELLIPSE, Fill.WHITE)
     twin_b = _feature(Shape.ELLIPSE, Fill.WHITE)  # value-equal, distinct instance
-    third = _feature(Shape.RECTANGLE, Fill.WHITE)
     assert twin_a.value_equals(twin_b) and twin_a is not twin_b
-
-    # Seed chosen so some base location collects both twins in one pass; identity
-    # dedup admits both, value dedup would have dropped twin_b.
-    found_both_at_one_location = False
-    for seed in range(200):
-        relation = LogicalAND(transform, [twin_a, twin_b, third], JavaRandom(seed))
-        for i in range(len(transform.base_locations())):
-            assigned = relation.provide_base_surface_features(i)
-            ids = {id(f) for f in assigned}
-            if id(twin_a) in ids and id(twin_b) in ids:
-                found_both_at_one_location = True
-                break
-        if found_both_at_one_location:
-            break
-    assert found_both_at_one_location, (
-        "no seed assigned both value-equal-but-distinct twins to one location; "
-        "identity dedup must admit both"
-    )
+    with pytest.raises(ValueError, match="value-distinct"):
+        LogicalAND(transform, [twin_a, twin_b], JavaRandom(0))
 
 
 # ---------------------------------------------------------------------------
@@ -266,7 +242,9 @@ def test_value_equal_but_distinct_instance_is_absent_and() -> None:
     assert original.value_equals(twin)  # value-equal...
     assert original is not twin  # ...but a different instance.
 
-    relation = _logic_relation(LogicalAND, [original, twin])
+    # The base pool must be value-distinct (precondition); the twin lives in the
+    # combine cells, which is where the identity-vs-value distinction is tested.
+    relation = _logic_relation(LogicalAND, [original, _feature(Shape.RECTANGLE)])
     # cell-one has the original; cell-two has only the value-equal twin.
     result = relation.combine_surface_features([original], [twin])
     # By identity the twin is absent, so the intersection is empty.
@@ -283,7 +261,8 @@ def test_value_equal_but_distinct_instance_is_absent_xor() -> None:
     twin = _feature(Shape.ELLIPSE, Fill.WHITE)
     assert original.value_equals(twin) and original is not twin
 
-    relation = _logic_relation(LogicalXOR, [original, twin])
+    # Pool must be value-distinct (precondition); the twin lives in the cells.
+    relation = _logic_relation(LogicalXOR, [original, _feature(Shape.RECTANGLE)])
     result = relation.combine_surface_features([original], [twin])
     assert [id(f) for f in result] == [id(original), id(twin)]
 
