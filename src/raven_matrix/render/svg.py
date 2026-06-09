@@ -29,8 +29,9 @@ multiplies it through the affine transform, exactly as Java applies scale inside
 the transform (``SGMCellImage.setSGMCell``) rather than baking it into the path.
 
 Transform order matches ``SGMCellImage.setSGMCell``:
-``translate(pos) -> rotate -> scale -> translate(-pos)``.  Java rotation is in
-degrees; the Python model stores radians, so ``deg = degrees(feature.rotation)``.
+``translate(pos) -> rotate -> scale -> translate(-pos)``.  The model stores
+rotation in degrees (mirrors Java ``getRotation() % 360``); SVG ``rotate()``
+takes degrees; the value is emitted directly with no unit conversion.
 
 Paint order matches ``SGMCellImage``: fill (with the fill's RGBA alpha) THEN a
 2px black stroke.  White has alpha 0, so it renders as a transparent fill with a
@@ -51,7 +52,6 @@ import path stays free of the optional ``raster`` extra.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from math import degrees
 
 from raven_matrix.model import Cell, Fill, Matrix, Shape, SurfaceFeature
 
@@ -199,13 +199,20 @@ def _shape_body(shape: Shape, px: float, py: float, base: float) -> str:
 
 
 def _feature_transform(feature: SurfaceFeature) -> str:
-    """Affine transform string, mirroring ``SGMCellImage.setSGMCell`` order."""
+    """Affine transform string, mirroring ``SGMCellImage.setSGMCell`` order.
+
+    ``feature.rotation`` is already in degrees (mirrors Java ``getRotation()
+    % 360``, which is an ``int`` accumulating integer-degree increments).  SVG
+    ``rotate()`` takes degrees, so the value is emitted directly — no unit
+    conversion.  Java2D's ``AffineTransform.rotate()`` consumes radians, which
+    is why the Java renderer converts (``getRotation()/180.0*Math.PI``); that
+    conversion is internal to the Java renderer and does not exist here.
+    """
     px = feature.position.x
     py = feature.position.y
-    deg = degrees(feature.rotation)
     return (
         f"translate({_fmt(px)} {_fmt(py)}) "
-        f"rotate({_fmt(deg)}) "
+        f"rotate({_fmt(feature.rotation)}) "
         f"scale({_fmt(feature.scale)}) "
         f"translate({_fmt(-px)} {_fmt(-py)})"
     )

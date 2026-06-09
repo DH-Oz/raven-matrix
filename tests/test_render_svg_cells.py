@@ -258,16 +258,33 @@ def test_zero_rotation_unit_scale_transform_is_identity_form() -> None:
     assert t == "translate(100.0 100.0) rotate(0.0) scale(1.0) translate(-100.0 -100.0)"
 
 
-def test_rotation_radians_become_svg_degrees() -> None:
-    from math import pi
+def test_rotation_degrees_emitted_directly_as_svg_rotate() -> None:
+    """Model stores rotation in degrees; SVG rotate() takes degrees; emit directly.
 
-    el = _render_one(_feature(Shape.RECTANGLE, scale=2.0, rotation=pi / 2))
+    A 90-degree rotation must produce rotate(90.0) in the transform, NOT
+    rotate(5156.6...) (which would result from treating 90 as radians and
+    converting) and NOT rotate(1.5707...) (which would embed a radians value).
+
+    This is the tripwire for the coherence-HIGH bug: degrees(feature.rotation)
+    treated a degree value as radians.
+    """
+    el = _render_one(_feature(Shape.RECTANGLE, scale=2.0, rotation=90.0))
     t = el.get("transform")
-    # pi/2 rad -> 90 degrees; scale carried verbatim
-    assert "rotate(90.0)" in t
+    assert "rotate(90.0)" in t, (
+        f"Expected rotate(90.0) in transform; got: {t!r}"
+    )
     assert "scale(2.0)" in t
     assert t.startswith("translate(100.0 100.0)")
     assert t.endswith("translate(-100.0 -100.0)")
+
+
+def test_rotation_45_degrees_emitted_directly() -> None:
+    """45-degree rotation must emit rotate(45.0), not rotate(2578.3...)."""
+    el = _render_one(_feature(Shape.RECTANGLE, rotation=45.0))
+    t = el.get("transform")
+    assert "rotate(45.0)" in t, (
+        f"Expected rotate(45.0) in transform; got: {t!r}"
+    )
 
 
 # ---------------------------------------------------------------------------
