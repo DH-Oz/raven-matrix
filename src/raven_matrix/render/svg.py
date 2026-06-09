@@ -281,6 +281,31 @@ def _blank_cell(row: int, col: int, settings: RasterSettings) -> str:
     return f'<g class="cell" transform="translate({x} {y})"><g></g></g>'
 
 
+def _positioned_answer_cell(cell: Cell, row: int, col: int,
+                             settings: RasterSettings) -> str:
+    """A ``<g class="cell">`` for an answer choice, with a white cell background.
+
+    Mirrors ``SGMCellImage.setSGMCell`` (lines 167-174): each cell image fills
+    itself white before drawing its features, so features paint on a white
+    surface rather than directly onto the black backdrop.  The white rect sits
+    at (0, 0) in cell-local coordinates (after the translate), covering exactly
+    ``cell_pixel_size × cell_pixel_size`` pixels — the same area the features
+    occupy.  It is the first child of the cell ``<g>`` so features paint on
+    top of it.
+    """
+    x, y = _cell_origin(row, col, settings)
+    size = settings.cell_pixel_size
+    white_bg = (
+        f'<rect class="cell-bg" x="0" y="0" '
+        f'width="{size}" height="{size}" fill="white"/>'
+    )
+    return (
+        f'<g class="cell" transform="translate({x} {y})">'
+        f"{white_bg}"
+        f"{render_cell_svg(cell, settings)}</g>"
+    )
+
+
 def render_matrix_svg(matrix: Matrix, settings: RasterSettings = DEFAULT_RASTER) -> str:
     """Full ``<svg>`` for the 3x3 problem matrix (white bg, blank bottom-right).
 
@@ -342,6 +367,6 @@ def render_answers_svg(matrix: Matrix, settings: RasterSettings = DEFAULT_RASTER
     ]
     for i, choice in enumerate(choices):
         row, col = divmod(i, columns)
-        parts.append(_positioned_cell(choice, row, col, settings))
+        parts.append(_positioned_answer_cell(choice, row, col, settings))
     parts.append("</svg>")
     return "".join(parts)
