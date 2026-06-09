@@ -320,6 +320,12 @@ class TranslationalNumerosity(SupplementalStructureFeature):
     def provide_base_surface_features(
         self, base_index: int, existing: list[SurfaceFeature]
     ) -> list[SurfaceFeature]:
+        # No source -> no copies. Mirrors the upstream null guard
+        # (TranslationalNumerositySGMStructureFeature.java:131,170) and extends it
+        # to the empty case (catalog ``numerosity-transform-null-deref``,
+        # flag-and-decide -> fail-safe). Unreachable on the single-layer path.
+        if not existing:
+            return []
         # initial_numerosity clones of existing[0], scale OVERWRITTEN (l.142-164).
         source = existing[0]
         features = [_clone(source) for _ in range(self._initial_numerosity)]
@@ -331,6 +337,11 @@ class TranslationalNumerosity(SupplementalStructureFeature):
         surface_features_at_previous_location: list[SurfaceFeature],
         existing: list[SurfaceFeature],
     ) -> list[SurfaceFeature]:
+        # No source -> no copies (fail-safe; the upstream transform
+        # l.175-214 has NO guard and would crash on empty existing -- catalog
+        # ``numerosity-transform-null-deref``, flag-and-decide).
+        if not existing:
+            return []
         # len(previous)+1 clones of existing[0], scale MULTIPLIED (l.179-214).
         source = existing[0]
         count = len(surface_features_at_previous_location) + 1

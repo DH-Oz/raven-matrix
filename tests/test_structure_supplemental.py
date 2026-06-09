@@ -231,6 +231,24 @@ def test_numerosity_base_produces_initial_copies() -> None:
     assert all(f is not existing[0] for f in result)  # all clones
 
 
+def test_numerosity_empty_existing_returns_empty_fail_safe() -> None:
+    """Empty ``existing`` yields no copies instead of an IndexError (fail-safe).
+
+    Mirrors the upstream null guard
+    (TranslationalNumerositySGMStructureFeature.java:131,170) and extends it to
+    the empty case, plus guards the transform path the upstream leaves unguarded
+    (catalog ``numerosity-transform-null-deref``, flag-and-decide -> fail-safe).
+    Unreachable on the single-layer path, but a multi-layer/impoverished config
+    could pass an empty list.
+    """
+    size = MatrixSize(3, 3)
+    relation = TranslationalNumerosity(
+        _horizontal(), _CELL, size, initial_numerosity=2
+    )
+    assert relation.provide_base_surface_features(0, []) == []
+    assert relation.transform_surface_features([_feature()], []) == []
+
+
 def test_numerosity_base_scale_is_overwrite() -> None:
     """Base path OVERWRITES scale to the computed scaling (java:153)."""
     size = MatrixSize(3, 3)
