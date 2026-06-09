@@ -53,7 +53,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import degrees
 
-from raven_matrix.model import Cell, Fill, Shape, SurfaceFeature
+from raven_matrix.model import Cell, Fill, Matrix, Shape, SurfaceFeature
+
+_SVG_NS = "http://www.w3.org/2000/svg"
 
 # ---------------------------------------------------------------------------
 # Raster / layout sizing
@@ -230,3 +232,99 @@ def render_cell_svg(cell: Cell, settings: RasterSettings = DEFAULT_RASTER) -> st
         render_feature_svg(feature, settings) for feature in cell.surface_features
     )
     return f"<g>{elements}</g>"
+
+
+# ---------------------------------------------------------------------------
+# Document layouts
+# ---------------------------------------------------------------------------
+
+def _cell_origin(row: int, col: int, settings: RasterSettings) -> tuple[int, int]:
+    """Top-left pixel origin of cell (row, col), matching ``SGMMatrixImage``.
+
+    ``x = gap + col*(cell+gap)``; ``y = gap + row*(cell+gap)``.
+    """
+    step = settings.cell_pixel_size + settings.pixels_between_cells
+    gap = settings.pixels_between_cells
+    return gap + col * step, gap + row * step
+
+
+def _positioned_cell(cell: Cell, row: int, col: int,
+                     settings: RasterSettings) -> str:
+    """A ``<g class="cell">`` translated to cell (row, col), holding the cell SVG."""
+    x, y = _cell_origin(row, col, settings)
+    return (
+        f'<g class="cell" transform="translate({x} {y})">'
+        f"{render_cell_svg(cell, settings)}</g>"
+    )
+
+
+def _blank_cell(row: int, col: int, settings: RasterSettings) -> str:
+    """A blanked ``<g class="cell">`` (no features) for the problem-mode answer slot."""
+    x, y = _cell_origin(row, col, settings)
+    return f'<g class="cell" transform="translate({x} {y})"><g></g></g>'
+
+
+def render_matrix_svg(matrix: Matrix, settings: RasterSettings = DEFAULT_RASTER) -> str:
+    """Full ``<svg>`` for the 3x3 problem matrix (white bg, blank bottom-right).
+
+    Layout mirrors ``SGMMatrixImage``: ``side = (cell+gap)*n + gap`` for an
+    ``n``-column/row grid.  The bottom-right cell is rendered blank white
+    regardless of its contents — problem mode, where the answer is removed
+    (``render-answer-cell-hardcoded-bottom-right``).  The grid size is taken from
+    the matrix's own cell layout (``matrix.cells``).
+    """
+    rows = len(matrix.cells)
+    cols = len(matrix.cells[0]) if rows else 0
+    step = settings.cell_pixel_size + settings.pixels_between_cells
+    gap = settings.pixels_between_cells
+    width = step * cols + gap
+    height = step * rows + gap
+
+    parts: list[str] = [
+        f'<svg xmlns="{_SVG_NS}" width="{width}" height="{height}" '
+        f'viewBox="0 0 {width} {height}">',
+        f'<rect class="background" x="0" y="0" '
+        f'width="{width}" height="{height}" fill="white"/>',
+    ]
+    last_row = rows - 1
+    last_col = cols - 1
+    for row in range(rows):
+        for col in range(cols):
+            if row == last_row and col == last_col:
+                parts.append(_blank_cell(row, col, settings))
+            else:
+                parts.append(
+                    _positioned_cell(matrix.cells[row][col], row, col, settings)
+                )
+    parts.append("</svg>")
+    return "".join(parts)
+
+
+def render_answers_svg(matrix: Matrix, settings: RasterSettings = DEFAULT_RASTER,
+                       *, columns: int = 4) -> str:
+    """Full ``<svg>`` for the answer sheet (black bg, 2x4 grid of 8 choices).
+
+    Layout mirrors ``SGMAnswerChoicesImage``: the choices fill a grid
+    ``columns`` wide (4 by default) with ``ceil(count/columns)`` rows; for the
+    8 upstream answer choices this is the documented 2x4.  Choice ``i`` sits at
+    ``(row = i // columns, col = i % columns)``.
+    """
+    choices = matrix.answer_choices
+    count = len(choices)
+    rows = -(-count // columns) if count else 0  # ceil division
+    step = settings.cell_pixel_size + settings.pixels_between_cells
+    gap = settings.pixels_between_cells
+    width = step * columns + gap
+    height = step * rows + gap
+
+    parts: list[str] = [
+        f'<svg xmlns="{_SVG_NS}" width="{width}" height="{height}" '
+        f'viewBox="0 0 {width} {height}">',
+        f'<rect class="background" x="0" y="0" '
+        f'width="{width}" height="{height}" fill="black"/>',
+    ]
+    for i, choice in enumerate(choices):
+        row, col = divmod(i, columns)
+        parts.append(_positioned_cell(choice, row, col, settings))
+    parts.append("</svg>")
+    return "".join(parts)
