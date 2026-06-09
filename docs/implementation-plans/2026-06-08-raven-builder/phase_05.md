@@ -34,6 +34,15 @@
 
 ---
 
+## Carried-in checks from the Phase 3 proleptic challenge (2026-06-09)
+
+Deferred from Phase 3 (Brian's call); verify here, where the oracle is loaded.
+
+- **CA1 — confirm the oracle is all-3×3 (Vertical fix-to-paper inertness).** Phase 3 fixed the upstream `Vertical.parent_location` `numColumns-1` bug to `num_rows-1` (fix-to-paper). That divergence is inert only while every matrix is square 3×3 (`numColumns-1 == numRows-1`). When the 840-sweep builds each stimulus, assert every built matrix is 3×3. If any non-3×3 (or non-square) stimulus appears, **escalate** — the Vertical divergence (and other 3×3-masked upstream bugs) could then produce real oracle mismatches, and the fix-to-paper decision would need revisiting.
+- **CA2 — (optional) independent TopLeftCornerOut derivation.** Phase 3's TopLeftCornerOut sequences were verified against the Java `createNextLocation` logic and the JUnit fixture (two derivations), which is correct for oracle equivalence (the oracle was Java-generated). For extra confidence only: derive the direction-5 visit order for one size from the paper's "outward from top-left" definition (independent of the Java) and confirm a direction-5 oracle code round-trips structurally. Nice-to-have, not a hard gate.
+
+---
+
 <!-- START_SUBCOMPONENT_A (tasks 1-2): labeller + parser -->
 
 <!-- START_TASK_1 -->
