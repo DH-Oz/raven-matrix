@@ -708,9 +708,9 @@ def generate_answer_choices(
         position += 1
     answer_choices[correct_position_0] = correct_answer
 
-    num_duplicates_in_a_row = 0
+    num_fruitless_in_a_row = 0
     while position < num_answer_choices and (
-        num_duplicates_in_a_row < MAX_DUPLICATES_IN_A_ROW
+        num_fruitless_in_a_row < MAX_DUPLICATES_IN_A_ROW
     ):
         # >=2 layers: any of the 4 strategies; 1 layer: exclude case 0 (the
         # layer-subset strategy is meaningless), so next_int(3)+1 -> 1..3.
@@ -727,7 +727,15 @@ def generate_answer_choices(
                 features = _distractor_random_layer_combination(layers, size, rng)
 
         if len(features) == 0:
-            continue  # null/empty candidate: skip, not a duplicate (l.483-487).
+            # Empty/null candidate (l.483-487). Upstream skips WITHOUT counting,
+            # so a fully-impoverished matrix spins forever. Per bug-catalog
+            # ``gen-unbounded-generation-loop`` (flag-and-decide -> add a
+            # hang-prevention bound), count it toward the give-up cap. A matrix
+            # with any content resets the count on the next success, so realistic
+            # generation is unaffected; a degenerate matrix falls through to
+            # blank-pad instead of hanging.
+            num_fruitless_in_a_row += 1
+            continue
 
         candidate = Cell(surface_features=features, location=None)
         if not _cell_value_equals(candidate, correct_answer) and not _contains_cell(
@@ -737,9 +745,9 @@ def generate_answer_choices(
             position += 1
             if position == correct_position_0:
                 position += 1
-            num_duplicates_in_a_row = 0
+            num_fruitless_in_a_row = 0
         else:
-            num_duplicates_in_a_row += 1
+            num_fruitless_in_a_row += 1
 
     # Relocation (l.531-552): flag-gated. The default skips the whole block,
     # including its conditional next_int draw, honouring the configured position.

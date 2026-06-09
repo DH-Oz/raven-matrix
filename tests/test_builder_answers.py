@@ -227,6 +227,29 @@ def test_blank_pad_produces_empty_cells_without_error() -> None:
     assert len(blanks) >= 1  # padding happened
 
 
+def test_fully_empty_matrix_blank_pads_without_hanging() -> None:
+    """A fully-empty matrix (no features in cells OR layers) terminates.
+
+    Every distractor strategy then yields an empty candidate, so the upstream's
+    uncounted ``continue`` (SGMMatrix.java:483-487) would spin forever. The
+    ``gen-unbounded-generation-loop`` hang-prevention bound counts empty
+    candidates toward the give-up cap, so the loop exits and the slots blank-pad
+    instead of hanging.
+    """
+    empty_cells = [[_cell([], Location(r, c)) for c in range(3)] for r in range(3)]
+    empty_layer = Layer(
+        cells=[[_cell([], Location(r, c)) for c in range(3)] for r in range(3)],
+        structures=[],
+    )
+    rng = JavaRandom(0)
+    choices, _ = generate_answer_choices(
+        empty_cells, [empty_layer], 1, _SIZE, rng, DEFAULT_FLAGS
+    )
+    assert len(choices) == NUM_ANSWER_CHOICES
+    # Nothing to distract with, so every slot is blank — but it RETURNS.
+    assert all(not c.surface_features for c in choices)
+
+
 # ---------------------------------------------------------------------------
 # relocate_correct_answer flag (RNG-consumption toggle)
 # ---------------------------------------------------------------------------
@@ -237,10 +260,10 @@ def _uniform_matrix() -> tuple[list[list[Cell]], list[Layer]]:
     Few distinct distractors can be made (a fill/scale tweak of the single
     feature), so the wrong-answer block stays short and a high configured correct
     position sits AHEAD of `position` -- the forced blank-pad / relocation case.
-    Crucially the candidates are NON-empty, so duplicates increment the cap and
-    the loop terminates (an all-empty matrix would spin, a degenerate the upstream
-    never produces). The single shared layer makes strategies 1/2/3 read the same
-    impoverished cells.
+    The candidates are NON-empty, so the wrong-answer block is populated before
+    the cap (a fully-empty matrix instead blank-pads via the hang-prevention
+    bound; see test_fully_empty_matrix_blank_pads_without_hanging). The single
+    shared layer makes strategies 1/2/3 read the same impoverished cells.
     """
 
     def cell(r: int, c: int) -> Cell:
