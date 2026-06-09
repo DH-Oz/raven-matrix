@@ -9,7 +9,7 @@ JUnit traversal sequences reproduce exactly.
 
 from __future__ import annotations
 
-from raven_matrix.model import Location
+from raven_matrix.model import Location, MatrixSize
 
 from .base import LocationTransform
 
@@ -72,7 +72,7 @@ class Vertical(LocationTransform):
         return Location(row, location.column)
 
 
-def _require_odd_square(size, description: str) -> None:
+def _require_odd_square(size: MatrixSize, description: str) -> None:
     """Reject sizes that are not square with an odd number of rows/columns.
 
     Replicates the upstream odd-AND-square gate (bug-catalog

@@ -103,3 +103,29 @@ def test_diagonal_rejects_even_or_non_square(cls, size: MatrixSize) -> None:
 def test_diagonal_accepts_odd_square(cls, size: MatrixSize) -> None:
     transform = cls(size)
     assert len(transform.base_locations()) == size.num_columns
+
+
+# ---------------------------------------------------------------------------
+# Full next_location cycle from every base — parity with axis / corner-out tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("cls", DIAGONALS)
+def test_diagonal_full_next_cycle_from_every_base_on_3x3(cls) -> None:
+    """Every base location on a 3×3 diagonal must yield a cycle of length 3.
+
+    Walks ``next_location`` from each base and asserts the cycle revisits the
+    start after exactly ``num_rows`` steps. Matches the full-cycle coverage in
+    the axis and corner-out test files.
+    """
+    size = MatrixSize(3, 3)
+    transform = cls(size)
+    for base in transform.base_locations():
+        cycle = _full_next_cycle(transform, base)
+        assert len(cycle) == size.num_rows, (
+            f"{cls.__name__}: cycle from {base} has length {len(cycle)}, "
+            f"expected {size.num_rows}"
+        )
+        # Confirm the cycle closes back to the starting base.
+        assert transform.next_location(cycle[-1]) == base, (
+            f"{cls.__name__}: next_location({cycle[-1]}) does not return to base {base}"
+        )
