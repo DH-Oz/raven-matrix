@@ -156,6 +156,16 @@ Each is `(maxLayersPerMatrix, maxStructureFeaturesPerLayer, numAnswerChoices)` o
 These exercise single-layer base relations, supplemental features (Numerosity),
 and multi-layer logic composition (Logical AND on a Logic location transform).
 
+**Seeding note:** Each config entry is an independent cold-start from seed 42 —
+`generate()` calls `new Random(SEED)` per invocation, so the five matrices are
+five independent draws, not five consecutive draws from one continuing stream
+(upstream `SGMMatrixSetGenerator.generateMatrices` uses one `Random` across the
+whole run). This matches Phase 4's intended API, where `build(config, seed,
+flags)` seeds its own `JavaRandom` per call, so a cold-start fixture is the
+correct oracle for `build()`. Single-stream matrix-set behaviour (the outer
+accept/reject loop) belongs to the classifier-driven orchestration that is out
+of scope here and is not tested by these fixtures.
+
 ### Schema
 
 ```json
