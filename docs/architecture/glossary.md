@@ -27,6 +27,7 @@ code, docs, and conversation. (Bootstrapped from the design plan
 - **FCIS (Functional Core / Imperative Shell)**: pure logic in an import-light core; I/O, UI, CLI, rasterisation at the edges in their own dependency groups.
 - **uv dependency groups**: uv's named optional dependency sets, keeping the core zero-dependency (`raster`, `ui`, `cli`, reserved `difficulty`).
 - **SVG-canonical rendering**: SVG is the primary render artifact; PNG is produced on demand via the optional `raster` group; the browser renders SVG natively.
+- **RasterSettings**: the renderer-side sizing config (`cell_pixel_size`, `pixels_between_cells`) used by `render/svg.py` to lay out the grid and size shapes. Distinct from the generation-time `cell_pixel_size` the upstream `SGMSurfaceFeatureGenerator` used to place/size features: feature `position` lives in *some* cell-pixel space, and a faithful render requires the renderer's `cell_pixel_size` to match the one `build()` produced positions in (see ADR-0001 merge-back checks).
 
 ## Abbreviations
 
