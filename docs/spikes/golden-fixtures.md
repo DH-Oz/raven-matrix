@@ -1,7 +1,8 @@
 # Golden JVM fixtures — spike follow-on
 
 **Date:** 2026-06-09
-**Status:** Both deliverables emitted. Deliverable 2 succeeded within the timebox.
+**Status:** Both deliverables emitted (deliverable 2 succeeded within the
+timebox), plus a fill-pattern fixture added as a coherence-review follow-on (M1).
 
 This is a Phase-1 spike follow-on (authorised directly, not a numbered phase
 task). The Java build spike (`docs/spikes/java-build-spike.md`) established that
@@ -36,13 +37,15 @@ It (1) verifies `javac` and `java` are JDK 8, (2) compiles + runs
 `tools/golden/JavaRandomDump.java` (no jar needed) to write
 `tests/golden/javarandom_vectors.json`, and (3) if `tools/golden/SgmtDump.java`
 exists, extracts the upstream source zip to a **temp dir**, builds the jar there
-with `ant -Djavac.compilerargs="-Xlint:none" clean jar`, compiles the driver
-against it, and runs it headless (`-Djava.awt.headless=true`) to write
-`tests/golden/sgmt_matrices.json`. `upstream/` is never modified.
+with `ant -Djavac.compilerargs="-Xlint:none" clean jar`, compiles the drivers
+against it, and runs them headless (`-Djava.awt.headless=true`) to write
+`tests/golden/sgmt_matrices.json` and `tests/golden/fill_patterns.json`. The jar
+is built **once** and reused for both SGMT-jar-dependent drivers (`SgmtDump`,
+`FillDump`). `upstream/` is never modified.
 
 **Determinism (verified):** running `regenerate.sh` twice yields byte-identical
-JSON for both files (sha256 unchanged; `git status` clean on the committed JSON
-after a re-run). The JSON is hand-formatted in Java with a fixed key order,
+JSON for all three files (sha256 unchanged; `git status` clean on the committed
+JSON after a re-run). The JSON is hand-formatted in Java with a fixed key order,
 two-space indent, LF newlines, and no trailing whitespace, so regeneration is
 byte-stable.
 
@@ -221,6 +224,60 @@ of scope here and is not tested by these fixtures.
   is exactly the data/logic-equivalence bar (CLAUDE.md QA target). It is a
   best-effort RNG differential, not part of the acceptance gate; the upstream RNG
   seeds behind the published norming PNGs are themselves unpublished.
+
+## Deliverable 2b — fill-pattern fixture (coherence review M1)
+
+**File:** `tests/golden/fill_patterns.json`
+**Source:** `tools/golden/FillDump.java` (built against the jar — reuses the jar
+`regenerate.sh` already builds for `SgmtDump`; no second build).
+
+### What it anchors and why
+
+The seed-42 `sgmt_matrices.json` matrices never drew the Grey fills, so the
+upstream fill quirks had **no golden anchor**. This fixture instantiates all five
+`fillpattern/` classes directly and records, for each, its Java class name,
+`getDescription()`, and the exact 8-bit RGBA of `getPaint()` (a `java.awt.Color`,
+so the float channels are rounded by AWT). Phase 2's `Fill` enum must reproduce
+these exactly. The anchored facts:
+
+- **Grey10 and Grey40 both report `getDescription()` == `"Red"`** — a genuine
+  upstream quirk (carried faithfully, no compat flag), not a typo on our side.
+- **White is fully transparent: alpha 0** (`new Color(1,1,1,0)`).
+- **Grey75 reports `"Grey"`** (not `"Grey75"` — the phase_02 draft guessed
+  `"Grey75"`; the JVM is authoritative, so Phase 2 should pin `"Grey"`).
+- Exact alphas (the float→8-bit rounding AWT applies): Black 191 (0.75),
+  Grey10 153 (0.6), Grey40 128 (0.5), Grey75 102 (0.4), White 0 (0.0).
+
+Recorded values (canonical order `[White, Grey10, Grey40, Grey75, Black]`):
+
+| class | description | rgba |
+|-------|-------------|------|
+| `WhiteSGMFillPattern` | `White` | `[255, 255, 255, 0]` |
+| `Grey10SGMFillPattern` | `Red` | `[26, 26, 26, 153]` |
+| `Grey40SGMFillPattern` | `Red` | `[102, 102, 102, 128]` |
+| `Grey75SGMFillPattern` | `Grey` | `[191, 191, 191, 102]` |
+| `BlackSGMFillPattern` | `Black` | `[0, 0, 0, 191]` |
+
+### Schema
+
+```json
+{
+  "fills": [
+    {"class": "WhiteSGMFillPattern", "description": "White", "rgba": [255, 255, 255, 0]},
+    {"class": "Grey10SGMFillPattern", "description": "Red", "rgba": [26, 26, 26, 153]},
+    {"class": "Grey40SGMFillPattern", "description": "Red", "rgba": [102, 102, 102, 128]},
+    {"class": "Grey75SGMFillPattern", "description": "Grey", "rgba": [191, 191, 191, 102]},
+    {"class": "BlackSGMFillPattern", "description": "Black", "rgba": [0, 0, 0, 191]}
+  ]
+}
+```
+
+- Top-level object with one key, `"fills"` — a list in the canonical order
+  `[White, Grey10, Grey40, Grey75, Black]`.
+- Each entry: `"class"` (the Java simple class name), `"description"`
+  (`getDescription()`), `"rgba"` (a 4-int array `[red, green, blue, alpha]`, each
+  0–255, the alpha last).
+- Consumed **without a JVM** (stdlib `json`), like the other fixtures.
 
 ## Phase-4 head-start (API findings)
 

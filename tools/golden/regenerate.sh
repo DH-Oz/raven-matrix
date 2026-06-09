@@ -87,10 +87,15 @@ if [ -f "$SCRIPT_DIR/SgmtDump.java" ]; then
   LIB="$SRC_DIR/Distribution/lib"
   CP="$JAR:$LIB/*"
   mkdir -p "$SGMT_BUILD/driver"
-  javac -cp "$CP" -d "$SGMT_BUILD/driver" "$SCRIPT_DIR/SgmtDump.java"
+  javac -cp "$CP" -d "$SGMT_BUILD/driver" \
+    "$SCRIPT_DIR/SgmtDump.java" "$SCRIPT_DIR/FillDump.java"
   java -Djava.awt.headless=true -cp "$SGMT_BUILD/driver:$CP" SgmtDump \
     > "$GOLDEN_DIR/sgmt_matrices.json"
   echo "wrote $GOLDEN_DIR/sgmt_matrices.json"
+  # Reuse the same jar/classpath (no second build) for the fill-pattern fixture.
+  java -Djava.awt.headless=true -cp "$SGMT_BUILD/driver:$CP" FillDump \
+    > "$GOLDEN_DIR/fill_patterns.json"
+  echo "wrote $GOLDEN_DIR/fill_patterns.json"
 else
   echo "== deliverable 2: SgmtDump.java absent -> deferred (see docs/spikes/golden-fixtures.md) =="
 fi
