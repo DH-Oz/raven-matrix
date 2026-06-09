@@ -20,6 +20,7 @@ classes, with its 3x3 cells collectively covering all 7 shapes and all 5 fills.
 
 from __future__ import annotations
 
+import dataclasses
 import xml.etree.ElementTree as ET
 
 from raven_matrix.model import (
@@ -219,8 +220,12 @@ def test_answers_svg_cells_translate_to_two_by_four_positions() -> None:
 
 def test_answers_svg_with_blank_pad_cell_renders() -> None:
     matrix = _sample_matrix()
-    # Replace one answer with a featureless (blank-pad) cell.
-    matrix.answer_choices[5] = Cell(surface_features=[], location=Location(0, 0))
+    # Replace one answer with a featureless (blank-pad) cell without mutating
+    # the original list — guards against answer_choices becoming an immutable
+    # sequence in future.
+    choices = list(matrix.answer_choices)
+    choices[5] = Cell(surface_features=[], location=Location(0, 0))
+    matrix = dataclasses.replace(matrix, answer_choices=choices)
     root = ET.fromstring(render_answers_svg(matrix))
     cell_groups = root.findall(f"./{_qn('g')}[@class='cell']")
     assert len(cell_groups) == 8

@@ -113,6 +113,16 @@ def test_line_emits_horizontal_line_centred_on_position() -> None:
     assert isclose(float(el.get("y2")), 100.0)
 
 
+def test_line_has_no_fill_attrs() -> None:
+    """<line> has no fill area; fill/fill-opacity must be absent (Issue 1 fix)."""
+    el = _render_one(_feature(Shape.LINE))
+    assert el.get("fill") is None, "LINE element must not carry a fill attribute"
+    assert el.get("fill-opacity") is None, "LINE element must not carry fill-opacity"
+    # Stroke must still be present.
+    assert el.get("stroke") == "black"
+    assert el.get("stroke-width") == "2"
+
+
 def _path_points(d: str) -> list[tuple[float, float]]:
     """Parse an absolute M/L/Z path of float pairs into a point list."""
     points: list[tuple[float, float]] = []

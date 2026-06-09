@@ -87,10 +87,14 @@ def _base_size(settings: RasterSettings) -> float:
 # ---------------------------------------------------------------------------
 
 def _fmt(value: float) -> str:
-    """Format a float for an SVG attribute, trimming a trailing ``.0``-only int.
+    """Format a float for an SVG attribute.
 
-    Coordinates and opacities are emitted with their natural float repr so the
-    tests can compare numerically; integers-as-floats stay readable.
+    Returns the shortest round-trip ``repr`` of the float.  This is stable on
+    CPython 3.12+ (the project's floor): the runtime guarantees the shortest
+    decimal string that round-trips back to the same ``float``, so e.g.
+    ``_fmt(1.0)`` yields ``'1.0'``.  Coordinates and opacities are therefore
+    emitted as their natural float repr; the pinned transform-string tests rely
+    on this stability.
     """
     return repr(value)
 
@@ -208,13 +212,19 @@ def _feature_transform(feature: SurfaceFeature) -> str:
 
 
 def render_feature_svg(feature: SurfaceFeature, settings: RasterSettings) -> str:
-    """SVG element for one surface feature: geometry + fill + stroke + transform."""
+    """SVG element for one surface feature: geometry + fill + stroke + transform.
+
+    ``<line>`` has no fill area, so ``fill``/``fill-opacity`` are omitted for
+    LINE shapes — they would have no visual effect and would pollute the output.
+    All other shapes receive the full ``_fill_attrs`` block.
+    """
     px = feature.position.x
     py = feature.position.y
     base = _base_size(settings)
     body = _shape_body(feature.shape, px, py, base)
+    fill_part = "" if feature.shape is Shape.LINE else f"{_fill_attrs(feature.fill)} "
     return (
-        f"{body} {_fill_attrs(feature.fill)} {_STROKE_ATTRS} "
+        f"{body} {fill_part}{_STROKE_ATTRS} "
         f'transform="{_feature_transform(feature)}"/>'
     )
 
