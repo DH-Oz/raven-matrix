@@ -1,0 +1,1495 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.5" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <NonVisualComponents>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup1">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup2">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup3">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup4">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup5">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup6">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup7">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup8">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup9">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup10">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup11">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup12">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup13">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup14">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup15">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup16">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup17">
+    </Component>
+    <Menu class="javax.swing.JMenuBar" name="jMenuBar3">
+    </Menu>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="3"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="menuBar" type="java.lang.String" value="jMenuBar3"/>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="2"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Group type="102" alignment="0" attributes="1">
+                              <Component id="OneLayer" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="TwoLayers" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                              <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="correctAnswerPositionFormattedTextField" min="-2" pref="35" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="jLabel17" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="rngSeedFormattedTextField" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
+                                  <Component id="LayerOne" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
+                                  <Component id="LayerTwo" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <EmptySpace pref="605" max="32767" attributes="0"/>
+                      <Component id="newSeedButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="Generate" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="saveImageButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="matrixImagePanel" min="-2" pref="327" max="-2" attributes="0"/>
+                  <Component id="answersImagePanel" min="-2" max="-2" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" min="-2" pref="386" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="TwoLayers" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="OneLayer" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel16" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="correctAnswerPositionFormattedTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel17" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="rngSeedFormattedTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="LayerOne" max="32767" attributes="1"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="LayerTwo" min="-2" max="-2" attributes="1"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace pref="33" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="Generate" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="newSeedButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="saveImageButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="matrixImagePanel" min="-2" pref="315" max="-2" attributes="1"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="answersImagePanel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jScrollPane1" min="-2" pref="300" max="-2" attributes="1"/>
+                  </Group>
+              </Group>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="gov.sandia.cognition.generator.matrix.ui.ImagePanel" name="matrixImagePanel">
+    </Component>
+    <Container class="gov.sandia.cognition.generator.matrix.ui.ImagePanel" name="answersImagePanel">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="415" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="214" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="explanationTextArea">
+          <Properties>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="rows" type="int" value="5"/>
+            <Property name="text" type="java.lang.String" value="Test&#xa;Test&#xa;Test"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JRadioButton" name="OneLayer">
+      <Properties>
+        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+          <ComponentRef name="buttonGroup1"/>
+        </Property>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="One Layer"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JRadioButton" name="TwoLayers">
+      <Properties>
+        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+          <ComponentRef name="buttonGroup1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Two Layers"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel5">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="First Supplemental Structure Feature"/>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JPanel" name="LayerOne">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+            <EtchetBorder/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="OneThirdSupplementalDisabled" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="OneThirdSupplementalApplyScaling" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="OneThirdSupplementalApplyRotation" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="OneThirdSupplementalFillPatternRepetition" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="OneThirdSupplementalTranslationalNumerosity" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel21" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="OneSecondSupplementalDisabled" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalApplyScaling" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalApplyRotation" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalFillPatternRepetition" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalTranslationalNumerosity" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalDisabled" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalApplyScaling" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalApplyRotation" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalFillPatternRepetition" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalTranslationalNumerosity" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneThirdSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="OneBaseTopLeftOut" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneBaseDiagBL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneBaseDiagTL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneBaseVertical" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneBaseHorizontal" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalDiagBL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalDiagTL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalVertical" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalHorizontal" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneFirstSupplementalTopLeftOut" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalDiagBL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalDiagTL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalVertical" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalHorizontal" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel7" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalTopLeftOut" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneThirdSupplementalDiagBL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneThirdSupplementalDiagTL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneThirdSupplementalVertical" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneThirdSupplementalHorizontal" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel20" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="OneThirdSupplementalTopLeftOut" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Component id="OneSecondSupplementalChangeFillPattern" alignment="0" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace pref="20" max="32767" attributes="0"/>
+              </Group>
+              <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="OneBaseShapeRepetition" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="OneBaseOR" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="OneBaseAND" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="OneBaseXOR" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="315" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="OneBaseHorizontal" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="OneBaseVertical" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="OneBaseDiagTL" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="OneBaseDiagBL" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="OneBaseTopLeftOut" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneFirstSupplementalDisabled" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneFirstSupplementalApplyRotation" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneFirstSupplementalApplyScaling" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneFirstSupplementalFillPatternRepetition" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneFirstSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneFirstSupplementalTranslationalNumerosity" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Component id="OneFirstSupplementalHorizontal" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneFirstSupplementalVertical" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneFirstSupplementalDiagTL" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneFirstSupplementalDiagBL" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="138" pref="138" max="138" attributes="0"/>
+                          <Component id="OneFirstSupplementalTopLeftOut" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneSecondSupplementalDisabled" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneSecondSupplementalApplyRotation" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneSecondSupplementalApplyScaling" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneSecondSupplementalFillPatternRepetition" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneSecondSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneSecondSupplementalTranslationalNumerosity" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalHorizontal" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalVertical" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalDiagTL" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="OneSecondSupplementalDiagBL" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="138" pref="138" max="138" attributes="0"/>
+                              <Component id="OneSecondSupplementalTopLeftOut" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="jLabel21" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneThirdSupplementalDisabled" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneThirdSupplementalApplyRotation" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneThirdSupplementalApplyScaling" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneThirdSupplementalFillPatternRepetition" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneThirdSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneThirdSupplementalTranslationalNumerosity" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jLabel20" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Component id="OneThirdSupplementalHorizontal" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneThirdSupplementalVertical" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneThirdSupplementalDiagTL" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="OneThirdSupplementalDiagBL" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="138" pref="138" max="138" attributes="0"/>
+                          <Component id="OneThirdSupplementalTopLeftOut" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+              <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="OneBaseShapeRepetition" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="OneBaseAND" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="OneBaseOR" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="OneBaseXOR" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="597" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="jLabel1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Base Structure Feature"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneBaseShapeRepetition">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup2"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Shape Repetition"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneBaseOR">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup2"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Logical OR"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneBaseAND">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup2"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Logical AND"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneBaseXOR">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup2"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Logical XOR"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneBaseDiagBL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup3"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Bottom Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneBaseDiagTL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup3"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Top Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneBaseVertical">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup3"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Vertical"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneBaseHorizontal">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup3"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Horizontal"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Location Transform"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneBaseTopLeftOut">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup3"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Top Left Corner Out"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalDisabled">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup6"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Disabled"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalApplyScaling">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup6"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Scaling"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalApplyRotation">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup6"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Rotation"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalFillPatternRepetition">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup6"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Fill Pattern Repetition"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalTranslationalNumerosity">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup6"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Translational Numerosity"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel6">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Second Supplemental Feature"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalDiagBL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup7"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Bottom Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalDiagTL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup7"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Top Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalVertical">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup7"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Vertical"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalHorizontal">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup7"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Horizontal"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel7">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Location Transform"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalTopLeftOut">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup7"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Top Left Corner Out"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel3">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="First Supplemental Feature"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalDisabled">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Disabled"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalApplyScaling">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Scaling"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalApplyRotation">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Rotation"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalFillPatternRepetition">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Fill Pattern Repetition"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalTranslationalNumerosity">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Translational Numerosity"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalDiagBL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup5"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Bottom Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalDiagTL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup5"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Top Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalVertical">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup5"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Vertical"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalHorizontal">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup5"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Horizontal"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel4">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Location Transform"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalTopLeftOut">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup5"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Top Left Corner Out"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel20">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Location Transform"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalHorizontal">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup15"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Horizontal"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalVertical">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup15"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Vertical"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalDiagTL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup15"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Top Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalDiagBL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup15"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Bottom Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalTopLeftOut">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup15"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Top Left Corner Out"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalTranslationalNumerosity">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup14"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Translational Numerosity"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalFillPatternRepetition">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup14"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Fill Pattern Repetition"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalApplyScaling">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup14"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Scaling"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalApplyRotation">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup14"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Rotation"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalDisabled">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup14"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Disabled"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel21">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Third Supplemental Feature"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneFirstSupplementalChangeFillPattern">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Change Fill Pattern "/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneSecondSupplementalChangeFillPattern">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Change Fill Pattern "/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="OneThirdSupplementalChangeFillPattern">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Change Fill Pattern "/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="LayerTwo">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+            <EtchetBorder/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="TwoThirdSupplementalDisabled" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="TwoThirdSupplementalApplyScaling" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="TwoThirdSupplementalApplyRotation" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="TwoThirdSupplementalFillPatternRepetition" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="TwoThirdSupplementalTranslationalNumerosity" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel18" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="TwoSecondSupplementalDisabled" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalApplyScaling" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalApplyRotation" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalFillPatternRepetition" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalTranslationalNumerosity" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel10" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel12" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalDisabled" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalApplyScaling" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalApplyRotation" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalFillPatternRepetition" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalTranslationalNumerosity" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoThirdSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="TwoBaseTopLeftOut" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoBaseDiagBL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoBaseDiagTL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoBaseVertical" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoBaseHorizontal" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalDiagBL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalDiagTL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalVertical" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalHorizontal" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel13" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoFirstSupplementalTopLeftOut" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalDiagBL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalDiagTL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalVertical" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalHorizontal" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel11" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalTopLeftOut" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoThirdSupplementalDiagBL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoThirdSupplementalDiagTL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoThirdSupplementalVertical" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoThirdSupplementalHorizontal" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel19" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoThirdSupplementalTopLeftOut" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <EmptySpace pref="20" max="32767" attributes="0"/>
+              </Group>
+              <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="TwoBaseShapeRepetition" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="TwoBaseOR" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="TwoBaseAND" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="TwoBaseXOR" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="315" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="TwoBaseHorizontal" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="TwoBaseVertical" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="TwoBaseDiagTL" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="TwoBaseDiagBL" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="TwoBaseTopLeftOut" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoFirstSupplementalDisabled" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoFirstSupplementalApplyRotation" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoFirstSupplementalApplyScaling" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoFirstSupplementalFillPatternRepetition" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoFirstSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoFirstSupplementalTranslationalNumerosity" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Component id="TwoFirstSupplementalHorizontal" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoFirstSupplementalVertical" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoFirstSupplementalDiagTL" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoFirstSupplementalDiagBL" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="138" pref="138" max="138" attributes="0"/>
+                          <Component id="TwoFirstSupplementalTopLeftOut" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoSecondSupplementalDisabled" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoSecondSupplementalApplyRotation" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoSecondSupplementalApplyScaling" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoSecondSupplementalFillPatternRepetition" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoSecondSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoSecondSupplementalTranslationalNumerosity" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalHorizontal" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalVertical" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalDiagTL" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="TwoSecondSupplementalDiagBL" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="138" pref="138" max="138" attributes="0"/>
+                              <Component id="TwoSecondSupplementalTopLeftOut" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="jLabel18" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoThirdSupplementalDisabled" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoThirdSupplementalApplyRotation" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoThirdSupplementalApplyScaling" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoThirdSupplementalFillPatternRepetition" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoThirdSupplementalChangeFillPattern" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoThirdSupplementalTranslationalNumerosity" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jLabel19" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Component id="TwoThirdSupplementalHorizontal" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoThirdSupplementalVertical" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoThirdSupplementalDiagTL" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TwoThirdSupplementalDiagBL" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="138" pref="138" max="138" attributes="0"/>
+                          <Component id="TwoThirdSupplementalTopLeftOut" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+              <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="TwoBaseShapeRepetition" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="TwoBaseAND" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="TwoBaseOR" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="TwoBaseXOR" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="597" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="jLabel8">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Base Structure Feature"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoBaseShapeRepetition">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup8"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Shape Repetition"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoBaseOR">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup8"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Logical OR"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoBaseAND">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup8"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Logical AND"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoBaseXOR">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup8"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Logical XOR"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoBaseDiagBL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup9"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Bottom Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoBaseDiagTL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup9"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Top Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoBaseVertical">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup9"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Vertical"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoBaseHorizontal">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup9"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Horizontal"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel9">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Location Transform"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoBaseTopLeftOut">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup9"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Top Left Corner Out"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalDisabled">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup12"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Disabled"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalApplyScaling">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup12"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Scaling"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalApplyRotation">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup12"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Rotation"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalFillPatternRepetition">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup12"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Fill Pattern Repetition"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalTranslationalNumerosity">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup12"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Translational Numerosity"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel10">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Second Supplemental Feature"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalDiagBL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup13"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Bottom Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalDiagTL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup13"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Top Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalVertical">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup13"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Vertical"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalHorizontal">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup13"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Horizontal"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel11">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Location Transform"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalTopLeftOut">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup13"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Top Left Corner Out"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel12">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="First Supplemental Feature"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalDisabled">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup10"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Disabled"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalApplyScaling">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup10"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Scaling"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalApplyRotation">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup10"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Rotation"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalFillPatternRepetition">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup10"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Fill Pattern Repetition"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalTranslationalNumerosity">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup10"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Translational Numerosity"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalDiagBL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup11"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Bottom Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalDiagTL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup11"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Top Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalVertical">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup11"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Vertical"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalHorizontal">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup11"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Horizontal"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel13">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Location Transform"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalTopLeftOut">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup11"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Top Left Corner Out"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalDisabled">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup16"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Disabled"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalApplyScaling">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup16"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Scaling"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalApplyRotation">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup16"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply Rotation"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalFillPatternRepetition">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup16"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Fill Pattern Repetition"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalTranslationalNumerosity">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup16"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Translational Numerosity"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel18">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Third Supplemental Feature"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalDiagBL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup17"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Bottom Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalDiagTL">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup17"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Diagonal From Top Left"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalVertical">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup17"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Vertical"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalHorizontal">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup17"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Horizontal"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel19">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Location Transform"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalTopLeftOut">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup17"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Top Left Corner Out"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoFirstSupplementalChangeFillPattern">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Change Fill Pattern "/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoSecondSupplementalChangeFillPattern">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Change Fill Pattern "/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="TwoThirdSupplementalChangeFillPattern">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup4"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Change Fill Pattern "/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JButton" name="Generate">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Generate"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="GenerateActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel14">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Layer One"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel15">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Layer Two"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel16">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Correct Answer Position [1-8]:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JFormattedTextField" name="correctAnswerPositionFormattedTextField">
+      <Properties>
+        <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
+          <Format format="#0" subtype="-1" type="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="1"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel17">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Random Number Generator Seed:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JFormattedTextField" name="rngSeedFormattedTextField">
+      <Properties>
+        <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
+          <Format format="#0" subtype="-1" type="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="1"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="newSeedButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="New Seed"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newSeedButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="saveImageButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Save Images"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveImageButtonActionPerformed"/>
+      </Events>
+    </Component>
+  </SubComponents>
+</Form>
