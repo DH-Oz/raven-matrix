@@ -14,6 +14,64 @@ from raven_matrix.model import Location
 from .base import LocationTransform
 
 
+class Horizontal(LocationTransform):
+    """Repetition along each row. Port of ``HorizontalSGMLocationTransform``.
+
+    Base locations are the first column of every row; ``next_location`` advances
+    the column, wrapping to 0; ``parent_location`` steps back one column,
+    wrapping to the last column.
+    """
+
+    description = "Horizontal"
+
+    def _populate_base_locations(self) -> list[Location]:
+        return [Location(row, 0) for row in range(self.size.num_rows)]
+
+    def next_location(self, location: Location) -> Location:
+        column = location.column + 1
+        if column >= self.size.num_columns:
+            column = 0
+        return Location(location.row, column)
+
+    def parent_location(self, location: Location) -> Location:
+        column = location.column - 1
+        if column < 0:
+            column = self.size.num_columns - 1
+        return Location(location.row, column)
+
+
+class Vertical(LocationTransform):
+    """Repetition along each column. Port of ``VerticalSGMLocationTransform``.
+
+    Base locations are the first row of every column; ``next_location`` advances
+    the row, wrapping to 0; ``parent_location`` steps back one row, wrapping to
+    the last row.
+    """
+
+    description = "Vertical"
+
+    def _populate_base_locations(self) -> list[Location]:
+        return [Location(0, column) for column in range(self.size.num_columns)]
+
+    def next_location(self, location: Location) -> Location:
+        row = location.row + 1
+        if row >= self.size.num_rows:
+            row = 0
+        return Location(row, location.column)
+
+    def parent_location(self, location: Location) -> Location:
+        row = location.row - 1
+        if row < 0:
+            # Fix-to-paper: upstream wraps to numColumns-1 here
+            # (VerticalSGMLocationTransform.java:108), a bug masked on the
+            # all-3x3 square oracle where numColumns == numRows. Per CLAUDE.md
+            # spec-precedence (the Matzen paper is the spec) we wrap to
+            # num_rows-1. bug-catalog: loc-vertical-parent-wrap (fix-to-paper).
+            # No compat flag.
+            row = self.size.num_rows - 1
+        return Location(row, location.column)
+
+
 class TopLeftCornerOut(LocationTransform):
     """Diagonal wavefront moving outward from the top-left corner.
 
