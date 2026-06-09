@@ -29,6 +29,14 @@ with attribution.
   `gov.sandia.cognition.generator.matrix`).
 - `Matzen_et_al_2010_norming_stim.zip` — the QA oracle (see below).
 
+**Read the Java here — do NOT unzip.** The source is extracted to a committed,
+read-only mirror at `reference/sgmt-source/`: the port source under
+`Source/gov/sandia/cognition/generator/matrix/…` and the JUnit spec under
+`Test/…`. Grep and read from there. The zip above stays sealed as the provenance
+artifact; never re-unzip it ad hoc. Re-derive the mirror only with
+`bash tools/extract_upstream.sh`. The Matzen paper (when needed) is at
+`docs/papers/matzen-2010-recreating-ravens.pdf`.
+
 Java structure (≈72 source files):
 
 - Core model: `SGMMatrix`, `SGM{Base,Composite,Derived}Cell`, `SGMLayer`,
@@ -139,6 +147,13 @@ Locked constraints the port must honour (rationale, not task state):
   generation options as upstream SGMT: relation types, directions, layer
   composition, logic transforms, and answer/difficulty settings (the controls
   in `ui/SGMBuilderFrame`).
+- Spec precedence = the Matzen et al. (2010) paper is the fundamental spec. When
+  the Java source and the paper genuinely disagree because of a source bug,
+  follow the paper and fix the bug; record the divergence (code comment + test +
+  ADR). First instance: upstream compares fills by `getDescription()`, where
+  Grey10/Grey40 both report "Red" (a bug — the paper specifies five distinct
+  fill patterns), so the port keeps the five shadings distinct. See
+  `src/raven_matrix/model.py` `Fill` / `SurfaceFeature.value_equals`.
 
 Design state, aspirations, and still-open questions live in `.notes/`, not here.
 
