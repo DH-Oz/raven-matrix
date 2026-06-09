@@ -1,0 +1,841 @@
+Number of Relations,Problem Subtype,Structure,Stimulus Name,Correct Answer,% Correct in Norming Study
+One Relation,Shape,A1,A1_1,6,1
+One Relation,Shape,A1,A1_2,3,0.75
+One Relation,Shape,A1,A1_3,7,1
+One Relation,Shape,A1,A1_4,1,1
+One Relation,Shape,A2,A2_1,5,1
+One Relation,Shape,A2,A2_2,4,1
+One Relation,Shape,A2,A2_3,1,0.75
+One Relation,Shape,A2,A2_4,4,1
+One Relation,Shape,A3,A3_1,3,1
+One Relation,Shape,A3,A3_2,7,1
+One Relation,Shape,A3,A3_3,6,0.25
+One Relation,Shape,A3,A3_4,4,1
+One Relation,Shape,A4,A4_1,2,0.75
+One Relation,Shape,A4,A4_1,1,0.75
+One Relation,Shape,A4,A4_2,3,1
+One Relation,Shape,A4,A4_3,1,1
+One Relation,Shading,B1,B1_1,3,0.75
+One Relation,Shading,B1,B1_2,2,1
+One Relation,Shading,B1,B1_3,8,1
+One Relation,Shading,B1,B1_4,6,1
+One Relation,Shading,B2,B2_1,8,1
+One Relation,Shading,B2,B2_2,3,1
+One Relation,Shading,B2,B2_3,1,1
+One Relation,Shading,B2,B2_4,2,1
+One Relation,Shading,B3,B3_1,7,1
+One Relation,Shading,B3,B3_2,1,1
+One Relation,Shading,B3,B3_3,3,1
+One Relation,Shading,B3,B3_4,7,1
+One Relation,Shading,B4,B4_1,4,1
+One Relation,Shading,B4,B4_2,4,1
+One Relation,Shading,B4,B4_3,1,1
+One Relation,Shading,B4,B4_4,4,0.75
+One Relation,Shading,B5,B5_1,4,0.25
+One Relation,Shading,B5,B5_2,7,0.5
+One Relation,Shading,B5,B5_3,3,0
+One Relation,Shading,B5,B5_4,6,0.75
+One Relation,Orientation,C1,C1_1,5,1
+One Relation,Orientation,C1,C1_2,4,1
+One Relation,Orientation,C1,C1_3,1,0.75
+One Relation,Orientation,C1,C1_4,4,1
+One Relation,Orientation,C2,C2_1,5,1
+One Relation,Orientation,C2,C2_2,3,1
+One Relation,Orientation,C2,C2_3,2,0.75
+One Relation,Orientation,C2,C2_4,8,1
+One Relation,Orientation,C3,C3_1,7,0.5
+One Relation,Orientation,C3,C3_2,4,0.75
+One Relation,Orientation,C3,C3_3,7,0.75
+One Relation,Orientation,C3,C3_4,3,1
+One Relation,Orientation,C4,C4_1,8,0.75
+One Relation,Orientation,C4,C4_2,3,1
+One Relation,Orientation,C4,C4_3,1,0.75
+One Relation,Orientation,C4,C4_4,2,1
+One Relation,Orientation,C5,C5_1,7,0.5
+One Relation,Orientation,C5,C5_2,1,0.75
+One Relation,Orientation,C5,C5_3,3,1
+One Relation,Orientation,C5,C5_4,7,0.5
+One Relation,Size,D1,D1_1,8,1
+One Relation,Size,D1,D1_2,3,1
+One Relation,Size,D1,D1_3,1,1
+One Relation,Size,D1,D1_4,2,0.75
+One Relation,Size,D2,D2_1,7,1
+One Relation,Size,D2,D2_2,1,1
+One Relation,Size,D2,D2_3,3,0.75
+One Relation,Size,D2,D2_4,7,1
+One Relation,Size,D3,D3_1,7,0.75
+One Relation,Size,D3,D3_2,5,1
+One Relation,Size,D3,D3_3,3,1
+One Relation,Size,D3,D3_4,2,1
+One Relation,Size,D4,D4_1,8,0.75
+One Relation,Size,D4,D4_2,5,0.5
+One Relation,Size,D4,D4_3,4,0.75
+One Relation,Size,D4,D4_4,1,1
+One Relation,Size,D5,D5_1,6,0.75
+One Relation,Size,D5,D5_2,4,0.75
+One Relation,Size,D5,D5_3,7,0.75
+One Relation,Size,D5,D5_4,3,0.75
+One Relation,Number,E1,E1_1,8,0.75
+One Relation,Number,E1,E1_2,5,0.75
+One Relation,Number,E1,E1_3,4,1
+One Relation,Number,E1,E1_4,1,1
+One Relation,Number,E2,E2_1,6,1
+One Relation,Number,E2,E2_2,4,1
+One Relation,Number,E2,E2_3,7,1
+One Relation,Number,E2,E2_4,3,0.75
+One Relation,Number,E3,E3_1,8,1
+One Relation,Number,E3,E3_2,3,1
+One Relation,Number,E3,E3_3,1,0.75
+One Relation,Number,E3,E3_4,2,1
+One Relation,Number,E4,E4_1,8,1
+One Relation,Number,E4,E4_2,7,1
+One Relation,Number,E4,E4_3,5,0.75
+One Relation,Number,E4,E4_4,3,1
+One Relation,Number,E5,E5_1,2,0.75
+One Relation,Number,E5,E5_2,7,0.75
+One Relation,Number,E5,E5_3,1,1
+One Relation,Number,E5,E5_4,3,0.75
+Two Relations,Shape and Shading,A1B2,A1B2,5,1
+Two Relations,Shape and Shading,A1B3,A1B3,8,0.75
+Two Relations,Shape and Shading,A1B4,A1B4,7,1
+Two Relations,Shape and Shading,A1B5,A1B5,5,0.25
+Two Relations,Shape and Shading,A2B1,A2B1,8,1
+Two Relations,Shape and Shading,A2B3,A2B3,5,1
+Two Relations,Shape and Shading,A2B4,A2B4,3,1
+Two Relations,Shape and Shading,A2B5,A2B5,2,0
+Two Relations,Shape and Shading,A3B1,A3B1,8,1
+Two Relations,Shape and Shading,A3B2,A3B2,7,1
+Two Relations,Shape and Shading,A3B4,A3B4,8,1
+Two Relations,Shape and Shading,A3B5,A3B5,6,0
+Two Relations,Shape and Shading,A4B1,A4B1,5,0.75
+Two Relations,Shape and Shading,A4B2,A4B2,4,1
+Two Relations,Shape and Shading,A4B3,A4B3,3,1
+Two Relations,Shape and Shading,A4B5,A4B5,7,0.5
+Two Relations,Shape and Orientation,A1C2,A1C2,4,1
+Two Relations,Shape and Orientation,A1C3,A1C3,3,0.75
+Two Relations,Shape and Orientation,A1C4,A1C4,1,0.5
+Two Relations,Shape and Orientation,A1C5,A1C5,4,0.75
+Two Relations,Shape and Orientation,A2C1,A2C1,7,1
+Two Relations,Shape and Orientation,A2C3,A2C3,7,0.75
+Two Relations,Shape and Orientation,A2C4,A2C4,2,1
+Two Relations,Shape and Orientation,A2C5,A2C5,8,0.75
+Two Relations,Shape and Orientation,A3C1,A3C1,3,0.5
+Two Relations,Shape and Orientation,A3C2,A3C2,2,1
+Two Relations,Shape and Orientation,A3C4,A3C4,7,0.75
+Two Relations,Shape and Orientation,A3C5,A3C5,5,0
+Two Relations,Shape and Orientation,A4C1,A4C1,8,0.75
+Two Relations,Shape and Orientation,A4C2,A4C2,6,1
+Two Relations,Shape and Orientation,A4C3,A4C3,8,0.5
+Two Relations,Shape and Orientation,A4C5,A4C5,2,0.75
+Two Relations,Shape and Size,A1D2,A1D2,6,1
+Two Relations,Shape and Size,A1D3,A1D3,8,0.5
+Two Relations,Shape and Size,A1D4,A1D4,7,0.75
+Two Relations,Shape and Size,A1D5,A1D5,5,1
+Two Relations,Shape and Size,A2D1,A2D1,1,1
+Two Relations,Shape and Size,A2D3,A2D3,5,0.5
+Two Relations,Shape and Size,A2D4,A2D4,4,0.25
+Two Relations,Shape and Size,A2D5,A2D5,3,0.75
+Two Relations,Shape and Size,A3D1,A3D1,2,1
+Two Relations,Shape and Size,A3D2,A3D2,8,0.5
+Two Relations,Shape and Size,A3D4,A3D4,2,0.75
+Two Relations,Shape and Size,A3D5,A3D5,4,0.5
+Two Relations,Shape and Size,A4D1,A4D1,7,1
+Two Relations,Shape and Size,A4D2,A4D2,5,0.75
+Two Relations,Shape and Size,A4D3,A4D3,3,1
+Two Relations,Shape and Size,A4D5,A4D5,5,0.75
+Two Relations,Shape and Number,A1E2,A1E2,5,1
+Two Relations,Shape and Number,A1E3,A1E3,3,1
+Two Relations,Shape and Number,A1E4,A1E4,2,1
+Two Relations,Shape and Number,A1E5,A1E5,8,0.75
+Two Relations,Shape and Number,A2E1,A2E1,7,1
+Two Relations,Shape and Number,A2E3,A2E3,8,0.75
+Two Relations,Shape and Number,A2E4,A2E4,6,0.75
+Two Relations,Shape and Number,A2E5,A2E5,8,1
+Two Relations,Shape and Number,A3E1,A3E1,4,1
+Two Relations,Shape and Number,A3E2,A3E2,3,1
+Two Relations,Shape and Number,A3E4,A3E4,7,1
+Two Relations,Shape and Number,A3E5,A3E5,5,0.5
+Two Relations,Shape and Number,A4E1,A4E1,5,1
+Two Relations,Shape and Number,A4E2,A4E2,4,0.75
+Two Relations,Shape and Number,A4E3,A4E3,2,0.5
+Two Relations,Shape and Number,A4E5,A4E5,8,0.5
+Two Relations,Shading and Orientation,B1C2,B1C2,4,1
+Two Relations,Shading and Orientation,B1C3,B1C3,2,1
+Two Relations,Shading and Orientation,B1C4,B1C4,8,1
+Two Relations,Shading and Orientation,B1C5,B1C5,7,0.75
+Two Relations,Shading and Orientation,B2C1,B2C1,2,1
+Two Relations,Shading and Orientation,B2C3,B2C3,7,0.75
+Two Relations,Shading and Orientation,B2C4,B2C4,5,0.5
+Two Relations,Shading and Orientation,B2C5,B2C5,3,1
+Two Relations,Shading and Orientation,B3C1,B3C1,6,1
+Two Relations,Shading and Orientation,B3C2,B3C2,8,0.75
+Two Relations,Shading and Orientation,B3C4,B3C4,2,0.75
+Two Relations,Shading and Orientation,B3C5,B3C5,8,0.25
+Two Relations,Shading and Orientation,B4C1,B4C1,7,1
+Two Relations,Shading and Orientation,B4C2,B4C2,5,0.75
+Two Relations,Shading and Orientation,B4C3,B4C3,4,0.75
+Two Relations,Shading and Orientation,B4C5,B4C5,8,0.25
+Two Relations,Shading and Orientation,B5C1,B5C1,5,0.25
+Two Relations,Shading and Orientation,B5C2,B5C2,8,0.25
+Two Relations,Shading and Orientation,B5C3,B5C3,5,0.5
+Two Relations,Shading and Orientation,B5C4,B5C4,4,0
+Two Relations,Shading and Size,B1D2,B1D2,4,1
+Two Relations,Shading and Size,B1D3,B1D3,5,0.75
+Two Relations,Shading and Size,B1D4,B1D4,8,0.75
+Two Relations,Shading and Size,B1D5,B1D5,5,1
+Two Relations,Shading and Size,B2D1,B2D1,8,1
+Two Relations,Shading and Size,B2D3,B2D3,5,0.5
+Two Relations,Shading and Size,B2D4,B2D4,4,1
+Two Relations,Shading and Size,B2D5,B2D5,2,0.25
+Two Relations,Shading and Size,B3D1,B3D1,5,1
+Two Relations,Shading and Size,B3D2,B3D2,3,1
+Two Relations,Shading and Size,B3D4,B3D4,8,1
+Two Relations,Shading and Size,B3D5,B3D5,7,0.5
+Two Relations,Shading and Size,B4D1,B4D1,2,1
+Two Relations,Shading and Size,B4D2,B4D2,8,1
+Two Relations,Shading and Size,B4D3,B4D3,6,1
+Two Relations,Shading and Size,B4D5,B4D5,3,1
+Two Relations,Shading and Size,B5D1,B5D1,6,0
+Two Relations,Shading and Size,B5D2,B5D2,8,0.25
+Two Relations,Shading and Size,B5D3,B5D3,7,0
+Two Relations,Shading and Size,B5D4,B5D4,5,0.75
+Two Relations,Shading and Number,B1E2,B1E2,1,1
+Two Relations,Shading and Number,B1E3,B1E3,3,1
+Two Relations,Shading and Number,B1E4,B1E4,1,0.75
+Two Relations,Shading and Number,B1E5,B1E5,3,1
+Two Relations,Shading and Number,B2E1,B2E1,8,0.75
+Two Relations,Shading and Number,B2E3,B2E3,8,0.75
+Two Relations,Shading and Number,B2E4,B2E4,4,1
+Two Relations,Shading and Number,B2E5,B2E5,5,1
+Two Relations,Shading and Number,B3E1,B3E1,4,1
+Two Relations,Shading and Number,B3E2,B3E2,2,0.75
+Two Relations,Shading and Number,B3E4,B3E4,8,0.75
+Two Relations,Shading and Number,B3E5,B3E5,5,1
+Two Relations,Shading and Number,B4E1,B4E1,8,1
+Two Relations,Shading and Number,B4E2,B4E2,7,1
+Two Relations,Shading and Number,B4E3,B4E3,5,1
+Two Relations,Shading and Number,B4E5,B4E5,2,1
+Two Relations,Shading and Number,B5E1,B5E1,5,0
+Two Relations,Shading and Number,B5E2,B5E2,3,0.5
+Two Relations,Shading and Number,B5E3,B5E3,2,0.25
+Two Relations,Shading and Number,B5E4,B5E4,8,0.25
+Two Relations,Orientation and Size,C1D2,C1D2,3,1
+Two Relations,Orientation and Size,C1D3,C1D3,1,0.5
+Two Relations,Orientation and Size,C1D4,C1D4,4,1
+Two Relations,Orientation and Size,C1D5,C1D5,7,0.75
+Two Relations,Orientation and Size,C2D1,C2D1,1,1
+Two Relations,Orientation and Size,C2D3,C2D3,7,1
+Two Relations,Orientation and Size,C2D4,C2D4,1,0.75
+Two Relations,Orientation and Size,C2D5,C2D5,3,0.75
+Two Relations,Orientation and Size,C3D1,C3D1,4,1
+Two Relations,Orientation and Size,C3D2,C3D2,5,1
+Two Relations,Orientation and Size,C3D4,C3D4,2,0.75
+Two Relations,Orientation and Size,C3D5,C3D5,8,0.5
+Two Relations,Orientation and Size,C4D1,C4D1,8,1
+Two Relations,Orientation and Size,C4D2,C4D2,5,0.75
+Two Relations,Orientation and Size,C4D3,C4D3,4,1
+Two Relations,Orientation and Size,C4D5,C4D5,5,0.25
+Two Relations,Orientation and Size,C5D1,C5D1,4,0.75
+Two Relations,Orientation and Size,C5D2,C5D2,2,0.75
+Two Relations,Orientation and Size,C5D3,C5D3,8,0.75
+Two Relations,Orientation and Size,C5D4,C5D4,7,1
+Two Relations,Orientation and Number,C1E2,C1E2,7,1
+Two Relations,Orientation and Number,C1E3,C1E3,7,1
+Two Relations,Orientation and Number,C1E4,C1E4,5,1
+Two Relations,Orientation and Number,C1E5,C1E5,4,1
+Two Relations,Orientation and Number,C2E1,C2E1,4,0.75
+Two Relations,Orientation and Number,C2E3,C2E3,4,0.75
+Two Relations,Orientation and Number,C2E4,C2E4,3,1
+Two Relations,Orientation and Number,C2E5,C2E5,1,1
+Two Relations,Orientation and Number,C3E1,C3E1,3,0.25
+Two Relations,Orientation and Number,C3E2,C3E2,3,0.75
+Two Relations,Orientation and Number,C3E4,C3E4,4,0.25
+Two Relations,Orientation and Number,C3E5,C3E5,7,0.5
+Two Relations,Orientation and Number,C4E1,C4E1,2,1
+Two Relations,Orientation and Number,C4E2,C4E2,8,1
+Two Relations,Orientation and Number,C4E3,C4E3,4,0.5
+Two Relations,Orientation and Number,C4E5,C4E5,7,0.75
+Two Relations,Orientation and Number,C5E1,C5E1,4,0.75
+Two Relations,Orientation and Number,C5E2,C5E2,5,0.25
+Two Relations,Orientation and Number,C5E3,C5E3,8,0.75
+Two Relations,Orientation and Number,C5E4,C5E4,5,0.5
+Two Relations,Size and Number,D1E2,D1E2,3,1
+Two Relations,Size and Number,D1E3,D1E3,2,0.75
+Two Relations,Size and Number,D1E4,D1E4,8,1
+Two Relations,Size and Number,D1E5,D1E5,6,1
+Two Relations,Size and Number,D2E1,D2E1,5,1
+Two Relations,Size and Number,D2E3,D2E3,6,0.75
+Two Relations,Size and Number,D2E4,D2E4,8,0
+Two Relations,Size and Number,D2E5,D2E5,7,0.5
+Two Relations,Size and Number,D3E1,D3E1,3,0.5
+Two Relations,Size and Number,D3E2,D3E2,1,1
+Two Relations,Size and Number,D3E4,D3E4,5,0
+Two Relations,Size and Number,D3E5,D3E5,4,0.75
+Two Relations,Size and Number,D4E1,D4E1,4,0.5
+Two Relations,Size and Number,D4E2,D4E2,7,0
+Two Relations,Size and Number,D4E3,D4E3,1,0.5
+Two Relations,Size and Number,D4E5,D4E5,1,0.75
+Two Relations,Size and Number,D5E1,D5E1,5,0.75
+Two Relations,Size and Number,D5E2,D5E2,7,0.75
+Two Relations,Size and Number,D5E3,D5E3,2,0.25
+Two Relations,Size and Number,D5E4,D5E4,8,0.75
+Three Relations,Shape,A3B1C2,A3B1C2_1,4,0.75
+Three Relations,Shape,A3B1C2,A3B1C2_2,8,1
+Three Relations,Shape,A3B1E2,A3B1E2,6,1
+Three Relations,Shape,A3B2C1,A3B2C1,8,0
+Three Relations,Shape,A3B2D1,A3B2D1_1,2,0.5
+Three Relations,Shape,A3B2D1,A3B2D1_2,7,0.75
+Three Relations,Shape,A3C1E2,A3C1E2_1,4,0.75
+Three Relations,Shape,A3C1E2,A3C1E2_2,8,0.75
+Three Relations,Shape,A3C2D1,A3C2D1,7,0.5
+Three Relations,Shape,A3D2E1,A3D2E1,5,0.25
+Three Relations,Shape,A4B1C2,A4B1C2,7,0.75
+Three Relations,Shape,A4B1D2,A4B1D2,3,0.5
+Three Relations,Shape,A4B2C1,A4B2C1,1,1
+Three Relations,Shape,A4B2E1,A4B2E1_1,5,1
+Three Relations,Shape,A4B2E1,A4B2E1_2,5,1
+Three Relations,Shape,A4C1D2,A4C1D2_1,2,0.5
+Three Relations,Shape,A4C1D2,A4C1D2_2,8,0.75
+Three Relations,Shape,A4C2E1,A4C2E1,5,0.75
+Three Relations,Shape,A4D1E2,A4D1E2_1,4,0.75
+Three Relations,Shape,A4D1E2,A4D1E2_2,2,0.75
+Three Relations,Shading,A1B3D2,A1B3D2,5,1
+Three Relations,Shading,A1B3E2,A1B3E2,3,1
+Three Relations,Shading,A1B4C2,A1B4C2,8,1
+Three Relations,Shading,A1B4E2,A1B4E2,2,0.5
+Three Relations,Shading,A1B5D2,A1B5D2,5,0.75
+Three Relations,Shading,A1B5E2,A1B5E2,4,0.75
+Three Relations,Shading,A2B3C1,A2B3C1,4,1
+Three Relations,Shading,A2B4D1,A2B4D1,8,0.5
+Three Relations,Shading,A2B4E1,A2B4E1,3,1
+Three Relations,Shading,A2B5C1,A2B5C1,4,0.5
+Three Relations,Shading,A2B5E1,A2B5E1,8,1
+Three Relations,Shading,B3C1E2,B3C1E2,2,1
+Three Relations,Shading,B3C2D1,B3C2D1,1,1
+Three Relations,Shading,B3D2E1,B3D2E1,5,0.25
+Three Relations,Shading,B4C1D2,B4C1D2,8,1
+Three Relations,Shading,B4C2E1,B4C2E1,7,1
+Three Relations,Shading,B4D1E2,B4D1E2,5,0.75
+Three Relations,Shading,B5C1E2,B5C1E2,6,1
+Three Relations,Shading,B5C2D1,B5C2D1,2,0.25
+Three Relations,Shading,B5D2E1,B5D2E1,7,0.5
+Three Relations,Orientation,A1B2C4,A1B2C4,7,1
+Three Relations,Orientation,A1C3D2,A1C3D2,7,1
+Three Relations,Orientation,A1C4E2,A1C4E2,5,0.75
+Three Relations,Orientation,A1C5D2,A1C5D2,5,1
+Three Relations,Orientation,A2B1C3,A2B1C3,5,0.75
+Three Relations,Orientation,A2B1C5,A2B1C5,3,0.5
+Three Relations,Orientation,A2C3E1,A2C3E1,8,0.75
+Three Relations,Orientation,A2C4D1,A2C4D1,6,0
+Three Relations,Orientation,A2C5E1,A2C5E1,2,0.5
+Three Relations,Orientation,B1C3D2,B1C3D2,8,0.25
+Three Relations,Orientation,B1C3E2,B1C3E2,8,0.75
+Three Relations,Orientation,B1C4E2,B1C4E2,2,1
+Three Relations,Orientation,B1C5D2,B1C5D2,5,0.75
+Three Relations,Orientation,B1C5E2,B1C5E2,6,1
+Three Relations,Orientation,B2C4D1,B2C4D1,4,1
+Three Relations,Orientation,B2C5E1,B2C5E1,4,0.5
+Three Relations,Orientation,C3D1E2,C3D1E2,2,1
+Three Relations,Orientation,C3D2E1,C3D2E1,3,1
+Three Relations,Orientation,C4D1E2,C4D1E2,4,0.75
+Three Relations,Orientation,C5D2E1,C5D2E1,1,1
+Three Relations,Size,A1B2D4,A1B2D4,1,0.5
+Three Relations,Size,A1C2D4,A1C2D4,5,0.5
+Three Relations,Size,A1D3E2,A1D3E2,1,0.75
+Three Relations,Size,A1D4E2,A1D4E2,4,1
+Three Relations,Size,A1D5E2,A1D5E2,3,0.5
+Three Relations,Size,A2B1D3,A2B1D3,4,0.75
+Three Relations,Size,A2B1D5,A2B1D5,8,1
+Three Relations,Size,A2C1D3,A2C1D3,6,0.25
+Three Relations,Size,A2C1D5,A2C1D5,5,0.25
+Three Relations,Size,A2D3E1,A2D3E1,5,0.5
+Three Relations,Size,A2D4E1,A2D4E1,6,0.75
+Three Relations,Size,B1C2D3,B1C2D3,2,0.75
+Three Relations,Size,B1C2D5,B1C2D5,8,0
+Three Relations,Size,B1D4E2,B1D4E2,5,1
+Three Relations,Size,B2C1D4,B2C1D4,3,0.5
+Three Relations,Size,B2D3E1,B2D3E1,4,0.75
+Three Relations,Size,B2D5E1,B2D5E1,8,0.75
+Three Relations,Size,C1D3E2,C1D3E2,7,0.5
+Three Relations,Size,C1D5E2,C1D5E2,8,0.5
+Three Relations,Size,C2D4E1,C2D4E1,2,1
+Three Relations,Number,A1B2E3,A1B2E3,2,1
+Three Relations,Number,A1B2E5,A1B2E5,4,0.75
+Three Relations,Number,A1C2E4,A1C2E4,5,0.5
+Three Relations,Number,A1D2E4,A1D2E4,3,1
+Three Relations,Number,A2B1E4,A2B1E4,8,1
+Three Relations,Number,A2C1E3,A2C1E3,5,0.75
+Three Relations,Number,A2C1E5,A2C1E5,7,1
+Three Relations,Number,A2D1E3,A2D1E3,6,0.5
+Three Relations,Number,A2D1E5,A2D1E5,4,0.75
+Three Relations,Number,B1C2E3,B1C2E3,1,1
+Three Relations,Number,B1C2E4,B1C2E4,8,1
+Three Relations,Number,B1C2E5,B1C2E5,1,0.5
+Three Relations,Number,B1D2E4,B1D2E4,7,1
+Three Relations,Number,B2C1E4,B2C1E4,6,0.5
+Three Relations,Number,B2C1E5,B2C1E5,5,1
+Three Relations,Number,B2D1E3,B2D1E3,3,1
+Three Relations,Number,B2D1E5,B2D1E5,6,0.5
+Three Relations,Number,C1D2E3,C1D2E3,5,1
+Three Relations,Number,C1D2E5,C1D2E5,2,0.75
+Three Relations,Number,C2D1E4,C2D1E4,8,1
+Three Relations,Shape and Shading,A3B4C1,A3B4C1,6,1
+Three Relations,Shape and Shading,A3B4C2,A3B4C2,5,1
+Three Relations,Shape and Shading,A3B4D1,A3B4D1,3,0.75
+Three Relations,Shape and Shading,A3B4D2,A3B4D2,8,0.5
+Three Relations,Shape and Shading,A3B4E1,A3B4E1,1,0.5
+Three Relations,Shape and Shading,A3B4E2,A3B4E2,5,0.5
+Three Relations,Shape and Shading,A3B5C1,A3B5C1,5,0
+Three Relations,Shape and Shading,A3B5C2,A3B5C2,6,0.25
+Three Relations,Shape and Shading,A3B5D1,A3B5D1,4,0
+Three Relations,Shape and Shading,A3B5D2,A3B5D2,4,0
+Three Relations,Shape and Shading,A3B5E1,A3B5E1,8,0.5
+Three Relations,Shape and Shading,A3B5E2,A3B5E2,8,0.75
+Three Relations,Shape and Shading,A4B3C1,A4B3C1,1,1
+Three Relations,Shape and Shading,A4B3C2,A4B3C2,7,0.5
+Three Relations,Shape and Shading,A4B3D1,A4B3D1,2,0.5
+Three Relations,Shape and Shading,A4B3E1,A4B3E1,7,1
+Three Relations,Shape and Shading,A4B5C1,A4B5C1,2,0.25
+Three Relations,Shape and Shading,A4B5C2,A4B5C2,6,0.25
+Three Relations,Shape and Shading,A4B5D2,A4B5D2,3,0
+Three Relations,Shape and Shading,A4B5E2,A4B5E2,6,0.75
+Three Relations,Shape and Orientation,A3B1C4,A3B1C4,3,0.5
+Three Relations,Shape and Orientation,A3B1C5,A3B1C5,6,0
+Three Relations,Shape and Orientation,A3B2C4,A3B2C4,8,0.75
+Three Relations,Shape and Orientation,A3B2C5,A3B2C5,2,0
+Three Relations,Shape and Orientation,A3C4D1,A3C4D1,1,1
+Three Relations,Shape and Orientation,A3C4D2,A3C4D2,7,0.75
+Three Relations,Shape and Orientation,A3C4E1,A3C4E1,7,0.75
+Three Relations,Shape and Orientation,A3C5D1,A3C5D1,2,0
+Three Relations,Shape and Orientation,A3C5D2,A3C5D2,6,0.25
+Three Relations,Shape and Orientation,A3C5E1,A3C5E1,4,0.25
+Three Relations,Shape and Orientation,A3C5E2,A3C5E2,4,0.25
+Three Relations,Shape and Orientation,A4B1C3,A4B1C3,6,1
+Three Relations,Shape and Orientation,A4B1C5,A4B1C5,5,0.5
+Three Relations,Shape and Orientation,A4B2C3,A4B2C3,5,0.75
+Three Relations,Shape and Orientation,A4B2C5,A4B2C5,6,0.5
+Three Relations,Shape and Orientation,A4C3D1,A4C3D1,1,0.75
+Three Relations,Shape and Orientation,A4C3D2,A4C3D2,5,0.75
+Three Relations,Shape and Orientation,A4C3E1,A4C3E1,2,0.75
+Three Relations,Shape and Orientation,A4C5D2,A4C5D2,8,0.75
+Three Relations,Shape and Orientation,A4C5E2,A4C5E2,3,1
+Three Relations,Shape and Size,A3B1D4,A3B1D4,1,0.75
+Three Relations,Shape and Size,A3B1D5,A3B1D5,2,0.75
+Three Relations,Shape and Size,A3B2D4,A3B2D4,7,0.75
+Three Relations,Shape and Size,A3B2D5,A3B2D5,6,0.25
+Three Relations,Shape and Size,A3C1D4,A3C1D4,6,0.5
+Three Relations,Shape and Size,A3C1D5,A3C1D5,5,0.75
+Three Relations,Shape and Size,A3C2D4,A3C2D4,5,0.25
+Three Relations,Shape and Size,A3C2D5,A3C2D5,6,0
+Three Relations,Shape and Size,A3D4E1,A3D4E1,2,0.25
+Three Relations,Shape and Size,A3D5E2,A3D5E2,3,0.25
+Three Relations,Shape and Size,A4B1D3,A4B1D3,1,0.25
+Three Relations,Shape and Size,A4B1D5,A4B1D5,6,0.75
+Three Relations,Shape and Size,A4B2D3,A4B2D3,7,0.5
+Three Relations,Shape and Size,A4B2D5,A4B2D5,2,0.25
+Three Relations,Shape and Size,A4C1D3,A4C1D3,3,0.75
+Three Relations,Shape and Size,A4C2D3,A4C2D3,8,0.5
+Three Relations,Shape and Size,A4C2D5,A4C2D5,4,0.5
+Three Relations,Shape and Size,A4D3E1,A4D3E1,1,1
+Three Relations,Shape and Size,A4D3E2,A4D3E2,8,0.75
+Three Relations,Shape and Size,A4D5E1,A4D5E1,4,0
+Three Relations,Shape and Number,A3B1E4,A3B1E4,6,1
+Three Relations,Shape and Number,A3B1E5,A3B1E5,5,0.75
+Three Relations,Shape and Number,A3B2E5,A3B2E5,6,0.25
+Three Relations,Shape and Number,A3C1E4,A3C1E4,1,0.5
+Three Relations,Shape and Number,A3C1E5,A3C1E5,6,0.5
+Three Relations,Shape and Number,A3C2E4,A3C2E4,7,0.75
+Three Relations,Shape and Number,A3C2E5,A3C2E5,2,0.25
+Three Relations,Shape and Number,A3D1E4,A3D1E4,1,1
+Three Relations,Shape and Number,A3D2E4,A3D2E4,5,0
+Three Relations,Shape and Number,A3D2E5,A3D2E5,8,0.5
+Three Relations,Shape and Number,A4B1E3,A4B1E3,1,1
+Three Relations,Shape and Number,A4B1E5,A4B1E5,3,0.5
+Three Relations,Shape and Number,A4B2E3,A4B2E3,7,0.75
+Three Relations,Shape and Number,A4B2E5,A4B2E5,6,0.75
+Three Relations,Shape and Number,A4C1E3,A4C1E3,2,0.75
+Three Relations,Shape and Number,A4C2E5,A4C2E5,6,0.5
+Three Relations,Shape and Number,A4D1E3,A4D1E3,3,0.5
+Three Relations,Shape and Number,A4D1E5,A4D1E5,2,0.75
+Three Relations,Shape and Number,A4D2E3,A4D2E3,4,1
+Three Relations,Shape and Number,A4D2E5,A4D2E5,8,0.75
+Three Relations,Shading and Orientation,A1B3C5,A1B3C5,6,0.75
+Three Relations,Shading and Orientation,A1B4C5,A1B4C5,5,0.75
+Three Relations,Shading and Orientation,A1B5C4,A1B5C4,3,0
+Three Relations,Shading and Orientation,A2B3C4,A2B3C4,7,1
+Three Relations,Shading and Orientation,A2B4C3,A2B4C3,5,1
+Three Relations,Shading and Orientation,A2B5C3,A2B5C3,2,0.5
+Three Relations,Shading and Orientation,B3C4D1,B3C4D1,1,0.5
+Three Relations,Shading and Orientation,B3C4E1,B3C4E1,3,1
+Three Relations,Shading and Orientation,B3C5D2,B3C5D2,2,1
+Three Relations,Shading and Orientation,B3C5E2,B3C5E2,4,0.25
+Three Relations,Shading and Orientation,B4C3D1,B4C3D1,6,0.75
+Three Relations,Shading and Orientation,B4C3E1,B4C3E1,1,0.5
+Three Relations,Shading and Orientation,B4C5D2,B4C5D2,6,0.75
+Three Relations,Shading and Orientation,B4C5E2,B4C5E2,8,0
+Three Relations,Shading and Orientation,B5C3D1,B5C3D1,4,0.25
+Three Relations,Shading and Orientation,B5C3D2,B5C3D2,7,0
+Three Relations,Shading and Orientation,B5C3E1,B5C3E1,1,0
+Three Relations,Shading and Orientation,B5C4D1,B5C4D1,2,0.25
+Three Relations,Shading and Orientation,B5C4D2,B5C4D2,6,0.5
+Three Relations,Shading and Orientation,B5C4E2,B5C4E2,6,0.75
+Three Relations,Shading and Size,A1B3D5,A1B3D5,6,0.75
+Three Relations,Shading and Size,A1B4D5,A1B4D5,4,0.75
+Three Relations,Shading and Size,A1B5D4,A1B5D4,6,0.5
+Three Relations,Shading and Size,A2B3D4,A2B3D4,1,0.25
+Three Relations,Shading and Size,A2B4D3,A2B4D3,3,0.25
+Three Relations,Shading and Size,A2B5D3,A2B5D3,1,0.25
+Three Relations,Shading and Size,B3C1D4,B3C1D4,4,0.25
+Three Relations,Shading and Size,B3C2D4,B3C2D4,7,0.75
+Three Relations,Shading and Size,B3C2D5,B3C2D5,6,0.5
+Three Relations,Shading and Size,B3D4E2,B3D4E2,2,0.5
+Three Relations,Shading and Size,B3D5E1,B3D5E1,3,0
+Three Relations,Shading and Size,B4C1D3,B4C1D3,1,0.75
+Three Relations,Shading and Size,B4C2D5,B4C2D5,2,0.75
+Three Relations,Shading and Size,B4D3E2,B4D3E2,7,1
+Three Relations,Shading and Size,B4D5E1,B4D5E1,6,0
+Three Relations,Shading and Size,B5C1D3,B5C1D3,6,0
+Three Relations,Shading and Size,B5C1D4,B5C1D4,5,0.75
+Three Relations,Shading and Size,B5C2D4,B5C2D4,7,0
+Three Relations,Shading and Size,B5D3E2,B5D3E2,5,0.25
+Three Relations,Shading and Size,B5D4E1,B5D4E1,8,0.25
+Three Relations,Shading and Number,A1B3E4,A1B3E4,5,0.75
+Three Relations,Shading and Number,A1B3E5,A1B3E5,7,0.75
+Three Relations,Shading and Number,A1B4E5,A1B4E5,6,0.5
+Three Relations,Shading and Number,A1B5E4,A1B5E4,2,0.25
+Three Relations,Shading and Number,A2B3E4,A2B3E4,2,0.75
+Three Relations,Shading and Number,A2B3E5,A2B3E5,5,0.75
+Three Relations,Shading and Number,A2B4E3,A2B4E3,4,0.75
+Three Relations,Shading and Number,A2B5E3,A2B5E3,1,0.25
+Three Relations,Shading and Number,B3C1E5,B3C1E5,8,0.75
+Three Relations,Shading and Number,B3C2E4,B3C2E4,1,0.75
+Three Relations,Shading and Number,B3D1E5,B3D1E5,6,1
+Three Relations,Shading and Number,B3D2E4,B3D2E4,6,0.75
+Three Relations,Shading and Number,B4C1E5,B4C1E5,3,0.75
+Three Relations,Shading and Number,B4C2E3,B4C2E3,2,0.75
+Three Relations,Shading and Number,B4D1E5,B4D1E5,6,0.75
+Three Relations,Shading and Number,B4D2E3,B4D2E3,1,0.25
+Three Relations,Shading and Number,B5C1E4,B5C1E4,6,0.5
+Three Relations,Shading and Number,B5C2E3,B5C2E3,7,0
+Three Relations,Shading and Number,B5D1E4,B5D1E4,4,0.5
+Three Relations,Shading and Number,B5D2E3,B5D2E3,3,0.25
+Three Relations,Orientation and Size,A1C3D4,A1C3D4,7,0.5
+Three Relations,Orientation and Size,A1C4D3,A1C4D3,1,0.75
+Three Relations,Orientation and Size,A1C5D3,A1C5D3,2,0.5
+Three Relations,Orientation and Size,A2C3D5,A2C3D5,4,0.25
+Three Relations,Orientation and Size,A2C4D5,A2C4D5,8,0.25
+Three Relations,Orientation and Size,A2C5D4,A2C5D4,3,0.25
+Three Relations,Orientation and Size,B1C3D5,B1C3D5,2,0.25
+Three Relations,Orientation and Size,B1C4D5,B1C4D5,6,0.5
+Three Relations,Orientation and Size,B1C5D4,B1C5D4,6,0.5
+Three Relations,Orientation and Size,B2C3D4,B2C3D4,3,1
+Three Relations,Orientation and Size,B2C4D3,B2C4D3,6,0.25
+Three Relations,Orientation and Size,B2C5D3,B2C5D3,1,0
+Three Relations,Orientation and Size,C3D4E2,C3D4E2,1,0.5
+Three Relations,Orientation and Size,C3D5E1,C3D5E1,3,0.5
+Three Relations,Orientation and Size,C3D5E2,C3D5E2,6,0.5
+Three Relations,Orientation and Size,C4D3E1,C4D3E1,5,0.25
+Three Relations,Orientation and Size,C4D3E2,C4D3E2,2,0.75
+Three Relations,Orientation and Size,C4D5E1,C4D5E1,7,0
+Three Relations,Orientation and Size,C5D3E2,C5D3E2,4,0.5
+Three Relations,Orientation and Size,C5D4E1,C5D4E1,6,0.75
+Three Relations,Orientation and Number,A1C3E4,A1C3E4,1,0.5
+Three Relations,Orientation and Number,A1C4E3,A1C4E3,1,0.5
+Three Relations,Orientation and Number,A1C5E3,A1C5E3,6,0.5
+Three Relations,Orientation and Number,A2C3E5,A2C3E5,6,0.75
+Three Relations,Orientation and Number,A2C4E5,A2C4E5,2,1
+Three Relations,Orientation and Number,A2C5E4,A2C5E4,6,1
+Three Relations,Orientation and Number,B1C4E3,B1C4E3,7,0.75
+Three Relations,Orientation and Number,B1C4E5,B1C4E5,3,0.75
+Three Relations,Orientation and Number,B1C5E3,B1C5E3,2,0
+Three Relations,Orientation and Number,B1C5E4,B1C5E4,7,0.5
+Three Relations,Orientation and Number,B2C3E4,B2C3E4,4,0.75
+Three Relations,Orientation and Number,B2C3E5,B2C3E5,6,0.75
+Three Relations,Orientation and Number,B2C4E3,B2C4E3,1,0.5
+Three Relations,Orientation and Number,B2C4E5,B2C4E5,6,0.75
+Three Relations,Orientation and Number,C3D1E4,C3D1E4,2,0.5
+Three Relations,Orientation and Number,C3D2E5,C3D2E5,3,0.75
+Three Relations,Orientation and Number,C4D1E3,C4D1E3,3,0.75
+Three Relations,Orientation and Number,C4D2E5,C4D2E5,4,0.75
+Three Relations,Orientation and Number,C5D1E3,C5D1E3,1,0.5
+Three Relations,Orientation and Number,C5D2E4,C5D2E4,8,0.25
+Three Relations,Size and Number,A1D3E4,A1D3E4,2,0.5
+Three Relations,Size and Number,A1D4E3,A1D4E3,4,0
+Three Relations,Size and Number,A1D4E5,A1D4E5,3,0.5
+Three Relations,Size and Number,A1D5E3,A1D5E3,1,0.5
+Three Relations,Size and Number,A2D3E5,A2D3E5,7,0.75
+Three Relations,Size and Number,A2D4E5,A2D4E5,3,0.75
+Three Relations,Size and Number,A2D5E3,A2D5E3,7,0.75
+Three Relations,Size and Number,A2D5E4,A2D5E4,3,0.5
+Three Relations,Size and Number,B1D3E4,B1D3E4,1,0.5
+Three Relations,Size and Number,B1D4E3,B1D4E3,2,0.25
+Three Relations,Size and Number,B1D4E5,B1D4E5,6,0.75
+Three Relations,Size and Number,B1D5E3,B1D5E3,3,0.5
+Three Relations,Size and Number,B2D3E5,B2D3E5,8,0.75
+Three Relations,Size and Number,B2D5E4,B2D5E4,4,0.25
+Three Relations,Size and Number,C1D3E4,C1D3E4,6,0.25
+Three Relations,Size and Number,C1D4E3,C1D4E3,1,0.5
+Three Relations,Size and Number,C1D5E3,C1D5E3,1,0.75
+Three Relations,Size and Number,C2D3E5,C2D3E5,6,1
+Three Relations,Size and Number,C2D4E5,C2D4E5,6,0.25
+Three Relations,Size and Number,C2D5E4,C2D5E4,2,0.25
+Three Relations,"Shape, Shading, and Orientation",A3B4C5,A3B4C5_1,1,0
+Three Relations,"Shape, Shading, and Orientation",A3B4C5,A3B4C5_2,2,0.25
+Three Relations,"Shape, Shading, and Orientation",A3B4C5,A3B4C5_3,1,0
+Three Relations,"Shape, Shading, and Orientation",A3B4C5,A3B4C5_4,1,0
+Three Relations,"Shape, Shading, and Orientation",A3B4C5,A3B4C5_5,1,0
+Three Relations,"Shape, Shading, and Orientation",A3B5C4,A3B5C4_1,3,0.5
+Three Relations,"Shape, Shading, and Orientation",A3B5C4,A3B5C4_2,7,0.25
+Three Relations,"Shape, Shading, and Orientation",A3B5C4,A3B5C4_3,2,0
+Three Relations,"Shape, Shading, and Orientation",A3B5C4,A3B5C4_4,6,0
+Three Relations,"Shape, Shading, and Orientation",A3B5C4,A3B5C4_5,8,0
+Three Relations,"Shape, Shading, and Orientation",A4B3C5,A4B3C5_1,1,0.25
+Three Relations,"Shape, Shading, and Orientation",A4B3C5,A4B3C5_2,4,0.25
+Three Relations,"Shape, Shading, and Orientation",A4B3C5,A4B3C5_3,6,0.75
+Three Relations,"Shape, Shading, and Orientation",A4B3C5,A4B3C5_4,3,1
+Three Relations,"Shape, Shading, and Orientation",A4B3C5,A4B3C5_5,2,0
+Three Relations,"Shape, Shading, and Orientation",A4B5C3,A4B5C3_1,3,0
+Three Relations,"Shape, Shading, and Orientation",A4B5C3,A4B5C3_2,6,0.75
+Three Relations,"Shape, Shading, and Orientation",A4B5C3,A4B5C3_3,6,0.75
+Three Relations,"Shape, Shading, and Orientation",A4B5C3,A4B5C3_4,4,0.5
+Three Relations,"Shape, Shading, and Orientation",A4B5C3,A4B5C3_5,3,1
+Three Relations,"Shape, Shading, and Size",A3B4D5,A3B4D5_1,1,0.25
+Three Relations,"Shape, Shading, and Size",A3B4D5,A3B4D5_2,4,0
+Three Relations,"Shape, Shading, and Size",A3B4D5,A3B4D5_3,6,0.25
+Three Relations,"Shape, Shading, and Size",A3B4D5,A3B4D5_4,3,0.25
+Three Relations,"Shape, Shading, and Size",A3B4D5,A3B4D5_5,2,0.75
+Three Relations,"Shape, Shading, and Size",A3B5D4,A3B5D4_1,7,0.25
+Three Relations,"Shape, Shading, and Size",A3B5D4,A3B5D4_2,3,0
+Three Relations,"Shape, Shading, and Size",A3B5D4,A3B5D4_3,6,0
+Three Relations,"Shape, Shading, and Size",A3B5D4,A3B5D4_4,6,0.25
+Three Relations,"Shape, Shading, and Size",A3B5D4,A3B5D4_5,4,0.25
+Three Relations,"Shape, Shading, and Size",A4B3D5,A4B3D5_1,1,0.5
+Three Relations,"Shape, Shading, and Size",A4B3D5,A4B3D5_2,2,0.5
+Three Relations,"Shape, Shading, and Size",A4B3D5,A4B3D5_3,1,0.25
+Three Relations,"Shape, Shading, and Size",A4B3D5,A4B3D5_4,1,1
+Three Relations,"Shape, Shading, and Size",A4B3D5,A4B3D5_5,1,0.5
+Three Relations,"Shape, Shading, and Size",A4B5D3,A4B5D3_1,3,0.75
+Three Relations,"Shape, Shading, and Size",A4B5D3,A4B5D3_2,7,0
+Three Relations,"Shape, Shading, and Size",A4B5D3,A4B5D3_3,2,0.5
+Three Relations,"Shape, Shading, and Size",A4B5D3,A4B5D3_4,6,0
+Three Relations,"Shape, Shading, and Size",A4B5D3,A4B5D3_5,8,0.25
+Three Relations,"Shape, Shading, and Number",A3B4E5,A3B4E5_1,1,0.5
+Three Relations,"Shape, Shading, and Number",A3B4E5,A3B4E5_2,2,0.75
+Three Relations,"Shape, Shading, and Number",A3B4E5,A3B4E5_3,1,0.5
+Three Relations,"Shape, Shading, and Number",A3B4E5,A3B4E5_4,1,0.75
+Three Relations,"Shape, Shading, and Number",A3B4E5,A3B4E5_5,1,0.5
+Three Relations,"Shape, Shading, and Number",A3B5E4,A3B5E4_1,3,1
+Three Relations,"Shape, Shading, and Number",A3B5E4,A3B5E4_2,7,1
+Three Relations,"Shape, Shading, and Number",A3B5E4,A3B5E4_3,2,0.25
+Three Relations,"Shape, Shading, and Number",A3B5E4,A3B5E4_4,6,0.5
+Three Relations,"Shape, Shading, and Number",A3B5E4,A3B5E4_5,3,1
+Three Relations,"Shape, Shading, and Number",A4B3E5,A4B3E5_1,4,1
+Three Relations,"Shape, Shading, and Number",A4B3E5,A4B3E5_2,1,0.75
+Three Relations,"Shape, Shading, and Number",A4B3E5,A4B3E5_3,4,0.75
+Three Relations,"Shape, Shading, and Number",A4B3E5,A4B3E5_4,6,1
+Three Relations,"Shape, Shading, and Number",A4B3E5,A4B3E5_5,3,0.75
+Three Relations,"Shape, Shading, and Number",A4B5E3,A4B5E3_1,7,0.75
+Three Relations,"Shape, Shading, and Number",A4B5E3,A4B5E3_2,3,1
+Three Relations,"Shape, Shading, and Number",A4B5E3,A4B5E3_3,6,0
+Three Relations,"Shape, Shading, and Number",A4B5E3,A4B5E3_4,6,0.25
+Three Relations,"Shape, Shading, and Number",A4B5E3,A4B5E3_5,4,0
+Three Relations,"Shape, Orientation, and Size",A3C4D5,A3C4D5_1,4,0.25
+Three Relations,"Shape, Orientation, and Size",A3C4D5,A3C4D5_2,1,0.25
+Three Relations,"Shape, Orientation, and Size",A3C4D5,A3C4D5_3,4,0.5
+Three Relations,"Shape, Orientation, and Size",A3C4D5,A3C4D5_4,6,0.5
+Three Relations,"Shape, Orientation, and Size",A3C4D5,A3C4D5_5,3,0.25
+Three Relations,"Shape, Orientation, and Size",A3C5D4,A3C5D4_1,7,0
+Three Relations,"Shape, Orientation, and Size",A3C5D4,A3C5D4_2,3,0
+Three Relations,"Shape, Orientation, and Size",A3C5D4,A3C5D4_3,6,0.5
+Three Relations,"Shape, Orientation, and Size",A3C5D4,A3C5D4_4,6,0.25
+Three Relations,"Shape, Orientation, and Size",A3C5D4,A3C5D4_5,4,0.5
+Three Relations,"Shape, Orientation, and Size",A4C3D5,A4C3D5_1,1,0.25
+Three Relations,"Shape, Orientation, and Size",A4C3D5,A4C3D5_2,2,0.5
+Three Relations,"Shape, Orientation, and Size",A4C3D5,A4C3D5_3,1,0.25
+Three Relations,"Shape, Orientation, and Size",A4C3D5,A4C3D5_4,1,0.75
+Three Relations,"Shape, Orientation, and Size",A4C3D5,A4C3D5_5,1,0.25
+Three Relations,"Shape, Orientation, and Size",A4C5D3,A4C5D3_1,1,0.75
+Three Relations,"Shape, Orientation, and Size",A4C5D3,A4C5D3_2,3,0.75
+Three Relations,"Shape, Orientation, and Size",A4C5D3,A4C5D3_3,7,0.5
+Three Relations,"Shape, Orientation, and Size",A4C5D3,A4C5D3_4,2,0.5
+Three Relations,"Shape, Orientation, and Size",A4C5D3,A4C5D3_5,6,0.75
+Three Relations,"Shape, Orientation, and Number",A3C4E5,A3C4E5_1,3,0.75
+Three Relations,"Shape, Orientation, and Number",A3C4E5,A3C4E5_2,1,1
+Three Relations,"Shape, Orientation, and Number",A3C4E5,A3C4E5_3,2,0.25
+Three Relations,"Shape, Orientation, and Number",A3C4E5,A3C4E5_4,1,0
+Three Relations,"Shape, Orientation, and Number",A3C4E5,A3C4E5_5,1,0.75
+Three Relations,"Shape, Orientation, and Number",A3C5E4,A3C5E4_1,1,0.25
+Three Relations,"Shape, Orientation, and Number",A3C5E4,A3C5E4_2,3,0.5
+Three Relations,"Shape, Orientation, and Number",A3C5E4,A3C5E4_3,7,0.25
+Three Relations,"Shape, Orientation, and Number",A3C5E4,A3C5E4_4,2,0.25
+Three Relations,"Shape, Orientation, and Number",A3C5E4,A3C5E4_5,6,0.25
+Three Relations,"Shape, Orientation, and Number",A4C3E5,A4C3E5_1,4,0.5
+Three Relations,"Shape, Orientation, and Number",A4C3E5,A4C3E5_2,1,0.75
+Three Relations,"Shape, Orientation, and Number",A4C3E5,A4C3E5_3,4,0.75
+Three Relations,"Shape, Orientation, and Number",A4C3E5,A4C3E5_4,6,1
+Three Relations,"Shape, Orientation, and Number",A4C3E5,A4C3E5_5,3,0.5
+Three Relations,"Shape, Orientation, and Number",A4C5E3,A4C5E3_1,7,1
+Three Relations,"Shape, Orientation, and Number",A4C5E3,A4C5E3_2,3,1
+Three Relations,"Shape, Orientation, and Number",A4C5E3,A4C5E3_3,6,1
+Three Relations,"Shape, Orientation, and Number",A4C5E3,A4C5E3_4,6,0.75
+Three Relations,"Shape, Orientation, and Number",A4C5E3,A4C5E3_5,4,1
+Three Relations,"Shape, Size, and Number",A3D4E5,A3D4E5_1,4,0.5
+Three Relations,"Shape, Size, and Number",A3D4E5,A3D4E5_2,1,1
+Three Relations,"Shape, Size, and Number",A3D4E5,A3D4E5_3,4,0.5
+Three Relations,"Shape, Size, and Number",A3D4E5,A3D4E5_4,6,0.75
+Three Relations,"Shape, Size, and Number",A3D4E5,A3D4E5_5,3,0.5
+Three Relations,"Shape, Size, and Number",A3D5E4,A3D5E4_1,4,0.5
+Three Relations,"Shape, Size, and Number",A3D5E4,A3D5E4_2,7,0.25
+Three Relations,"Shape, Size, and Number",A3D5E4,A3D5E4_3,3,0.25
+Three Relations,"Shape, Size, and Number",A3D5E4,A3D5E4_4,6,0.75
+Three Relations,"Shape, Size, and Number",A3D5E4,A3D5E4_5,6,0.5
+Three Relations,"Shape, Size, and Number",A4D3E5,A4D3E5_1,3,0.75
+Three Relations,"Shape, Size, and Number",A4D3E5,A4D3E5_2,1,1
+Three Relations,"Shape, Size, and Number",A4D3E5,A4D3E5_3,2,0.75
+Three Relations,"Shape, Size, and Number",A4D3E5,A4D3E5_4,1,0.75
+Three Relations,"Shape, Size, and Number",A4D3E5,A4D3E5_5,1,0.75
+Three Relations,"Shape, Size, and Number",A4D5E3,A4D5E3_1,1,1
+Three Relations,"Shape, Size, and Number",A4D5E3,A4D5E3_2,3,0.25
+Three Relations,"Shape, Size, and Number",A4D5E3,A4D5E3_3,7,0.5
+Three Relations,"Shape, Size, and Number",A4D5E3,A4D5E3_4,2,1
+Three Relations,"Shape, Size, and Number",A4D5E3,A4D5E3_5,6,0.25
+Three Relations,"Shading, Orientation, and Size",B3C4D5,B3C4D5_1,5,0
+Three Relations,"Shading, Orientation, and Size",B3C4D5,B3C4D5_2,1,0
+Three Relations,"Shading, Orientation, and Size",B3C4D5,B3C4D5_3,4,0.5
+Three Relations,"Shading, Orientation, and Size",B3C4D5,B3C4D5_4,1,0.5
+Three Relations,"Shading, Orientation, and Size",B3C5D4,B3C5D4_1,4,0.5
+Three Relations,"Shading, Orientation, and Size",B3C5D4,B3C5D4_2,3,0.75
+Three Relations,"Shading, Orientation, and Size",B3C5D4,B3C5D4_3,6,0.5
+Three Relations,"Shading, Orientation, and Size",B3C5D4,B3C5D4_4,6,0.5
+Three Relations,"Shading, Orientation, and Size",B4C3D5,B4C3D5_1,3,0.75
+Three Relations,"Shading, Orientation, and Size",B4C3D5,B4C3D5_2,1,0
+Three Relations,"Shading, Orientation, and Size",B4C3D5,B4C3D5_3,1,0.25
+Three Relations,"Shading, Orientation, and Size",B4C5D3,B4C5D3_1,1,0.75
+Three Relations,"Shading, Orientation, and Size",B4C5D3,B4C5D3_2,3,1
+Three Relations,"Shading, Orientation, and Size",B4C5D3,B4C5D3_3,2,0.5
+Three Relations,"Shading, Orientation, and Size",B5C3D4,B5C3D4_1,4,0
+Three Relations,"Shading, Orientation, and Size",B5C3D4,B5C3D4_2,2,0.25
+Three Relations,"Shading, Orientation, and Size",B5C3D4,B5C3D4_3,6,0
+Three Relations,"Shading, Orientation, and Size",B5C4D3,B5C4D3_1,7,0.25
+Three Relations,"Shading, Orientation, and Size",B5C4D3,B5C4D3_2,7,0.75
+Three Relations,"Shading, Orientation, and Size",B5C4D3,B5C4D3_3,6,0
+Three Relations,"Shading, Orientation, and Number",B3C4E5,B3C4E5_1,4,0.75
+Three Relations,"Shading, Orientation, and Number",B3C4E5,B3C4E5_2,2,0.75
+Three Relations,"Shading, Orientation, and Number",B3C4E5,B3C4E5_3,6,0.75
+Three Relations,"Shading, Orientation, and Number",B3C5E4,B3C5E4_1,7,0.5
+Three Relations,"Shading, Orientation, and Number",B3C5E4,B3C5E4_2,7,0.5
+Three Relations,"Shading, Orientation, and Number",B3C5E4,B3C5E4_3,7,0.75
+Three Relations,"Shading, Orientation, and Number",B3C5E4,B3C5E4_4,6,0.5
+Three Relations,"Shading, Orientation, and Number",B4C3E5,B4C3E5_1,5,1
+Three Relations,"Shading, Orientation, and Number",B4C3E5,B4C3E5_2,1,0.75
+Three Relations,"Shading, Orientation, and Number",B4C3E5,B4C3E5_3,4,0.75
+Three Relations,"Shading, Orientation, and Number",B4C3E5,B4C3E5_4,1,0.75
+Three Relations,"Shading, Orientation, and Number",B4C5E3,B4C5E3_1,4,0
+Three Relations,"Shading, Orientation, and Number",B4C5E3,B4C5E3_2,3,1
+Three Relations,"Shading, Orientation, and Number",B4C5E3,B4C5E3_3,6,0.5
+Three Relations,"Shading, Orientation, and Number",B5C3E4,B5C3E4_1,3,0.5
+Three Relations,"Shading, Orientation, and Number",B5C3E4,B5C3E4_2,1,0
+Three Relations,"Shading, Orientation, and Number",B5C3E4,B5C3E4_3,1,0.5
+Three Relations,"Shading, Orientation, and Number",B5C4E3,B5C4E3_1,1,0.25
+Three Relations,"Shading, Orientation, and Number",B5C4E3,B5C4E3_2,3,0.75
+Three Relations,"Shading, Orientation, and Number",B5C4E3,B5C4E3_3,2,0
+Three Relations,"Shading, Size, and Number",B3D4E5,B3D4E5_1,3,0.75
+Three Relations,"Shading, Size, and Number",B3D4E5,B3D4E5_2,1,0.75
+Three Relations,"Shading, Size, and Number",B3D4E5,B3D4E5_3,1,0.75
+Three Relations,"Shading, Size, and Number",B3D5E4,B3D5E4_1,1,0
+Three Relations,"Shading, Size, and Number",B3D5E4,B3D5E4_2,3,0
+Three Relations,"Shading, Size, and Number",B3D5E4,B3D5E4_3,2,0.25
+Three Relations,"Shading, Size, and Number",B4D3E5,B4D3E5_1,8,0.5
+Three Relations,"Shading, Size, and Number",B4D3E5,B4D3E5_2,4,0.5
+Three Relations,"Shading, Size, and Number",B4D3E5,B4D3E5_3,2,0.5
+Three Relations,"Shading, Size, and Number",B4D3E5,B4D3E5_4,6,0.75
+Three Relations,"Shading, Size, and Number",B4D5E3,B4D5E3_1,7,0.25
+Three Relations,"Shading, Size, and Number",B4D5E3,B4D5E3_2,7,0.5
+Three Relations,"Shading, Size, and Number",B4D5E3,B4D5E3_3,7,0.5
+Three Relations,"Shading, Size, and Number",B4D5E3,B4D5E3_4,6,0
+Three Relations,"Shading, Size, and Number",B5D3E4,B5D3E4_1,5,0.25
+Three Relations,"Shading, Size, and Number",B5D3E4,B5D3E4_2,1,0.25
+Three Relations,"Shading, Size, and Number",B5D3E4,B5D3E4_3,4,0
+Three Relations,"Shading, Size, and Number",B5D4E3,B5D4E3_1,4,0.25
+Three Relations,"Shading, Size, and Number",B5D4E3,B5D4E3_2,3,0
+Three Relations,"Shading, Size, and Number",B5D4E3,B5D4E3_3,6,0.25
+Three Relations,"Orientation, Size, and Number",C3D4E5,C3D4E5_1,5,0.75
+Three Relations,"Orientation, Size, and Number",C3D4E5,C3D4E5_2,1,0.75
+Three Relations,"Orientation, Size, and Number",C3D4E5,C3D4E5_3,4,0.75
+Three Relations,"Orientation, Size, and Number",C3D5E4,C3D5E4_1,4,0.5
+Three Relations,"Orientation, Size, and Number",C3D5E4,C3D5E4_2,3,0.25
+Three Relations,"Orientation, Size, and Number",C3D5E4,C3D5E4_3,6,0.25
+Three Relations,"Orientation, Size, and Number",C4D3E5,C4D3E5_1,3,1
+Three Relations,"Orientation, Size, and Number",C4D3E5,C4D3E5_2,1,0.25
+Three Relations,"Orientation, Size, and Number",C4D3E5,C4D3E5_3,1,0.25
+Three Relations,"Orientation, Size, and Number",C4D5E3,C4D5E3_1,6,0.5
+Three Relations,"Orientation, Size, and Number",C4D5E3,C4D5E3_2,1,1
+Three Relations,"Orientation, Size, and Number",C4D5E3,C4D5E3_3,3,0.5
+Three Relations,"Orientation, Size, and Number",C4D5E3,C4D5E3_4,2,0.25
+Three Relations,"Orientation, Size, and Number",C5D3E4,C5D3E4_1,8,0
+Three Relations,"Orientation, Size, and Number",C5D3E4,C5D3E4_2,4,0.25
+Three Relations,"Orientation, Size, and Number",C5D3E4,C5D3E4_3,2,0.5
+Three Relations,"Orientation, Size, and Number",C5D3E4,C5D3E4_4,6,0.25
+Three Relations,"Orientation, Size, and Number",C5D4E3,C5D4E3_1,7,0.25
+Three Relations,"Orientation, Size, and Number",C5D4E3,C5D4E3_2,7,0.25
+Three Relations,"Orientation, Size, and Number",C5D4E3,C5D4E3_3,7,0.5
+Logic,OR,X,X_1,5,0.25
+Logic,OR,X,X_2,5,0.25
+Logic,OR,X,X_3,7,0.75
+Logic,OR,X,X_4,2,1
+Logic,OR,X,X_5,8,0.5
+Logic,OR,X,X_6,4,0.5
+Logic,OR,X,X_7,5,0.75
+Logic,OR,X,X_8,8,0.5
+Logic,OR,X,X_9,5,0.75
+Logic,OR,X,X_10,4,0.5
+Logic,OR,X,X_11,2,0.25
+Logic,OR,X,X_12,8,0
+Logic,OR,X,X_13,7,0.25
+Logic,OR,X,X_14,5,0.25
+Logic,OR,X,X_15,3,0.75
+Logic,OR,X,X_16,2,0.5
+Logic,OR,X,X_17,8,0.75
+Logic,OR,X,X_18,6,0
+Logic,OR,X,X_19,8,0.25
+Logic,OR,X,X_20,7,0.5
+Logic,AND,Y,Y_1,6,0.5
+Logic,AND,Y,Y_2,5,0.5
+Logic,AND,Y,Y_3,5,0.5
+Logic,AND,Y,Y_4,7,0.5
+Logic,AND,Y,Y_5,2,0
+Logic,AND,Y,Y_6,8,0.75
+Logic,AND,Y,Y_7,4,0
+Logic,AND,Y,Y_8,5,0.5
+Logic,AND,Y,Y_9,8,0
+Logic,AND,Y,Y_10,5,0.25
+Logic,AND,Y,Y_11,4,0.5
+Logic,AND,Y,Y_12,2,0.25
+Logic,AND,Y,Y_13,8,0.25
+Logic,AND,Y,Y_14,7,0
+Logic,AND,Y,Y_15,5,0.25
+Logic,AND,Y,Y_16,3,0.25
+Logic,AND,Y,Y_17,2,0.25
+Logic,AND,Y,Y_18,8,0.5
+Logic,AND,Y,Y_19,6,0.5
+Logic,AND,Y,Y_20,8,0.5
+Logic,XOR,Z,Z_1,7,0.25
+Logic,XOR,Z,Z_2,6,0.25
+Logic,XOR,Z,Z_3,5,0
+Logic,XOR,Z,Z_4,5,0
+Logic,XOR,Z,Z_5,7,0.25
+Logic,XOR,Z,Z_6,2,0
+Logic,XOR,Z,Z_7,8,0
+Logic,XOR,Z,Z_8,4,0.5
+Logic,XOR,Z,Z_9,5,1
+Logic,XOR,Z,Z_10,8,0.25
+Logic,XOR,Z,Z_11,5,0.5
+Logic,XOR,Z,Z_12,4,0.5
+Logic,XOR,Z,Z_13,2,0.5
+Logic,XOR,Z,Z_14,8,0.25
+Logic,XOR,Z,Z_15,7,0.5
+Logic,XOR,Z,Z_16,5,0.5
+Logic,XOR,Z,Z_17,3,0.25
+Logic,XOR,Z,Z_18,2,0.75
+Logic,XOR,Z,Z_19,8,0.5
+Logic,XOR,Z,Z_20,6,0
