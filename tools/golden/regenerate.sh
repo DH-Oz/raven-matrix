@@ -50,10 +50,20 @@ require_jdk8 java
 
 mkdir -p "$GOLDEN_DIR"
 
+# --- Single cleanup function registered once at the top -------------------
+# Vars are initialised empty; rm -rf runs only when the var is non-empty,
+# so this is safe whether or not deliverable 2 is attempted.
+RNG_BUILD=""
+SGMT_BUILD=""
+cleanup() {
+  [ -n "$RNG_BUILD"  ] && rm -rf "$RNG_BUILD"
+  [ -n "$SGMT_BUILD" ] && rm -rf "$SGMT_BUILD"
+}
+trap cleanup EXIT
+
 # --- Deliverable 1: java.util.Random golden vectors -----------------------
 echo "== deliverable 1: javarandom_vectors.json =="
 RNG_BUILD="$(mktemp -d)"
-trap 'rm -rf "$RNG_BUILD"' EXIT
 javac -d "$RNG_BUILD" "$SCRIPT_DIR/JavaRandomDump.java"
 java -Djava.awt.headless=true -cp "$RNG_BUILD" JavaRandomDump \
   > "$GOLDEN_DIR/javarandom_vectors.json"
@@ -68,7 +78,6 @@ if [ -f "$SCRIPT_DIR/SgmtDump.java" ]; then
     exit 1
   fi
   SGMT_BUILD="$(mktemp -d)"
-  trap 'rm -rf "$RNG_BUILD" "$SGMT_BUILD"' EXIT
   unzip -q "$UPSTREAM_ZIP" -d "$SGMT_BUILD"
   SRC_DIR="$SGMT_BUILD/SandiaGeneratedMatrixTool-1.0.0-source"
   # Build the jar in the temp copy only (upstream/ stays untouched). The
