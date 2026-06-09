@@ -43,6 +43,15 @@
    - `relocate_correct_answer: bool = False` — code relocates the correct position on blank-pad; **False = faithful-to-design (honor the configured position)**, the default; True = replicate upstream relocation. *(Note the inverted default polarity vs `line_shape_enabled`: the design makes position an explicit input, so honor-config wins by default.)* **It is also an RNG-consumption toggle, not only a position toggle:** the upstream relocation block (`SGMMatrix.java:531–548`) fires conditionally and, when `positionInAnswerChoices > 0`, draws `random.nextInt(positionInAnswerChoices)` (l.538). The default (`False`) skips that whole block, so **for relocating configs it consumes one fewer draw than the JVM and every later draw shifts** vs upstream. This does not affect internal determinism (AC4.1) or the structural oracle (AC2.*) — both hold regardless — but it does mean the *optional* Java byte-stream differential is only meaningful under `relocate_correct_answer=True` (see Decisions §1 caveat).
 4. **AC2.1 deferred to Phase 5;** Phase 4 verifies structure by direct inspection.
 
+## Interface locks carried in from Phase 3 (coherence review, 2026-06-09)
+
+`build()` is the first real consumer of the Phase 3 `transforms/` package. Two
+contracts are documented in Phase 3 code but **not type-enforced** — `build()`
+must honour them, and each needs an explicit test here:
+
+- **Logic is a PARTIAL location transform.** `LogicLocationTransform.next_location` / `parent_location` raise `NotImplementedError` (the upstream non-traversing special case). When the base structure feature is a logic operation, `build()` must branch and consume the 2×2 seed (`base_locations()`) directly — it must never drive a Logic transform through the generic next/parent traversal loop. `make_location_transform` deliberately never returns Logic (it is selected by the structure layer, not a direction digit). Add a test that a logic-op layer builds without ever calling `next`/`parent` on the Logic transform.
+- **Factory contract `make_location_transform(direction: Direction | int, size)`.** The `Direction | int` union is intentional (oracle `Structure`-code digits arrive as ints; the factory owns the int→`Direction` conversion and the out-of-range `ValueError`). Lock the contract at this interface: decide whether `build()`/`parse_code` pass a parsed `Direction` (so the union could later narrow) or raw digits. Record the outcome; do not leave it implicit.
+
 ---
 
 <!-- START_SUBCOMPONENT_A (tasks 1-2): CompatFlags + surface/fill generators -->
