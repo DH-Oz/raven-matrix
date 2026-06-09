@@ -611,6 +611,8 @@ def _distractor_modify_parameter(
     column = rng.next_int(size.num_columns)
     source = layer.cells[row][column].surface_features
     if len(source) == 0:
+        # Faithful to the Java early exit (SGMMatrix.java:344): the parameter
+        # draw below is not reached, so the RNG stream stays aligned.
         return []
 
     features = list(source)
@@ -654,6 +656,11 @@ def _distractor_random_layer_combination(
     num_layers = 1
     if matrix_num_layers > num_layers:
         num_layers = rng.next_int(matrix_num_layers) + 1
+    # When num_layers == matrix_num_layers this can reproduce strategy 0's
+    # all-layers candidate; that overlap is faithful to upstream (SGMMatrix.java
+    # :420-479), not a port deviation (bug-catalog
+    # ``gen-strategy3-subsumes-strategy0-at-maxlayers``). Cell-level dedup drops
+    # any exact duplicate, so it only reduces distractor variety.
 
     chosen: list[int] = []
     while len(chosen) < num_layers:

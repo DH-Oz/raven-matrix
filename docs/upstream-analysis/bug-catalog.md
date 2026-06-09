@@ -41,6 +41,7 @@ This catalogue consolidates every confirmed bug, paper divergence, and porting g
 | numerosity-topleftcornerout-formula | medium | other | replicate | yes (numerosity layout) |
 | loc-diag-tlbr-wrong-exception-text | low | copy-paste | fix-to-paper | no |
 | gen-wronganswer-type-by-layercount | medium | rng-coupling | replicate | no (distractors) |
+| gen-strategy3-subsumes-strategy0-at-maxlayers | low | other | replicate | no (distractors) |
 | gen-base-surface-hashset-identity | medium | identity-vs-value | replicate | yes (difficulty score) |
 | gen-fillpatternrepetition-three-of-five | low | paper-divergence | flag-and-decide | no (distractors) |
 | gen-diagonal-only-odd-square | medium | paper-divergence | replicate | yes (direction availability) |
@@ -295,6 +296,13 @@ Note: several fill-description findings (`fill-grey10-grey40-red-and-misnamed`, 
 - Kind: rng-coupling.
 - Source: wrong-answer strategy is `nextInt(4)` for >1 layer, `nextInt(3)+1` for 1 layer (excludes case 0, the layer-subset strategy, which needs >=2 layers). A single shared Random threads the whole set, so a wrong branch desyncs all subsequent matrices.
 - Resolution: replicate. Correct-answer position is drawn before construction, so it is not corrupted, but distractor content for following matrices would desync.
+- Acceptance bar: no (distractors).
+
+### gen-strategy3-subsumes-strategy0-at-maxlayers
+- Location: `SGMMatrix.java:420-479` (strategy 3, random-layer-combination); overlaps strategy 0 (layer subset) at `SGMMatrix.java:270-298`.
+- Kind: other (distractor-strategy overlap, not a defect).
+- Source: strategy 3 draws `nextInt(numLayers)+1` layers; when that equals the layer count it selects every layer, producing a candidate structurally identical to strategy 0 choosing all layers. Faithful to upstream — flagged so Phase-5 oracle work does not mistake the overlap for a port deviation.
+- Resolution: replicate. Cell-level value dedup drops any exact duplicate, so the only effect is slightly reduced distractor variety; behaviour matches Java.
 - Acceptance bar: no (distractors).
 
 ### gen-base-surface-hashset-identity
