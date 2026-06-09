@@ -134,7 +134,7 @@ class SurfaceFeature:
     membership tests over lists.
     """
 
-    __slots__ = ("shape", "fill", "scale", "rotation", "position")
+    __slots__ = ("shape", "fill", "scale", "rotation", "position", "width", "height")
 
     def __init__(
         self,
@@ -143,19 +143,36 @@ class SurfaceFeature:
         scale: float,
         rotation: float,
         position: Point,
+        width: float,
+        height: float,
     ) -> None:
         self.shape = shape
         self.fill = fill
         self.scale = scale
         self.rotation = rotation
         self.position = position
+        # Absolute pixel dimensions from the generator's 1/4, 1/2, 3/4-cell
+        # draw. scale is a SEPARATE multiplier (birthed at 1.0 in the Java
+        # constructors, e.g. RectangleSGMSurfaceFeature.java:103) that the
+        # supplementals multiply later; do not conflate it with width/height.
+        # For Line, width carries the single length value (height is unused).
+        self.width = width
+        self.height = height
 
     def value_equals(self, other: SurfaceFeature) -> bool:
         """Value comparison mirroring AbstractSGMSurfaceFeature.equals.
 
-        Compares scale, rotation, position, shape, and fill.  No
-        shape-specific custom check is implemented here (YAGNI; Phase 4
-        adds geometry).
+        Combines the common checks (scale, rotation, position, shape, fill;
+        AbstractSGMSurfaceFeature.java:175-180) AND-ed with the per-shape
+        customEqualsCheck geometry term:
+
+        - Most shapes (Rectangle, Ellipse, the path-based Triangle/Tee/
+          Diamond/Trapezoid) compare ``width*scale`` and ``height*scale``
+          (RectangleSGMSurfaceFeature.java:192-195;
+          AbstractPathBasedSGMSurfaceFeature.java:188-191).
+        - Line compares ``length*scale`` only and ignores height
+          (LineSGMSurfaceFeature.java:191-194). Line stores its length in
+          ``width``, so we compare ``width*scale`` and skip the height term.
 
         Fill is compared by enum identity, so the five shadings stay distinct.
         Upstream instead compares fills by getDescription(), under which the
@@ -163,13 +180,22 @@ class SurfaceFeature:
         the Matzen 2010 paper (five distinct fill patterns) and do not
         reproduce that collapse.  See the Fill enum comment for detail.
         """
-        return (
+        common = (
             self.shape is other.shape
             and self.fill is other.fill
             and self.scale == other.scale
             and self.rotation == other.rotation
             and self.position == other.position
         )
+        if not common:
+            return False
+        # width*scale is the compared quantity, not raw width (customEqualsCheck).
+        if self.width * self.scale != other.width * other.scale:
+            return False
+        # Line ignores height (length-only check); every other shape compares it.
+        if self.shape is Shape.LINE:
+            return True
+        return self.height * self.scale == other.height * other.scale
 
 
 # ---------------------------------------------------------------------------

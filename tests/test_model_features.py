@@ -7,7 +7,16 @@ identity (==, list `in`), but value_equals() and contains_check() find them.
 from __future__ import annotations
 
 
-def _make_feature(shape=None, fill=None, scale=1.0, rotation=0.0, x=0.0, y=0.0):
+def _make_feature(
+    shape=None,
+    fill=None,
+    scale=1.0,
+    rotation=0.0,
+    x=0.0,
+    y=0.0,
+    width=64.0,
+    height=128.0,
+):
     """Build a SurfaceFeature with sensible defaults."""
     from raven_matrix.model import Fill, Point, Shape, SurfaceFeature
 
@@ -17,6 +26,8 @@ def _make_feature(shape=None, fill=None, scale=1.0, rotation=0.0, x=0.0, y=0.0):
         scale=scale,
         rotation=rotation,
         position=Point(x, y),
+        width=width,
+        height=height,
     )
 
 
@@ -92,6 +103,80 @@ def test_value_equals_false_when_rotation_differs() -> None:
 def test_value_equals_false_when_position_differs() -> None:
     a = _make_feature(x=0.0, y=0.0)
     b = _make_feature(x=1.0, y=0.0)
+    assert not a.value_equals(b)
+
+
+# ---------------------------------------------------------------------------
+# Geometry (width/height) in value_equals — deferred from Phase 1, added here.
+# Mirrors AbstractSGMSurfaceFeature.equals AND-ed with the per-shape
+# customEqualsCheck (RectangleSGMSurfaceFeature.java:192-195;
+# AbstractPathBasedSGMSurfaceFeature.java:188-191): width*scale and height*scale.
+# ---------------------------------------------------------------------------
+
+def test_value_equals_false_when_width_differs() -> None:
+    a = _make_feature(width=64.0)
+    b = _make_feature(width=128.0)
+    assert not a.value_equals(b)
+
+
+def test_value_equals_false_when_height_differs() -> None:
+    a = _make_feature(height=128.0)
+    b = _make_feature(height=192.0)
+    assert not a.value_equals(b)
+
+
+def test_value_equals_true_for_equal_width_height() -> None:
+    """The existing equal case still holds once geometry is compared."""
+    a = _make_feature(width=64.0, height=192.0)
+    b = _make_feature(width=64.0, height=192.0)
+    assert a is not b
+    assert a.value_equals(b)
+
+
+def test_value_equals_uses_width_times_scale_form_at_nonunit_scale() -> None:
+    """The compared quantity is width*scale (customEqualsCheck), at any scale.
+
+    The common check already forces equal scale (AbstractSGMSurfaceFeature.java:
+    176), so width*scale reduces to a width compare once scales match. This
+    pins the faithful width*scale form: two features at the same non-unit scale
+    with equal width/height are value-equal (mirrors
+    RectangleSGMSurfaceFeature.java:192-195).
+    """
+    a = _make_feature(width=64.0, height=192.0, scale=0.66)
+    b = _make_feature(width=64.0, height=192.0, scale=0.66)
+    assert a is not b
+    assert a.value_equals(b)
+
+
+def test_value_equals_false_when_scale_differs_despite_equal_width_scale() -> None:
+    """Differing scale rejects, even when width*scale would coincide.
+
+    The common scale check (AbstractSGMSurfaceFeature.java:176) is ANDed in, so
+    a width=128 scale=1.0 feature is NOT value-equal to width=64 scale=2.0 even
+    though both have width*scale == 128.
+    """
+    a = _make_feature(width=128.0, height=256.0, scale=1.0)
+    b = _make_feature(width=64.0, height=128.0, scale=2.0)
+    assert not a.value_equals(b)
+
+
+def test_value_equals_line_ignores_height_compares_length_only() -> None:
+    """Line compares length*scale + fill only, ignoring height.
+
+    Mirrors LineSGMSurfaceFeature.java:191-194: a Line's custom check compares
+    fill and length*scale (stored as width here), not height. Two Lines with
+    equal width (length) but differing height are still value-equal.
+    """
+    from raven_matrix.model import Shape
+    a = _make_feature(shape=Shape.LINE, width=100.0, height=128.0)
+    b = _make_feature(shape=Shape.LINE, width=100.0, height=999.0)
+    assert a.value_equals(b)
+
+
+def test_value_equals_line_false_when_length_differs() -> None:
+    from raven_matrix.model import Shape
+    a = _make_feature(shape=Shape.LINE, width=100.0)
+    b = _make_feature(shape=Shape.LINE, width=140.0)
     assert not a.value_equals(b)
 
 
