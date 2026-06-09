@@ -231,14 +231,23 @@ of scope here and is not tested by these fixtures.
 **Source:** `tools/golden/FillDump.java` (built against the jar — reuses the jar
 `regenerate.sh` already builds for `SgmtDump`; no second build).
 
+> **Scope (user steering, 2026-06-09): reference only, not a fidelity target.**
+> Fill *descriptions* (`"Red"`, `"Grey"`) are internal upstream/Swing labels that
+> never appear in a generated puzzle — the Structure code encodes relations and
+> directions, not fill names — so they do not bear on the acceptance bar. Exact
+> RGBA is likewise not a target: the bar is data/logic equivalence, not pixel
+> reproduction (Phase 6 asserts SVG semantics, never pixel parity). Treat this
+> fixture as convenient reference data only. See `.notes/feedback_fidelity-scope.md`.
+
 ### What it anchors and why
 
 The seed-42 `sgmt_matrices.json` matrices never drew the Grey fills, so the
 upstream fill quirks had **no golden anchor**. This fixture instantiates all five
 `fillpattern/` classes directly and records, for each, its Java class name,
 `getDescription()`, and the exact 8-bit RGBA of `getPaint()` (a `java.awt.Color`,
-so the float channels are rounded by AWT). Phase 2's `Fill` enum must reproduce
-these exactly. The anchored facts:
+so the float channels are rounded by AWT). Phase 2's `Fill` enum may use these
+as reference values but is not required to match them (see the scope note above).
+The recorded facts:
 
 - **Grey10 and Grey40 both report `getDescription()` == `"Red"`** — a genuine
   upstream quirk (carried faithfully, no compat flag), not a typo on our side.
