@@ -134,11 +134,19 @@ class LogicOperation(BaseStructureFeature):
         every feature is used at least once and every base location is populated.
 
         Divergence (bug-catalog ``base-logic-dedup-typemismatch``, FIX-TO-PAPER):
-        upstream guards a repeat-add with ``list.contains(featureIndex)`` on a
-        feature list (an int-vs-feature type mismatch that is always false), so a
-        location could collect the same feature twice and corrupt the set into a
-        multiset. The fix checks feature membership, not the integer index. The
-        guard gates only the *add*, never a draw, so the RNG stream is unchanged.
+        upstream guards a repeat-add with ``list.contains(featureIndex)``
+        (AbstractLogicOperationSGMStructureFeature.java:97-99) on a feature list —
+        an int-vs-feature type mismatch that is always false, so a location could
+        collect the same feature twice and corrupt the set into a multiset. The
+        intent was "don't add feature #i to this location if feature #i is already
+        there"; features are picked by index from a fixed list of shared
+        instances, so the faithful fix is IDENTITY membership (is THIS instance
+        already here), not value. DR7 reserves identity for the logic path (value
+        equality is only for distractor dedup). The distinction is observable:
+        base features share rotation=0/scale=1.0/centre, so two draws can be
+        value-equal-but-distinct, and identity dedup admits both (matching the
+        index intent) where value dedup would wrongly drop one. The guard gates
+        only the *add*, never a draw, so the RNG stream is unchanged.
         """
         num_features = len(base_surface_features)
         num_locations = len(location_transform.base_locations())
@@ -161,8 +169,8 @@ class LogicOperation(BaseStructureFeature):
                         assignments[location_index] = [feature]
                         populated_locations.add(location_index)
                         assigned_feature_ids.add(id(feature))
-                    elif not _contains_by_value(bucket, feature):
-                        # FIX-TO-PAPER membership guard (see docstring).
+                    elif not _contains_by_identity(bucket, feature):
+                        # FIX-TO-PAPER identity guard (DR7; see docstring).
                         bucket.append(feature)
                         populated_locations.add(location_index)
                         assigned_feature_ids.add(id(feature))
@@ -194,13 +202,6 @@ class LogicOperation(BaseStructureFeature):
         cell_two: list[SurfaceFeature],
     ) -> list[SurfaceFeature]:
         """Derive features from two prior cells (the two-arg variant, l.177-179)."""
-
-
-def _contains_by_value(
-    features: list[SurfaceFeature], item: SurfaceFeature
-) -> bool:
-    """Value membership for the assignment dedup (bug-catalog FIX-TO-PAPER)."""
-    return any(f.value_equals(item) for f in features)
 
 
 def _contains_by_identity(
