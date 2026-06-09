@@ -316,3 +316,112 @@ def test_multi_feature_cell_renders_all_features() -> None:
     group = root.find(_qn("g"))
     assert group is not None
     assert len(list(group)) == 2
+
+
+# ---------------------------------------------------------------------------
+# Proleptic hardening (Phase 6) — three invariant-guard tests
+# ---------------------------------------------------------------------------
+
+def test_rotation_90_transform_exact_full_string() -> None:
+    """Test #1 — exact full transform string for the 90-degree rotation case.
+
+    The existing rotation tripwire test uses substring checks.  This test
+    asserts the COMPLETE transform string so any future change to ordering,
+    separators, or float formatting is caught immediately.
+
+    Feature: shape=RECTANGLE, scale=2.0, rotation=90.0, position=Point(100.0, 100.0)
+    — same values the existing test uses, plus the full-string assertion.
+    """
+    el = _render_one(_feature(Shape.RECTANGLE, scale=2.0, rotation=90.0))
+    t = el.get("transform")
+    expected = (
+        "translate(100.0 100.0) rotate(90.0) scale(2.0) translate(-100.0 -100.0)"
+    )
+    assert t == expected, f"Full transform string did not match; got: {t!r}"
+
+
+def test_scale_lives_in_transform_not_geometry() -> None:
+    """Test #2 — scale is applied via the transform, not baked into path geometry.
+
+    Render the same shape (ELLIPSE and TRIANGLE) at scale=1.0 and scale=0.66
+    (the actual ApplyScaling multiplier upstream uses).  The geometry coordinates
+    must be IDENTICAL between the two renders; only the scale(...) term in the
+    transform may differ.
+
+    This guards the invariant documented in svg.py: ``feature.scale multiplies it
+    through the affine transform, exactly as Java applies scale inside the
+    transform (SGMCellImage.setSGMCell) rather than baking it into the path.``
+    """
+    # --- ELLIPSE ---
+    pos = _DEFAULT_POS  # Point(100.0, 100.0)
+    el_10 = _render_one(_feature(Shape.ELLIPSE, scale=1.0, rotation=0.0, position=pos))
+    el_066 = _render_one(
+        _feature(Shape.ELLIPSE, scale=0.66, rotation=0.0, position=pos)
+    )
+
+    # Geometry: cx/cy/rx/ry must be identical
+    for attr in ("cx", "cy", "rx", "ry"):
+        assert el_10.get(attr) == el_066.get(attr), (
+            f"ELLIPSE geometry attr {attr!r} differs between scale=1.0 and "
+            f"scale=0.66: {el_10.get(attr)!r} vs {el_066.get(attr)!r}"
+        )
+
+    # Transforms differ only in the scale(...) term
+    t10 = el_10.get("transform")
+    t066 = el_066.get("transform")
+    _t_base = "translate(100.0 100.0) rotate(0.0) scale({s}) translate(-100.0 -100.0)"
+    assert t10 == _t_base.format(s="1.0"), f"ELLIPSE scale=1.0 transform: {t10!r}"
+    assert t066 == _t_base.format(s="0.66"), f"ELLIPSE scale=0.66 transform: {t066!r}"
+
+    # --- TRIANGLE (path-based shape) ---
+    tr_10 = _render_one(_feature(Shape.TRIANGLE, scale=1.0, rotation=0.0, position=pos))
+    tr_066 = _render_one(
+        _feature(Shape.TRIANGLE, scale=0.66, rotation=0.0, position=pos)
+    )
+
+    # Path d attribute must be identical
+    assert tr_10.get("d") == tr_066.get("d"), (
+        f"TRIANGLE path d differs between scale=1.0 and scale=0.66: "
+        f"{tr_10.get('d')!r} vs {tr_066.get('d')!r}"
+    )
+    # Expected path at pos=(100,100), base=128, hw=hh=64
+    expected_triangle_d = "M 36.0 164.0 L 164.0 164.0 L 100.0 36.0 Z"
+    assert tr_10.get("d") == expected_triangle_d, (
+        f"TRIANGLE path d at scale=1.0: {tr_10.get('d')!r}"
+    )
+
+    # Transforms differ only in scale
+    tt10 = tr_10.get("transform")
+    tt066 = tr_066.get("transform")
+    assert tt10 == _t_base.format(s="1.0"), f"TRIANGLE scale=1.0 transform: {tt10!r}"
+    assert tt066 == _t_base.format(s="0.66"), (
+        f"TRIANGLE scale=0.66 transform: {tt066!r}"
+    )
+
+
+def test_off_centre_position_drives_geometry_and_transform_pivot() -> None:
+    """Test #3 — off-centre position is used coherently in geometry AND transform.
+
+    Render an ELLIPSE at Point(64.0, 192.0) — not the 128,128 cell centre at
+    cell_pixel_size=256.  Assert:
+    - The geometry (cx/cy) reflects the non-centred position.
+    - The transform starts with translate(64.0 192.0) and ends with
+      translate(-64.0 -192.0), proving both the geometry centre and the
+      rotate/scale pivot are derived from the same feature.position.
+    """
+    off_pos = Point(64.0, 192.0)
+    el = _render_one(_feature(Shape.ELLIPSE, scale=1.0, rotation=0.0, position=off_pos))
+
+    # Geometry must reflect the off-centre position
+    assert el.get("cx") == "64.0", f"cx should be 64.0; got {el.get('cx')!r}"
+    assert el.get("cy") == "192.0", f"cy should be 192.0; got {el.get('cy')!r}"
+    # rx/ry are base-derived, not position-derived — still 64.0
+    assert el.get("rx") == "64.0", f"rx should be 64.0; got {el.get('rx')!r}"
+    assert el.get("ry") == "64.0", f"ry should be 64.0; got {el.get('ry')!r}"
+
+    # Full transform string: pivot is position, not cell centre
+    t = el.get("transform")
+    expected = (
+        "translate(64.0 192.0) rotate(0.0) scale(1.0) translate(-64.0 -192.0)"
+    )
+    assert t == expected, f"Off-centre transform string did not match; got: {t!r}"
