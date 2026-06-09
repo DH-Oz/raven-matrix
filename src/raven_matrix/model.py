@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, IntEnum, auto
-from typing import NamedTuple  # noqa: UP035 — NamedTuple subclass syntax requires this
+from typing import Any, NamedTuple
 
 # ---------------------------------------------------------------------------
 # RGBA palette entry — named access so .a reads cleanly
@@ -202,7 +202,7 @@ class Cell:
 class Layer:
     """One layer of a matrix: a grid of cells plus its structure descriptors."""
     cells: list[list[Cell]]
-    structures: list  # typed fully in Phase 4
+    structures: list[Any]  # placeholder; structure-feature type lands in Phase 4
 
 
 @dataclass

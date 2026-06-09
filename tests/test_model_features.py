@@ -12,8 +12,8 @@ def _make_feature(shape=None, fill=None, scale=1.0, rotation=0.0, x=0.0, y=0.0):
     from raven_matrix.model import Fill, Point, Shape, SurfaceFeature
 
     return SurfaceFeature(
-        shape=shape or Shape.DIAMOND,
-        fill=fill or Fill.BLACK,
+        shape=Shape.DIAMOND if shape is None else shape,
+        fill=Fill.BLACK if fill is None else fill,
         scale=scale,
         rotation=rotation,
         position=Point(x, y),
