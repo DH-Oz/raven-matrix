@@ -72,6 +72,103 @@ class Vertical(LocationTransform):
         return Location(row, location.column)
 
 
+def _require_odd_square(size, description: str) -> None:
+    """Reject sizes that are not square with an odd number of rows/columns.
+
+    Replicates the upstream odd-AND-square gate (bug-catalog
+    ``gen-diagonal-only-odd-square``): diagonals are only valid when
+    ``num_rows`` is odd and ``num_rows == num_columns``. The base class runs
+    this via ``_validate`` *before* populating base locations, so an invalid
+    size raises cleanly without the upstream's transient out-of-range build
+    (bug-catalog ``loc-diag-validate-after-super``).
+    """
+    if size.num_rows % 2 == 0 or size.num_rows != size.num_columns:
+        raise ValueError(
+            f"{description} requires a square matrix with an odd number of "
+            f"rows and columns; got {size.num_rows}x{size.num_columns}"
+        )
+
+
+class DiagonalBottomLeftTopRight(LocationTransform):
+    """Diagonal repetition from bottom-left to top-right (an odd square only).
+
+    Port of ``DiagonalBottomLeftTopRightSGMLocationTransform``. Base locations
+    climb the main diagonal; ``next_location`` moves up-and-right; and
+    ``parent_location`` moves down-and-left, each wrapping at the grid edge.
+    """
+
+    description = "Diagonal Bottom Left to Top Right"
+
+    def _validate(self) -> None:
+        _require_odd_square(self.size, self.description)
+
+    def _populate_base_locations(self) -> list[Location]:
+        # Upstream walks row 0..n alongside column 0..n, so row == column.
+        return [
+            Location(column, column)
+            for column in range(self.size.num_columns)
+        ]
+
+    def next_location(self, location: Location) -> Location:
+        row = location.row - 1
+        if row < 0:
+            row = self.size.num_rows - 1
+        column = location.column + 1
+        if column >= self.size.num_columns:
+            column = 0
+        return Location(row, column)
+
+    def parent_location(self, location: Location) -> Location:
+        row = location.row + 1
+        if row >= self.size.num_rows:
+            row = 0
+        column = location.column - 1
+        if column < 0:
+            column = self.size.num_columns - 1
+        return Location(row, column)
+
+
+class DiagonalTopLeftBottomRight(LocationTransform):
+    """Diagonal repetition from top-left to bottom-right (an odd square only).
+
+    Port of ``DiagonalTopLeftBottomRightSGMLocationTransform``. Base locations
+    descend the anti-diagonal; ``next_location`` moves down-and-right; and
+    ``parent_location`` moves up-and-left, each wrapping at the grid edge.
+    """
+
+    description = "Diagonal Top Left to Bottom Right"
+
+    def _validate(self) -> None:
+        _require_odd_square(self.size, self.description)
+
+    def _populate_base_locations(self) -> list[Location]:
+        # Upstream walks row n-1..0 alongside column 0..n, so
+        # row == num_rows - 1 - column.
+        last_row = self.size.num_rows - 1
+        return [
+            Location(last_row - column, column)
+            for column in range(self.size.num_columns)
+        ]
+
+    def next_location(self, location: Location) -> Location:
+        row = location.row + 1
+        if row >= self.size.num_rows:
+            row = 0
+        column = location.column + 1
+        if column >= self.size.num_columns:
+            column = 0
+        return Location(row, column)
+
+    def parent_location(self, location: Location) -> Location:
+        row = location.row - 1
+        if row < 0:
+            row = self.size.num_rows - 1
+        column = location.column - 1
+        if column < 0:
+            column = self.size.num_columns - 1
+        return Location(row, column)
+
+
 class TopLeftCornerOut(LocationTransform):
     """Diagonal wavefront moving outward from the top-left corner.
 
