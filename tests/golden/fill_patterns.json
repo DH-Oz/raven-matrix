@@ -1,0 +1,9 @@
+{
+  "fills": [
+    {"class": "WhiteSGMFillPattern", "description": "White", "rgba": [255, 255, 255, 0]},
+    {"class": "Grey10SGMFillPattern", "description": "Red", "rgba": [26, 26, 26, 153]},
+    {"class": "Grey40SGMFillPattern", "description": "Red", "rgba": [102, 102, 102, 128]},
+    {"class": "Grey75SGMFillPattern", "description": "Grey", "rgba": [191, 191, 191, 102]},
+    {"class": "BlackSGMFillPattern", "description": "Black", "rgba": [0, 0, 0, 191]}
+  ]
+}
