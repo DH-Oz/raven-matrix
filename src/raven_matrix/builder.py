@@ -38,7 +38,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from raven_matrix.compat import CompatFlags
-from raven_matrix.fillpattern import CHANGE_FILL_CYCLE, FILL_REP_CYCLE
+from raven_matrix.fillpattern import (
+    CHANGE_FILL_CYCLE,
+    FILL_REP_CYCLE,
+    generate_fill,
+)
 from raven_matrix.model import (
     BaseRelation,
     Cell,
@@ -49,6 +53,7 @@ from raven_matrix.model import (
     MatrixSize,
     Supplemental,
     SurfaceFeature,
+    contains_check,
 )
 from raven_matrix.rng import JavaRandom
 from raven_matrix.structure.base import (
@@ -77,6 +82,12 @@ MAX_SUPPLEMENTALS_PER_LAYER = 3       # SGMBuilderFrame.java:1030 (max - 1 base)
 NUM_ANSWER_CHOICES = 8                # SGMBuilderFrame.java:1031.
 ROTATE_AMOUNT = 45                    # SupplementalGenerator.java:235.
 SCALE_AMOUNT = 0.66                   # SupplementalGenerator.java:213.
+
+# Distractor dedup cap (SGMMatrix.java:142): stop after this many consecutive
+# duplicate candidates rather than spin forever.
+MAX_DUPLICATES_IN_A_ROW = 500
+# The scale a "modify scale" distractor sets (SGMMatrix.java:376,410).
+DISTRACTOR_SCALE = 0.66
 
 # Logic base pool size bounds (BaseSGMStructureFeatureGenerator.java:106-107).
 _MIN_LOGIC_FEATURES = 3
@@ -460,3 +471,300 @@ def compose_layers(layers: list[Layer], size: MatrixSize) -> list[list[Cell]]:
             )
         composed.append(composed_row)
     return composed
+
+
+# ---------------------------------------------------------------------------
+# Answer + distractor generation (SGMMatrix.java ~242-572)
+# ---------------------------------------------------------------------------
+
+def _cell_value_equals(a: Cell, b: Cell) -> bool:
+    """Value equality of two cells (port of ``SGMCell.equals``, SGMBaseCell.java:202).
+
+    Equal feature count AND mutual value-containment: every feature of ``b`` is
+    value-present in ``a`` AND every feature of ``a`` is value-present in ``b``,
+    each via the Phase-2 feature-list ``contains_check`` (the bidirectional check
+    at l.215-228). This is the CELL-level helper -- do not confuse it with the
+    feature-list ``contains_check``.
+    """
+    if len(a.surface_features) != len(b.surface_features):
+        return False
+    a_features: list[SurfaceFeature | None] = list(a.surface_features)
+    b_features: list[SurfaceFeature | None] = list(b.surface_features)
+    # Bidirectional value-containment (SGMBaseCell.java:215-228): every feature of
+    # one cell is value-present in the other, and vice versa.
+    every_b_in_a = all(
+        contains_check(a_features, feature) for feature in b.surface_features
+    )
+    every_a_in_b = all(
+        contains_check(b_features, feature) for feature in a.surface_features
+    )
+    return every_b_in_a and every_a_in_b
+
+
+def _contains_cell(choices: list[Cell | None], candidate: Cell) -> bool:
+    """Cell-list membership (port of ``SGMMatrix.containsCheck``, SGMMatrix.java:575).
+
+    True iff some non-``None``/non-blank choice ``_cell_value_equals`` the
+    candidate. ``None`` entries are skipped (l.586-589). List-based -- no ``set``.
+    """
+    for choice in choices:
+        if choice is None:
+            continue
+        if _cell_value_equals(choice, candidate):
+            return True
+    return False
+
+
+def _clone_feature(feature: SurfaceFeature) -> SurfaceFeature:
+    """A fresh copy for distractor mutation (mirrors ``SGMSurfaceFeature.clone``).
+
+    Copies width/height too (FIX-TO-PAPER ``surface-clone-drops-size-rect-ellipse``),
+    matching the supplemental clone, so a mutated distractor stays value-comparable.
+    """
+    return SurfaceFeature(
+        shape=feature.shape,
+        fill=feature.fill,
+        scale=feature.scale,
+        rotation=feature.rotation,
+        position=feature.position,
+        width=feature.width,
+        height=feature.height,
+    )
+
+
+def _layer_uses_numerosity(layer: Layer) -> bool:
+    """True if any of the layer's structure features is a numerosity relation."""
+    return any(
+        isinstance(structure, TranslationalNumerosity)
+        for structure in layer.structures
+    )
+
+
+def _distractor_subset_of_layers(
+    layers: list[Layer], rng: JavaRandom
+) -> list[SurfaceFeature]:
+    """Strategy 0: a wrong answer as a subset of the correct answer's layers.
+
+    Port of ``SGMMatrix.java:270-298`` + ``generateRandomLayerSubSet``
+    (l.598-627). Only meaningful with >=2 layers (the caller excludes case 0 for
+    single-layer matrices). Returns the concatenated bottom-right features of the
+    chosen layer subset.
+    """
+    num_layers = len(layers)
+    layers_not_yet_used = list(range(num_layers))
+    # generateRandomLayerSubSet: numLayersToCombine = next_int(numLayers-1)+1.
+    num_to_combine = num_layers
+    if num_layers > 1:
+        num_to_combine = rng.next_int(num_layers - 1) + 1
+    subset: list[int] = []
+    for _ in range(num_to_combine):
+        index_to_use = rng.next_int(len(layers_not_yet_used))
+        subset.append(layers_not_yet_used.pop(index_to_use))
+
+    features: list[SurfaceFeature] = []
+    for layer_index in subset:
+        features.extend(layers[layer_index].cells[-1][-1].surface_features)
+    return features
+
+
+def _distractor_wrong_cell(
+    cells: list[list[Cell]], size: MatrixSize, rng: JavaRandom
+) -> list[SurfaceFeature]:
+    """Strategy 1: a wrong answer = any matrix cell other than ``(2,2)``.
+
+    Port of ``SGMMatrix.java:299-316``: redraw row/column until it is not the
+    bottom-right correct-answer cell.
+    """
+    correct_row = size.num_rows - 1
+    correct_column = size.num_columns - 1
+    row, column = correct_row, correct_column
+    while row == correct_row and column == correct_column:
+        row = rng.next_int(size.num_rows)
+        column = rng.next_int(size.num_columns)
+    return list(cells[row][column].surface_features)
+
+
+def _distractor_modify_parameter(
+    layers: list[Layer], size: MatrixSize, rng: JavaRandom
+) -> list[SurfaceFeature]:
+    """Strategy 2: change one parameter of a random cell's feature(s).
+
+    Port of ``SGMMatrix.java:317-419``. Pick a layer; pick a cell; if it has
+    features, clone them and modify either the fill (a fresh ``generate_fill``
+    draw) or the scale (->0.66). On a numerosity layer EVERY feature is changed
+    the same way; otherwise a single random feature is changed. The order of RNG
+    draws (layerID, row, column, parameter, [featureIndex], [fill]) is faithful.
+    Returns ``[]`` if the chosen cell has no features (an empty candidate the
+    caller skips).
+    """
+    layer_id = rng.next_int(len(layers))
+    layer = layers[layer_id]
+    numerosity_layer = _layer_uses_numerosity(layer)
+
+    row = rng.next_int(size.num_rows)
+    column = rng.next_int(size.num_columns)
+    source = layer.cells[row][column].surface_features
+    if len(source) == 0:
+        return []
+
+    features = list(source)
+    parameter_to_change = rng.next_int(2)
+    if numerosity_layer:
+        # Change all features the same way (l.357-386).
+        if parameter_to_change == 0:
+            fill = generate_fill(rng)
+            for i in range(len(features)):
+                clone = _clone_feature(features[i])
+                clone.fill = fill
+                features[i] = clone
+        else:
+            for i in range(len(features)):
+                clone = _clone_feature(features[i])
+                clone.scale = DISTRACTOR_SCALE
+                features[i] = clone
+    else:
+        # Change one random feature (l.387-414).
+        feature_index = rng.next_int(len(features))
+        clone = _clone_feature(features[feature_index])
+        features[feature_index] = clone
+        if parameter_to_change == 0:
+            clone.fill = generate_fill(rng)
+        else:
+            clone.scale = DISTRACTOR_SCALE
+    return features
+
+
+def _distractor_random_layer_combination(
+    layers: list[Layer], size: MatrixSize, rng: JavaRandom
+) -> list[SurfaceFeature]:
+    """Strategy 3: a combination of random layers from across the matrix.
+
+    Port of ``SGMMatrix.java:420-479``: choose ``numLayers`` (1..#layers), pick
+    that many distinct layers, and from each, a random cell -- keeping each of its
+    features with probability 1/2 (``next_boolean``). Returns the kept features
+    (possibly empty, which the caller skips).
+    """
+    matrix_num_layers = len(layers)
+    num_layers = 1
+    if matrix_num_layers > num_layers:
+        num_layers = rng.next_int(matrix_num_layers) + 1
+
+    chosen: list[int] = []
+    while len(chosen) < num_layers:
+        potential = rng.next_int(matrix_num_layers)
+        if potential not in chosen:
+            chosen.append(potential)
+
+    features: list[SurfaceFeature] = []
+    for layer_index in chosen:
+        row = rng.next_int(size.num_rows)
+        column = rng.next_int(size.num_columns)
+        for feature in layers[layer_index].cells[row][column].surface_features:
+            if rng.next_boolean():
+                features.append(feature)
+    return features
+
+
+def generate_answer_choices(
+    cells: list[list[Cell]],
+    layers: list[Layer],
+    correct_answer_position: int,
+    size: MatrixSize,
+    rng: JavaRandom,
+    flags: CompatFlags,
+) -> tuple[list[Cell], int]:
+    """Generate the 8 answer choices and the correct answer's 1-based position.
+
+    Port of ``SGMMatrix.java:230-572``. The correct answer is the composited
+    bottom-right cell ``(2,2)``; up to seven distractors come from the four
+    strategies (``next_int(4)`` for >=2 layers, ``next_int(3)+1`` for one layer);
+    dedup is CELL-level by value with a ``MAX_DUPLICATES_IN_A_ROW`` cap; remaining
+    slots are blank cells.
+
+    Positions are 1-based at the boundary (the config's
+    ``correct_answer_position`` is 1-8); internally the upstream's 0-based
+    arithmetic is reproduced, then converted back on return.
+
+    ``flags.relocate_correct_answer`` (default ``False``) selects the position
+    behaviour. ``False`` (faithful-to-design) honours the configured position and
+    SKIPS the upstream relocation block (l.531-548) ENTIRELY -- including its
+    conditional ``next_int`` draw (l.538). ``True`` (faithful-to-code) replicates
+    the relocation, consuming that draw. The default path is deliberately a
+    different RNG stream for relocating configs (DR §3); no compensating draw.
+    """
+    num_answer_choices = NUM_ANSWER_CHOICES
+    correct_position_0 = correct_answer_position - 1  # 1-based -> 0-based.
+    correct_answer = cells[size.num_rows - 1][size.num_columns - 1]
+
+    answer_choices: list[Cell | None] = [None] * num_answer_choices
+    position = 0
+    if position == correct_position_0:
+        position += 1
+    answer_choices[correct_position_0] = correct_answer
+
+    num_duplicates_in_a_row = 0
+    while position < num_answer_choices and (
+        num_duplicates_in_a_row < MAX_DUPLICATES_IN_A_ROW
+    ):
+        # >=2 layers: any of the 4 strategies; 1 layer: exclude case 0 (the
+        # layer-subset strategy is meaningless), so next_int(3)+1 -> 1..3.
+        strategy = rng.next_int(4) if len(layers) > 1 else rng.next_int(3) + 1
+
+        match strategy:
+            case 0:
+                features = _distractor_subset_of_layers(layers, rng)
+            case 1:
+                features = _distractor_wrong_cell(cells, size, rng)
+            case 2:
+                features = _distractor_modify_parameter(layers, size, rng)
+            case _:
+                features = _distractor_random_layer_combination(layers, size, rng)
+
+        if len(features) == 0:
+            continue  # null/empty candidate: skip, not a duplicate (l.483-487).
+
+        candidate = Cell(surface_features=features, location=None)
+        if not _cell_value_equals(candidate, correct_answer) and not _contains_cell(
+            answer_choices, candidate
+        ):
+            answer_choices[position] = candidate
+            position += 1
+            if position == correct_position_0:
+                position += 1
+            num_duplicates_in_a_row = 0
+        else:
+            num_duplicates_in_a_row += 1
+
+    # Relocation (l.531-552): flag-gated. The default skips the whole block,
+    # including its conditional next_int draw, honouring the configured position.
+    if flags.relocate_correct_answer and correct_position_0 > position:
+        new_position = 0
+        if position > 0:
+            new_position = rng.next_int(position)
+        # Move whatever sits at new_position to the end of the contiguous block.
+        answer_choices[position] = answer_choices[new_position]
+        answer_choices[new_position] = correct_answer
+        correct_position_0 = new_position
+        position += 1
+
+    # Don't overwrite the correct answer if position lands on it (l.556-559).
+    if position == correct_position_0:
+        position += 1
+
+    # Blank-pad the rest (l.562-572): empty cells, location None. The upstream
+    # loop does NOT re-skip the correct position because, in the faithful-to-code
+    # path, relocation has already guaranteed correct_position_0 <= position
+    # (relocation fires whenever correct_position_0 > position). In the default
+    # honor-config path relocation is skipped, so a high configured position may
+    # still sit AHEAD of `position`; we skip it each step to protect it -- the
+    # deliberate consequence of honouring the configured position (DR §3). This
+    # adds no RNG draw, so internal determinism is unaffected.
+    while position < num_answer_choices:
+        if position == correct_position_0:
+            position += 1
+            continue
+        answer_choices[position] = Cell(surface_features=[], location=None)
+        position += 1
+
+    finalised = [_require_cell(choice) for choice in answer_choices]
+    return finalised, correct_position_0 + 1  # 0-based -> 1-based.

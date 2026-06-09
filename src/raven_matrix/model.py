@@ -219,9 +219,14 @@ def contains_check(
 
 @dataclass
 class Cell:
-    """One cell in a matrix, holding its surface features and grid location."""
+    """One cell in a matrix, holding its surface features and grid location.
+
+    ``location`` is ``None`` for answer-choice cells (distractors and blank
+    pads), mirroring the upstream ``SGMLocation``-null answer cells
+    (``SGMMatrix.java:475,564``); grid cells always carry a real location.
+    """
     surface_features: list[SurfaceFeature]
-    location: Location
+    location: Location | None
 
 
 @dataclass
