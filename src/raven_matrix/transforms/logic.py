@@ -16,7 +16,17 @@ from .base import LocationTransform
 
 
 class LogicLocationTransform(LocationTransform):
-    """Seeds the top-left 2x2 block; refuses to traverse."""
+    """Seeds the top-left 2x2 block; refuses to traverse.
+
+    Consumer contract (Phase 4 ``build()`` and any traversal caller): this is a
+    PARTIAL ``LocationTransform``. ``base_locations()`` is valid, but
+    ``next_location`` / ``parent_location`` raise ``NotImplementedError``. A
+    caller must detect a logic-operation structure feature and consume the 2x2
+    seed directly; it must never drive this transform through the generic
+    next/parent traversal loop. Note ``make_location_transform`` never returns
+    this class (Logic is selected by the structure layer, not a direction
+    digit), so a caller only encounters it deliberately.
+    """
 
     description = "Logic"
 
