@@ -11,7 +11,7 @@ code, docs, and conversation. (Bootstrapped from the design plan
 - **Structure code**: a compact string encoding a matrix's relational structure (e.g. `A1B2C4`); letters name relations, digits name directions, `X`/`Y`/`Z` name OR/AND/XOR.
 - **Base relation**: the primary rule across a layer — ShapeRepetition or Logical OR/AND/XOR.
 - **Supplemental relation**: a feature-level rule layered on the base — Rotation, Scaling, FillPatternRepetition, ChangeFillPattern, or TranslationalNumerosity.
-- **Location transform**: the cell-traversal pattern (Horizontal, Vertical, two diagonals, TopLeftCornerOut) determining which cells share a feature.
+- **Location transform**: the cell-traversal pattern determining which cells share a feature — Horizontal, Vertical, the two diagonals, and TopLeftCornerOut, selected by direction digits 1–5 via the `make_location_transform` factory. Plus **Logic**, a *partial* transform that seeds the 2×2 top-left block and does not traverse (`next_location`/`parent_location` raise `NotImplementedError`); it is chosen by the structure layer, not a direction digit, so the factory never returns it. Each exposes `base_locations()` / `next_location()` / `parent_location()`.
 - **Labeller**: the function reading a `Matrix` back to its `Structure` code (ported from the upstream difficulty classifier's scoring logic). Inverse: `parse_code`.
 - **Structural oracle**: the test that parses each published `Structure` code → builds → labels → checks the label matches; a consistency check, anchored by a hand-derived label table.
 - **Hand-derived label table**: ~12 config→expected-label pairs derived from the Matzen paper's naming convention + the published codes (independent of the Java source); the primary correctness anchor.

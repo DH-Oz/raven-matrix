@@ -23,6 +23,20 @@ Discovered during Phase 1 (oracle extraction + the Java build spike, 2026-06-09)
 | `A4_1` join-key collision | `data/ravens_oracle.csv` has two rows named `A4_1`, both `Structure = A4` and both 0.75 % correct, but `Correct Answer` 2 vs 1. CLAUDE.md oracle #1 joins `Stimulus Name → Correct Answer`, so this name is 1:2 ambiguous. | The Phase-5 structural oracle keys on `Structure` (so it survives), but `A4_1` is a candidate for the Phase-5 documented exclusion list / needs a tiebreaker. |
 | Upstream difficulty classifier unavailable | `SerializedMatrixSGMDifficultyClassifier.xml`, loaded by the upstream `SGMMatrixSetGeneratorTest`, is absent everywhere in the source distribution (exhaustive `find`). The upstream test cannot run as-shipped and the 37-feature predictor cannot be deserialized. | Reinforces v1's deferral of difficulty + `SGMMatrixSetGenerator`; the hand-derived label table (DR6) stays the primary correctness anchor. |
 
+### Spec-precedence divergences
+
+Per CLAUDE.md's spec-precedence rule, where the Java source and the Matzen et al.
+(2010) paper genuinely disagree **because of a source bug**, the port follows the
+paper and fixes the bug, recording the divergence durably (code comment + test +
+this record). Default elsewhere stays faithful-to-code.
+
+| Divergence | Upstream (bug) | Port (paper) | Oracle impact | Witness |
+|-----------|----------------|--------------|---------------|---------|
+| `loc-vertical-parent-wrap` — `geometric.py::Vertical.parent_location` | `VerticalSGMLocationTransform.java:108` wraps the row to `getNumColumns()-1` | wraps to `num_rows-1` | None — inert on the all-3×3 oracle, where `numColumns-1 == numRows-1`; only differs on non-square grids, which the released tool never builds | `tests/test_transforms_axis.py` non-square 4×2 regression (fails against the upstream value) |
+| Grey10/40 fill collapse — `model.py::Fill` / `SurfaceFeature.value_equals` | fills compared by `getDescription()`, where `Grey10SGMFillPattern` and `Grey40SGMFillPattern` both return `"Red"` (a copy-paste bug), so equality collapses the two shadings | five distinct fills, compared by enum identity (the paper specifies five) | Surfaces only if a stimulus relies on the upstream collapse; validated structurally by the Phase 5 oracle, not by grid size | the `Fill` / `SurfaceFeature.value_equals` model tests |
+
+> Decision provenance: Grey10/40 settled at design time (CLAUDE.md); `loc-vertical-parent-wrap` settled by Brian on 2026-06-09 during Phase 3 (bug-catalog `loc-vertical-parent-wrap`: "fix-to-paper. Use `numRows`").
+
 ## Determinism
 
 | Constraint | Metric | Target | Verification |
@@ -55,3 +69,4 @@ Discovered during Phase 1 (oracle extraction + the Java build spike, 2026-06-09)
 |------|-----------|--------|--------|
 | 2026-06-08 | (all) | Initial bootstrap from the design plan | Greenfield design finalisation |
 | 2026-06-09 | Known data anomalies | Added the `A4_1` join-key collision and the absent upstream classifier-XML findings | Discovered during Phase 1 (oracle extraction + Java spike) |
+| 2026-06-09 | Spec-precedence divergences | Recorded `loc-vertical-parent-wrap` (and back-filled Grey10/40) as durable divergence records | Phase 3 coherence review GAP-1: the spec-precedence rule's "+ ADR" leg needed an architecture-doc home |
