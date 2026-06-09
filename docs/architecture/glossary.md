@@ -16,7 +16,8 @@ code, docs, and conversation. (Bootstrapped from the design plan
 - **Structural oracle**: the test that parses each published `Structure` code → builds → labels → checks the label matches; a consistency check, anchored by a hand-derived label table.
 - **Hand-derived label table**: ~12 config→expected-label pairs derived from the Matzen paper's naming convention + the published codes (independent of the Java source); the primary correctness anchor.
 - **Compat toggle**: a named flag exposing a known code-vs-design divergence; default is faithful-to-code.
-- **Difficulty classifier**: SGMT's 37-feature difficulty predictor; deferred out of v1.
+- **Difficulty classifier**: SGMT's 37-feature difficulty predictor; deferred out of v1. Its serialized form (`SerializedMatrixSGMDifficultyClassifier.xml`, loaded by the upstream `SGMMatrixSetGeneratorTest`) is **not shipped** in the source distribution, so the upstream test cannot run as-shipped — reinforcing the deferral (see `constraints.md` → Known data anomalies).
+- **Stimulus Name (join key)**: the PNG basename that joins a norming-oracle row to its stimulus. Unique except for `A4_1`, which appears twice with the same `Structure` (`A4`) but different `Correct Answer` (2 vs 1) — a known 1:2 anomaly (see `constraints.md`).
 
 ## Technical Terms
 

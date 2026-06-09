@@ -14,6 +14,15 @@ and a verification method. (Bootstrapped from the design plan
 | Location-transform fidelity | TopLeftCornerOut coordinate sequences | Exact match to the JUnit spec, all 8 sizes | The ported pinned test (`raven-builder.AC3.1`) |
 | Behaviour faithfulness | "Build what is" at the behaviour level | Outputs match upstream code; bugs preserved behind toggles | The test suite + best-effort Java differential |
 
+### Known data anomalies
+
+Discovered during Phase 1 (oracle extraction + the Java build spike, 2026-06-09):
+
+| Anomaly | Detail | Handling |
+|---------|--------|----------|
+| `A4_1` join-key collision | `data/ravens_oracle.csv` has two rows named `A4_1`, both `Structure = A4` and both 0.75 % correct, but `Correct Answer` 2 vs 1. CLAUDE.md oracle #1 joins `Stimulus Name → Correct Answer`, so this name is 1:2 ambiguous. | The Phase-5 structural oracle keys on `Structure` (so it survives), but `A4_1` is a candidate for the Phase-5 documented exclusion list / needs a tiebreaker. |
+| Upstream difficulty classifier unavailable | `SerializedMatrixSGMDifficultyClassifier.xml`, loaded by the upstream `SGMMatrixSetGeneratorTest`, is absent everywhere in the source distribution (exhaustive `find`). The upstream test cannot run as-shipped and the 37-feature predictor cannot be deserialized. | Reinforces v1's deferral of difficulty + `SGMMatrixSetGenerator`; the hand-derived label table (DR6) stays the primary correctness anchor. |
+
 ## Determinism
 
 | Constraint | Metric | Target | Verification |
@@ -45,3 +54,4 @@ and a verification method. (Bootstrapped from the design plan
 | Date | Constraint | Change | Reason |
 |------|-----------|--------|--------|
 | 2026-06-08 | (all) | Initial bootstrap from the design plan | Greenfield design finalisation |
+| 2026-06-09 | Known data anomalies | Added the `A4_1` join-key collision and the absent upstream classifier-XML findings | Discovered during Phase 1 (oracle extraction + Java spike) |
