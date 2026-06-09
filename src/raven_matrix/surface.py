@@ -40,7 +40,7 @@ from __future__ import annotations
 
 from raven_matrix.compat import CompatFlags
 from raven_matrix.fillpattern import generate_fill
-from raven_matrix.model import Point, Shape, SurfaceFeature
+from raven_matrix.model import Fill, Point, Shape, SurfaceFeature
 from raven_matrix.rng import JavaRandom
 
 # Live-switch index -> Shape (SGMSurfaceFeatureGenerator.java:165-202). Index 6
@@ -60,6 +60,7 @@ def generate_surface_feature(
     rng: JavaRandom,
     flags: CompatFlags,
     cell_pixel_size: int,
+    allowed_fills: list[Fill] | None = None,
 ) -> SurfaceFeature:
     """Draw one surface feature, mirroring ``generateSurfaceFeature``.
 
@@ -77,6 +78,18 @@ def generate_surface_feature(
         Line (index 6) appear; the default (``False``) keeps ``next_int(6)``.
     cell_pixel_size : int
         The cell's pixel size; width/height are quarter/half/three-quarter of it.
+    allowed_fills : list[Fill] | None, optional
+        Mirrors the upstream ``allowedFillPatterns`` overload
+        (``SGMSurfaceFeatureGenerator.java:115-118`` ->
+        ``SGMFillPatternGenerator.generateFillPattern(list, random)``,
+        ``:88-100``). ``None`` (the default) reproduces the no-list overload: a
+        single ``next_int(3)`` over the base catalogue ``[White, Grey75, Black]``
+        (the geometric/ShapeRepetition path). A non-``None`` list draws
+        ``next_int(len)`` over it instead -- the logic base pool passes
+        ``[White]`` (``BaseSGMStructureFeatureGenerator.java:200-214``), so the
+        fill draw is ``next_int(1)`` (always White), NOT ``next_int(3)``. This is
+        a genuine RNG-stream divergence between the two paths, faithful to the
+        upstream's two distinct fill-generator overloads.
 
     Returns
     -------
@@ -107,8 +120,13 @@ def generate_surface_feature(
     rotation = 0
     position = Point(half, half)
 
-    # 5. fill: a single next_int(3) (l.158-161).
-    fill = generate_fill(rng)
+    # 5. fill (l.158-161): no list -> generate_fill's next_int(3) over the base
+    # catalogue; a list -> next_int(len) over the list (SGMFillPatternGenerator
+    # .generateFillPattern(list, random), :98-99). The logic pool passes [White].
+    if allowed_fills is None:
+        fill = generate_fill(rng)
+    else:
+        fill = allowed_fills[rng.next_int(len(allowed_fills))]
 
     # 6. shape: next_int(6), widened to next_int(7) under line_shape_enabled (l.164).
     bound = 7 if flags.line_shape_enabled else 6
