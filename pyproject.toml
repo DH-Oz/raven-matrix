@@ -36,6 +36,14 @@ dev = [
     "ty==0.0.42",       # exact-pinned: pre-1.0, gated in CI (resolved by uv)
 ]
 
+[tool.uv]
+# Pin resolution to packages published on/before this absolute date so uv.lock is
+# reproducible everywhere. Without it, a user-level uv config's relative
+# `exclude-newer = "1 week"` bakes a machine/time-dependent span into the lock,
+# which makes `uv sync --locked` fail on CI (where no global uv config exists).
+# A committed absolute value overrides the user-level span. Bump deliberately.
+exclude-newer = "2026-06-02T00:00:00Z"
+
 [tool.ruff]
 line-length = 88
 target-version = "py312"   # keep the whole package Pyodide-compatible (see requires-python)
