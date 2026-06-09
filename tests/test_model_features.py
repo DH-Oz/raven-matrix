@@ -61,6 +61,22 @@ def test_value_equals_false_when_fill_differs() -> None:
     assert not a.value_equals(b)
 
 
+def test_value_equals_treats_grey10_and_grey40_as_distinct() -> None:
+    """Paper-faithful fix of an upstream bug.
+
+    SGMT compares fills by getDescription(), and Grey10/Grey40 both return
+    "Red", so upstream treats them as the same fill.  The Matzen 2010 paper
+    specifies five DISTINCT fill patterns; per policy the paper is the spec, so
+    Grey10 and Grey40 must NOT be value-equal here.  Guards against anyone
+    re-porting the upstream description-equality.
+    """
+    from raven_matrix.model import Fill, contains_check
+    a = _make_feature(fill=Fill.GREY10)
+    b = _make_feature(fill=Fill.GREY40)
+    assert not a.value_equals(b)
+    assert not contains_check([a], b)
+
+
 def test_value_equals_false_when_scale_differs() -> None:
     a = _make_feature(scale=1.0)
     b = _make_feature(scale=2.0)

@@ -38,7 +38,20 @@ class Shape(Enum):
 
 
 # ---------------------------------------------------------------------------
-# Fill — 5 upstream fill patterns; each value is an Rgba NamedTuple
+# Fill — the five shading levels (Matzen et al. 2010, "five possible fill
+# patterns").  Each value is an Rgba NamedTuple; RGBA drives rendering only and
+# is not a fidelity target (the bar is data/logic equivalence, not pixels).
+#
+# Deliberate divergence from upstream: SGMT compares fills by getDescription()
+# inside AbstractSGMSurfaceFeature.customEqualsCheck, and both
+# Grey10SGMFillPattern and Grey40SGMFillPattern return DESCRIPTION = "Red" (a
+# copy-paste bug — the Grey10 source file is even mis-headed
+# "Grey25SGMFillPattern.java").  That makes upstream treat Grey10 and Grey40 as
+# the SAME fill in feature/cell equality.  The paper specifies five DISTINCT
+# fill patterns, and per project policy the paper is the fundamental spec, so we
+# fix the bug: the five fills are distinct and compared by enum identity (see
+# SurfaceFeature.value_equals).  We carry no description string — it encoded only
+# the Swing label and the bug.
 # ---------------------------------------------------------------------------
 
 class Fill(Enum):
@@ -143,6 +156,12 @@ class SurfaceFeature:
         Compares scale, rotation, position, shape, and fill.  No
         shape-specific custom check is implemented here (YAGNI; Phase 4
         adds geometry).
+
+        Fill is compared by enum identity, so the five shadings stay distinct.
+        Upstream instead compares fills by getDescription(), under which the
+        Grey10/Grey40 "Red" label bug collapses those two shadings; we follow
+        the Matzen 2010 paper (five distinct fill patterns) and do not
+        reproduce that collapse.  See the Fill enum comment for detail.
         """
         return (
             self.shape is other.shape
