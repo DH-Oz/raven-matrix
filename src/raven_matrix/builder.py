@@ -678,6 +678,59 @@ def _distractor_random_layer_combination(
     return features
 
 
+def _relocate_correct_answer(
+    answer_choices: list[Cell | None],
+    correct_position_0: int,
+    position: int,
+    correct_answer: Cell,
+    rng: JavaRandom,
+    flags: CompatFlags,
+) -> tuple[int, int]:
+    """Flag-gated correct-answer relocation (SGMMatrix.java:531-552).
+
+    ``relocate_correct_answer=False`` (default) skips the whole block -- including
+    its conditional ``next_int`` draw (l.538) -- honouring the configured
+    position; the honor-config path is deliberately a different RNG stream for
+    relocating configs (DR §3). Returns the (possibly updated) ``(correct_position_0,
+    position)`` and mutates ``answer_choices`` in place.
+    """
+    if not (flags.relocate_correct_answer and correct_position_0 > position):
+        return correct_position_0, position
+    new_position = 0
+    if position > 0:
+        new_position = rng.next_int(position)
+    # Move whatever sits at new_position to the end of the contiguous block.
+    answer_choices[position] = answer_choices[new_position]
+    answer_choices[new_position] = correct_answer
+    return new_position, position + 1
+
+
+def _blank_pad(
+    answer_choices: list[Cell | None],
+    correct_position_0: int,
+    position: int,
+    num_answer_choices: int,
+) -> None:
+    """Fill remaining slots with blank cells (SGMMatrix.java:556-572).
+
+    Upstream does not re-skip the correct position inside the loop because
+    relocation (faithful-to-code path) guarantees ``correct_position_0 <=
+    position`` there. In the default honor-config path relocation is skipped, so a
+    high configured position may still sit AHEAD of ``position``; skip it each step
+    to protect it -- the deliberate consequence of honouring the configured
+    position (DR §3). Adds no RNG draw, so internal determinism is unaffected.
+    """
+    # Don't overwrite the correct answer if position lands on it (l.556-559).
+    if position == correct_position_0:
+        position += 1
+    while position < num_answer_choices:
+        if position == correct_position_0:
+            position += 1
+            continue
+        answer_choices[position] = Cell(surface_features=[], location=None)
+        position += 1
+
+
 def generate_answer_choices(
     cells: list[list[Cell]],
     layers: list[Layer],
@@ -756,36 +809,10 @@ def generate_answer_choices(
         else:
             num_fruitless_in_a_row += 1
 
-    # Relocation (l.531-552): flag-gated. The default skips the whole block,
-    # including its conditional next_int draw, honouring the configured position.
-    if flags.relocate_correct_answer and correct_position_0 > position:
-        new_position = 0
-        if position > 0:
-            new_position = rng.next_int(position)
-        # Move whatever sits at new_position to the end of the contiguous block.
-        answer_choices[position] = answer_choices[new_position]
-        answer_choices[new_position] = correct_answer
-        correct_position_0 = new_position
-        position += 1
-
-    # Don't overwrite the correct answer if position lands on it (l.556-559).
-    if position == correct_position_0:
-        position += 1
-
-    # Blank-pad the rest (l.562-572): empty cells, location None. The upstream
-    # loop does NOT re-skip the correct position because, in the faithful-to-code
-    # path, relocation has already guaranteed correct_position_0 <= position
-    # (relocation fires whenever correct_position_0 > position). In the default
-    # honor-config path relocation is skipped, so a high configured position may
-    # still sit AHEAD of `position`; we skip it each step to protect it -- the
-    # deliberate consequence of honouring the configured position (DR §3). This
-    # adds no RNG draw, so internal determinism is unaffected.
-    while position < num_answer_choices:
-        if position == correct_position_0:
-            position += 1
-            continue
-        answer_choices[position] = Cell(surface_features=[], location=None)
-        position += 1
+    correct_position_0, position = _relocate_correct_answer(
+        answer_choices, correct_position_0, position, correct_answer, rng, flags
+    )
+    _blank_pad(answer_choices, correct_position_0, position, num_answer_choices)
 
     finalised = [_require_cell(choice) for choice in answer_choices]
     return finalised, correct_position_0 + 1  # 0-based -> 1-based.
