@@ -335,12 +335,12 @@ def build_outcome(
 # the shell decides which header fields to include (it computes the code, the
 # position, the seed) and passes only the toggled ones.
 
-# A rendered sheet opens with ``<svg ... width="W" height="H" viewBox=...>`` and
-# closes with ``</svg>``; this captures the dimensions and the inner body so each
-# sheet can be re-wrapped in a translated ``<g>``.
-_SVG_OPEN_RE = re.compile(
-    r'^<svg\b[^>]*\bwidth="(?P<width>\d+)"[^>]*\bheight="(?P<height>\d+)"[^>]*>'
-)
+# A rendered sheet opens with ``<svg ...>`` and closes with ``</svg>``; the
+# opening tag is matched first, then width/height are extracted independently
+# so attribute order does not matter (the SVG spec makes order arbitrary).
+_SVG_TAG_RE = re.compile(r"^<svg\b[^>]*>")
+_SVG_WIDTH_RE = re.compile(r'\bwidth="(\d+)"')
+_SVG_HEIGHT_RE = re.compile(r'\bheight="(\d+)"')
 
 # Header band geometry (only emitted when header_fields is non-empty).
 _HEADER_HEIGHT = 28
@@ -355,13 +355,23 @@ def _svg_parts(rendered: str) -> tuple[int, int, str]:
     ``inner_body`` is everything between the opening ``<svg ...>`` tag and the
     closing ``</svg>`` -- the background rect and the cell groups -- ready to drop
     inside a translated ``<g>``.
+
+    Width and height are extracted independently (order-agnostic): the SVG spec
+    does not mandate attribute order, so two separate searches are used rather
+    than a single ordered pattern.
     """
-    match = _SVG_OPEN_RE.match(rendered)
-    if match is None:  # pragma: no cover - guards a render contract change
+    tag_match = _SVG_TAG_RE.match(rendered)
+    if tag_match is None:  # pragma: no cover - guards a render contract change
         raise ValueError("rendered SVG did not start with a parseable <svg> tag")
-    width = int(match.group("width"))
-    height = int(match.group("height"))
-    inner = rendered[match.end() : rendered.rindex("</svg>")]
+    open_tag = tag_match.group(0)
+    w_match = _SVG_WIDTH_RE.search(open_tag)
+    h_match = _SVG_HEIGHT_RE.search(open_tag)
+    if w_match is None or h_match is None:  # pragma: no cover - render contract
+        raise ValueError("rendered SVG did not start with a parseable <svg> tag")
+    width = int(w_match.group(1))
+    height = int(h_match.group(1))
+    # exactly one </svg> per rendered document (no nested <svg>); rindex is unambiguous
+    inner = rendered[tag_match.end() : rendered.rindex("</svg>")]
     return width, height, inner
 
 

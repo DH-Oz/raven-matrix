@@ -444,3 +444,51 @@ def test_compose_save_svg_each_variant_parses(matrix: Matrix) -> None:
         )
         root = ET.fromstring(svg)
         assert root.tag == _SVG_TAG
+
+
+# ---------------------------------------------------------------------------
+# compose_save_svg -- order-independent SVG dimension extraction
+# ---------------------------------------------------------------------------
+#
+# The renderer currently emits width before height, but the SVG spec makes
+# attribute order arbitrary.  _svg_parts must extract dimensions correctly
+# regardless of which attribute comes first in the opening <svg> tag.
+
+
+def test_svg_parts_height_before_width_is_order_independent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """compose_save_svg must handle height="..." BEFORE width="..." in the <svg> tag.
+
+    The renderer owns the attribute order; if it ever emits height first the
+    composition must still produce a correctly-sized outer SVG and parse as
+    well-formed XML.  This test replaces render_matrix_svg with a stub that
+    returns a minimal height-first SVG (100 × 200) to isolate the extraction
+    path from renderer internals.
+    """
+    height_first_svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" '
+        'height="200" width="100" viewBox="0 0 100 200">'
+        '<rect class="background" x="0" y="0" width="100" height="200" fill="white"/>'
+        "</svg>"
+    )
+
+    import raven_matrix.appsupport as _mod
+
+    monkeypatch.setattr(_mod, "render_matrix_svg", lambda _matrix: height_first_svg)
+
+    matrix_fixture = build_from_code("A1", 0)
+    svg = compose_save_svg(
+        matrix_fixture,
+        include_problem=True,
+        include_answers=False,
+        header_fields={},
+    )
+
+    # Must parse as well-formed XML.
+    root = ET.fromstring(svg)
+    assert root.tag == _SVG_TAG
+
+    # The outer SVG must carry the correct dimensions extracted from the stub.
+    assert root.attrib["width"] == "100"
+    assert root.attrib["height"] == "200"
