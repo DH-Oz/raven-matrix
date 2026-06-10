@@ -881,3 +881,26 @@ def build(
         correct_answer_position=correct_position,
         layers=layers,
     )
+
+
+def build_from_code(
+    code: str,
+    seed: int,
+    flags: CompatFlags = DEFAULT_FLAGS,
+) -> Matrix:
+    """Build a matrix from a Matzen ``Structure`` code: ``parse_code`` + ``build``.
+
+    A thin convenience over ``parse_code(code)`` then ``build(config, seed, flags)``.
+    The ``Structure`` code does not encode the correct-answer position, so
+    ``parse_code`` defaults it to 1; the structural oracle (Phase 5) checks
+    relations and directions, not position. A malformed code raises ``ValueError``
+    from ``parse_code`` (AC2.4).
+
+    ``parse_code`` is imported at call time to keep the module import acyclic
+    (``label`` imports this module's config dataclasses; importing ``parse_code``
+    at the top of ``builder`` would close the cycle).
+    """
+    from raven_matrix.label import parse_code
+
+    config = parse_code(code)
+    return build(config, seed, flags)

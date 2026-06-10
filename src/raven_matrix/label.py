@@ -37,7 +37,9 @@ Java reads ``layer.getStructureFeatures()`` — never inferred from rendered cel
 
 from __future__ import annotations
 
-from raven_matrix.model import Matrix
+from typing import TYPE_CHECKING
+
+from raven_matrix.model import BaseRelation, Direction, Matrix, Supplemental
 from raven_matrix.structure.base import (
     BaseStructureFeature,
     LogicalAND,
@@ -60,6 +62,9 @@ from raven_matrix.transforms.geometric import (
     Vertical,
 )
 from raven_matrix.transforms.logic import LogicLocationTransform
+
+if TYPE_CHECKING:
+    from raven_matrix.builder import BuilderConfig, LayerConfig
 
 # Digit pairs keyed by transform type: (repetition_digit, other_digit).
 # Mirrors the per-transform if/else ladder (Java l.308-382): the FIRST digit is
@@ -157,3 +162,218 @@ def label(matrix: Matrix) -> str:
     if parts and parts[-1] == "_":
         parts.pop()  # remove final '_' (l.389).
     return "".join(parts)
+
+
+# ===========================================================================
+# parse_code — the naming-scheme INVERSE (a NEW artifact; no upstream parser)
+# ===========================================================================
+#
+# parse_code reads a Matzen ``Structure`` code and produces a ``BuilderConfig``.
+# It is NOT a port — there is no Java parser. It inverts the published naming
+# convention (decoded in CLAUDE.md and the paper's sheet legend):
+#
+# - LETTER -> relation. ``A`` = ShapeRepetition (base). ``X``/``Y``/``Z`` =
+#   logical OR/AND/XOR (base, logic) and are BARE — they carry no digit in the
+#   published codes. ``B`` = shading, ``C`` = orientation (Rotation), ``D`` =
+#   size (Scaling), ``E`` = number repetition (Numerosity) — all supplementals.
+# - DIGIT -> the transform DIRECTION, read LITERALLY: 1 Horizontal, 2 Vertical,
+#   3 Diagonal BL->TR, 4 Diagonal TL->BR, 5 outward-from-top-left. The published
+#   digit is always the direction the relation runs, so ``Direction(int(digit))``
+#   is the direct inverse. (The labeller's ``1/2`` swap for non-repetition
+#   features means a non-repetition code does NOT relabel to itself — that delta
+#   is a round-trip modeling gap, recorded in Task 4, not a parse concern.)
+#
+# B aliasing (resolved by the published PNG palettes — DR6 independent frame):
+# both FillRep and ChangeFill label to ``B``. The 1-Layer norming PNGs distinguish
+# them by fill palette (FillRep is a 3-level palette [White, Black, Grey75];
+# ChangeFill is 5-level [White, Grey75, Grey40, Grey10, Black]). Inspection of
+# ``B[1-5]_1.png`` (confirmed in Phase 5) shows ``B1``-``B4`` are FillRep on the
+# matching transform (digit = direction, 3-level palette, constant along that
+# axis) and ``B5`` is ChangeFill + corner-out (5-level outward gradient). So
+# ``B1``-``B4`` -> ``FILL_REPETITION`` and ``B5`` -> ``CHANGE_FILL`` + corner-out.
+# Digit 5 can only come from a non-repetition feature + corner-out, since FillRep
+# (a repetition feature) + corner-out would label ``6`` (never seen in the codes).
+#
+# Supplemental-only codes (``C3``, ``D4E2``, ``E5``, …) — established BY READING
+# THE SOURCE: ``AbstractRepetitionSGMStructureFeature.provideBaseSurfaceFeatures``
+# (l.82-87) returns ``existingSurfaceFeaturesAtLocation`` UNCHANGED, and
+# ``ChangeFill``/``FillRep``/``Numerosity`` likewise only rewrite features a base
+# already placed. ``SGMLayerGenerator.generateLayer`` (l.92-98) ALWAYS creates a
+# base structure feature first ("which defines the base surface features"), then
+# adds supplementals. So a supplemental NEVER stands alone: a code with no base
+# letter (``A``/``X``/``Y``/``Z``) gets an injected implicit ``ShapeRepetition``
+# base. The label then re-emits that base's ``A`` letter, so a supplemental-only
+# code does NOT round-trip to itself — a documented modeling gap (Task 4), not a
+# bug.
+
+# Letter -> base relation (the first pair in a non-supplemental-led segment).
+_LETTER_TO_BASE: dict[str, BaseRelation] = {
+    "A": BaseRelation.SHAPE_REPETITION,
+    "X": BaseRelation.LOGICAL_OR,
+    "Y": BaseRelation.LOGICAL_AND,
+    "Z": BaseRelation.LOGICAL_XOR,
+}
+_LOGIC_LETTERS = frozenset({"X", "Y", "Z"})
+
+# Letter -> non-aliased supplemental (C/D/E; B is resolved separately by digit).
+_LETTER_TO_SUPPLEMENTAL: dict[str, Supplemental] = {
+    "C": Supplemental.ROTATION,
+    "D": Supplemental.SCALING,
+    "E": Supplemental.NUMEROSITY,
+}
+
+# The implicit base direction for a supplemental-led code (no published base
+# digit constrains it; HORIZONTAL is the documented default — the resulting 'A1'
+# prefix is part of the documented round-trip modeling gap).
+_IMPLICIT_BASE_DIRECTION = Direction.HORIZONTAL
+
+
+def _parse_pairs(segment: str) -> list[tuple[str, str | None]]:
+    """Split one layer segment into (letter, digit) pairs.
+
+    Logic letters (``X``/``Y``/``Z``) are BARE: ``digit`` is ``None``. Every other
+    letter MUST be followed by a single digit. Raises ``ValueError`` on a leading
+    digit, a missing digit, a doubled letter, or any non-``[A-EXYZ0-9]`` char.
+    """
+    pairs: list[tuple[str, str | None]] = []
+    index = 0
+    length = len(segment)
+    while index < length:
+        letter = segment[index]
+        if not letter.isalpha():
+            raise ValueError(
+                f"expected a relation letter at position {index} of {segment!r}, "
+                f"got {letter!r}"
+            )
+        letter = letter.upper()
+        index += 1
+        if letter in _LOGIC_LETTERS:
+            # Bare logic letter: must NOT be followed by a digit (the published
+            # logic codes are bare).
+            if index < length and segment[index].isdigit():
+                raise ValueError(
+                    f"logic letter {letter!r} must be bare (no digit) in {segment!r}"
+                )
+            pairs.append((letter, None))
+            continue
+        # Every non-logic letter needs exactly one digit.
+        if index >= length or not segment[index].isdigit():
+            raise ValueError(
+                f"relation letter {letter!r} must be followed by a direction "
+                f"digit in {segment!r}"
+            )
+        pairs.append((letter, segment[index]))
+        index += 1
+    return pairs
+
+
+def _direction_from_digit(digit: str) -> Direction:
+    """Map a direction digit (1-5) to a ``Direction``; bad digits raise.
+
+    ``Direction(int(digit))`` raises ``ValueError`` for 0 or 6-9 (out of range).
+    """
+    return Direction(int(digit))
+
+
+def _supplemental_from_pair(letter: str, digit: str) -> tuple[Supplemental, Direction]:
+    """Resolve one supplemental (letter, digit) pair, including B aliasing.
+
+    ``B`` with digit 1-4 -> FillRep on the matching transform; ``B5`` -> ChangeFill
+    on corner-out (per the published PNG palettes). ``C``/``D``/``E`` map directly.
+    """
+    direction = _direction_from_digit(digit)
+    if letter == "B":
+        if direction is Direction.TOP_LEFT_CORNER_OUT:
+            # B5: ChangeFill + corner-out (5-level palette, outward gradient).
+            return Supplemental.CHANGE_FILL, direction
+        # B1-B4: FillRep on the matching transform (3-level palette).
+        return Supplemental.FILL_REPETITION, direction
+    supplemental = _LETTER_TO_SUPPLEMENTAL.get(letter)
+    if supplemental is None:
+        raise ValueError(f"unknown supplemental relation letter {letter!r}")
+    return supplemental, direction
+
+
+def _parse_segment(segment: str) -> LayerConfig:
+    """Parse one layer segment into a ``LayerConfig``.
+
+    Classifies the FIRST pair as the base (``A``/``X``/``Y``/``Z``) or, if it is a
+    supplemental letter, injects an implicit ``ShapeRepetition`` base. Remaining
+    pairs are supplementals.
+    """
+    from raven_matrix.builder import LayerConfig
+
+    if not segment:
+        raise ValueError("empty layer segment")
+    pairs = _parse_pairs(segment)
+    if not pairs:
+        raise ValueError(f"layer segment {segment!r} has no relations")
+
+    first_letter, first_digit = pairs[0]
+    if first_letter in _LETTER_TO_BASE:
+        base = _LETTER_TO_BASE[first_letter]
+        if first_letter in _LOGIC_LETTERS:
+            # Bare logic base: it carries no direction and forbids supplementals.
+            if len(pairs) > 1:
+                raise ValueError(
+                    f"logic base {first_letter!r} forbids supplementals in "
+                    f"{segment!r}"
+                )
+            return LayerConfig(
+                base=base, base_direction=_IMPLICIT_BASE_DIRECTION, supplementals=()
+            )
+        assert first_digit is not None  # non-logic base always has a digit.
+        base_direction = _direction_from_digit(first_digit)
+        supplemental_pairs = pairs[1:]
+    else:
+        # Supplemental-led code: inject an implicit ShapeRepetition base. The
+        # supplemental relations provide no base surface features of their own
+        # (see module note above), so a base must exist for them to act on.
+        base = BaseRelation.SHAPE_REPETITION
+        base_direction = _IMPLICIT_BASE_DIRECTION
+        supplemental_pairs = pairs
+
+    supplementals: list[tuple[Supplemental, Direction]] = []
+    for letter, digit in supplemental_pairs:
+        if digit is None:
+            # A logic letter only appears as the first pair of a segment.
+            raise ValueError(
+                f"logic letter {letter!r} cannot be a supplemental in {segment!r}"
+            )
+        supplementals.append(_supplemental_from_pair(letter, digit))
+
+    return LayerConfig(
+        base=base,
+        base_direction=base_direction,
+        supplementals=tuple(supplementals),
+    )
+
+
+def parse_code(code: str, *, correct_answer_position: int = 1) -> BuilderConfig:
+    """Invert a Matzen ``Structure`` code into a ``BuilderConfig``.
+
+    Splits on ``_`` into per-layer segments, parses each into a ``LayerConfig``,
+    and wraps them with ``correct_answer_position`` (NOT encoded in the code, so it
+    is defaulted — the structural oracle checks relations/directions, not position).
+
+    Raises ``ValueError`` for any malformed code: empty, an unknown letter, a
+    missing or out-of-range digit, a logic letter carrying a digit, an empty layer
+    segment (e.g. a trailing ``_``), or a base/supplemental shape the upstream
+    option surface could not produce.
+
+    This is the naming-scheme inverse, NOT a port (no upstream parser exists). See
+    the module note above for the B-aliasing and implicit-base derivations.
+    """
+    from raven_matrix.builder import BuilderConfig
+
+    if not code:
+        raise ValueError("cannot parse an empty Structure code")
+    segments = code.split("_")
+    if any(segment == "" for segment in segments):
+        raise ValueError(
+            f"Structure code {code!r} has an empty layer segment (a stray '_')"
+        )
+    layers = tuple(_parse_segment(segment) for segment in segments)
+    return BuilderConfig(
+        layers=layers, correct_answer_position=correct_answer_position
+    )
