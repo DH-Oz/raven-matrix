@@ -44,7 +44,9 @@ from raven_matrix.render.svg import (
 
 PREVIEWS = Path(__file__).resolve().parent.parent / "previews"
 GALLERY = RasterSettings(cell_pixel_size=200, pixels_between_cells=12)
-_CENTRE = Point(100.0, 100.0)  # centre of the 200px gallery cell
+# Centre of a GALLERY cell — derived from GALLERY so it tracks cell_pixel_size
+# (NOT the builder's CELL_PIXEL_SIZE, which it happens to equal at 200/2 = 100).
+_GALLERY_CENTRE = Point(GALLERY.cell_pixel_size / 2, GALLERY.cell_pixel_size / 2)
 
 
 def _feat(
@@ -55,7 +57,7 @@ def _feat(
     h: float = 120.0,
     scale: float = 1.0,
     rot: float = 0.0,
-    pos: Point = _CENTRE,
+    pos: Point = _GALLERY_CENTRE,
 ) -> SurfaceFeature:
     return SurfaceFeature(shape, fill, scale, rot, pos, w, h)
 
