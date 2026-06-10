@@ -15,8 +15,12 @@ A faithful, live-reactive mirror of the upstream Swing ``SGMBuilderFrame``:
 - output -- the problem and answer-sheet SVGs inline (``mo.Html``), plus the
   resulting Structure code (``label``) and the configured correct-answer position.
 
-The final cell lays the controls and the live render side by side
-(``mo.hstack([controls, output])``) so they sit adjacent in ``marimo edit``.
+A visible "How to use this notebook" cell sits first (a short usage preamble plus
+the full ``option_reference()``), then the controls, then a final cell laying the
+controls and the live render side by side (``mo.hstack([controls, output])``) so
+they sit adjacent in ``marimo edit``. Every cell is ``hide_code=True`` so
+``marimo edit`` shows the rendered outputs rather than the source -- the reactive
+graph is unchanged (``hide_code`` is purely presentational).
 
 This is a thin EDGE layer (FCIS). It defines the UI elements (marimo needs them in
 cells to track ``.value`` reactively), then defers every decision to the pure
@@ -33,7 +37,7 @@ __generated_with = "0.23.8"
 app = marimo.App(width="medium")
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _imports():
     import marimo as mo
 
@@ -62,7 +66,53 @@ def _imports():
     )
 
 
-@app.cell
+@app.cell(hide_code=True)
+def _intro(mo, option_reference):
+    # FIRST visible cell: how to use this notebook. A short usage preamble (the two
+    # modes, the live render, the seed + "New seed" button, the save buttons + the
+    # three header toggles) followed by the full in-app option reference. The
+    # reference text is NOT duplicated here -- it is `option_reference()` from the
+    # pure appsupport seam (guarded against drift by the completeness test), called
+    # so every control/option meaning lands on the page. This cell's CODE is hidden
+    # (`hide_code=True`); its rendered markdown shows, so the guide is always
+    # visible above the controls (no accordion to expand).
+    usage_preamble = "\n".join(
+        [
+            "# How to use this notebook",
+            "",
+            "This panel builds Raven-style progressive-matrix puzzles. The render",
+            "below updates **live** as you change any control -- there is no run",
+            "button.",
+            "",
+            "## Two ways to build",
+            "",
+            "- **Build from controls** -- pick the relations, directions, and",
+            "  supplementals by hand (the faithful control panel).",
+            "- **Build from code** -- switch the **Mode** dropdown to *Build from",
+            "  code* and type a Structure code (e.g. `A1B2C4`) into the",
+            "  **Structure code** field.",
+            "",
+            "## Seed",
+            "",
+            "The **Seed** number fixes the random draw, so the same seed reproduces",
+            "the same puzzle. Click **New seed** to draw a fresh one for a new",
+            "realisation of the same relations.",
+            "",
+            "## Saving",
+            "",
+            "Once a matrix builds, three **Save (SVG)** buttons download the problem,",
+            "the answers, or both. The three header toggles (**Structure code**,",
+            "**Correct answer**, **Seed**) choose which fields the saved file's",
+            "header band lists.",
+            "",
+            "The full option reference follows.",
+        ]
+    )
+    mo.md(usage_preamble + "\n\n" + option_reference())
+    return
+
+
+@app.cell(hide_code=True)
 def _controls(mo):
     # The mode/seed/layer-count/position/code UI elements. These are defined here
     # so marimo tracks their `.value` reactively; the cells BELOW read those values
@@ -100,13 +150,17 @@ def _controls(mo):
     )
 
 
-@app.cell
-def _layer_factory(
+@app.cell(hide_code=True)
+def _layer_controls(
     DIRECTION_OPTIONS,
     RELATION_OPTIONS,
     SUPPLEMENTAL_OPTIONS,
+    layer_count,
     mo,
 ):
+    # The layer-column factory lives here with its single caller (it is used
+    # nowhere else, and CREATES the UI elements -- it reads no `.value`, so this is
+    # safe in the same cell as the calls below).
     def make_layer_controls(slot: int):
         """Build one layer's control column: base + 3 supplemental slots.
 
@@ -148,11 +202,6 @@ def _layer_factory(
             }
         )
 
-    return (make_layer_controls,)
-
-
-@app.cell
-def _layer_controls(layer_count, make_layer_controls):
     # One control column per active layer. Layer 2 exists only when the layer
     # count is 2, so its controls render (in the panel below) only then.
     layer1 = make_layer_controls(1)
@@ -160,7 +209,7 @@ def _layer_controls(layer_count, make_layer_controls):
     return layer1, layer2
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _controls_panel(
     code_text,
     layer1,
@@ -169,12 +218,12 @@ def _controls_panel(
     mo,
     mode,
     new_seed_button,
-    option_reference,
     position,
     seed,
 ):
     # Assemble the active mode's control panel. Layer-2 controls appear only when
-    # the layer count is 2 (layer2 is None otherwise).
+    # the layer count is 2 (layer2 is None otherwise). The option reference now
+    # lives in the visible intro cell at the top, so it is no longer attached here.
     if mode.value == "Build from controls":
         layer_columns = [mo.vstack([mo.md("**Layer 1**"), layer1])]
         if layer2 is not None:
@@ -189,49 +238,49 @@ def _controls_panel(
     else:
         mode_panel = code_text
 
-    # The in-app reference for every control and option, sourced from appsupport
-    # (the completeness test guards it against drift). It sits in a collapsed
-    # accordion so it is on hand without crowding the controls.
-    reference = mo.accordion({"Option reference": mo.md(option_reference())})
-
     controls_panel = mo.vstack(
         [
             mode,
             mode_panel,
             mo.hstack([seed, new_seed_button], justify="start"),
-            reference,
         ]
     )
     return (controls_panel,)
 
 
-@app.cell
-def _effective_seed(new_seed_button, seed):
+@app.cell(hide_code=True)
+def _read_back(
+    layer1,
+    layer2,
+    layer_count,
+    layer_controls_from_column,
+    new_seed_button,
+    seed,
+):
     import secrets
 
-    # The "new seed" button draws a fresh seed; otherwise the seed control wins.
-    # Reading new_seed_button.value makes this cell re-run on each click.
+    # GATHER (read-back only -- this cell creates no UI elements, so reading every
+    # `.value` here is safe). Two reads feed the build:
+    #
+    # 1. The effective seed: the "new seed" button draws a fresh one; otherwise the
+    #    seed control wins. Reading new_seed_button.value re-runs this on each click.
     if new_seed_button.value:
         effective_seed = secrets.randbelow(2**31)
     else:
         effective_seed = int(seed.value)
-    return (effective_seed,)
 
-
-@app.cell
-def _gather_layer_controls(layer1, layer2, layer_count, layer_controls_from_column):
-    # GATHER: read each active column's `.value` and map it (via the pure
-    # appsupport seam) to a LayerControls, dropping any "Disabled" supplemental.
+    # 2. The active layer columns: read each `.value` and map it (via the pure
+    #    appsupport seam) to a LayerControls, dropping any "Disabled" supplemental.
     columns = [layer1]
     if layer_count.value == 2 and layer2 is not None:
         columns.append(layer2)
     gathered_layers = [
         layer_controls_from_column(column.value) for column in columns
     ]
-    return (gathered_layers,)
+    return effective_seed, gathered_layers
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _build(
     build_outcome,
     code_text,
@@ -276,7 +325,7 @@ def _build(
     return outcome, output
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _save(
     compose_save_svg,
     effective_seed,
@@ -345,7 +394,7 @@ def _save(
     return (save_panel,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _layout(controls_panel, mo, output, save_panel):
     # Controls on the left, the live render on the right, so a control change and
     # its effect sit side by side in `marimo edit`. The save panel sits under the
