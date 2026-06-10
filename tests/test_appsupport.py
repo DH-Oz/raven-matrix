@@ -16,16 +16,25 @@ Coverage:
 
 from __future__ import annotations
 
+import re
+import xml.etree.ElementTree as ET
+
+import pytest
+
 from raven_matrix.appsupport import (
     DIRECTION_OPTIONS,
     RELATION_OPTIONS,
     SUPPLEMENTAL_OPTIONS,
     build_outcome,
+    compose_save_svg,
     layer_controls_from_column,
     option_reference,
 )
+from raven_matrix.builder import build_from_code
 from raven_matrix.model import BaseRelation, Direction, Matrix, Supplemental
 from raven_matrix.ui_config import LayerControls
+
+_SVG_TAG = "{http://www.w3.org/2000/svg}svg"
 
 # ---------------------------------------------------------------------------
 # Option maps
@@ -326,3 +335,112 @@ def test_option_reference_documents_every_control() -> None:
         "Structure code",
     ):
         assert control_label in text, f"control {control_label!r} undocumented"
+
+
+# ---------------------------------------------------------------------------
+# compose_save_svg (N3) -- save problem / answers / both, with optional header
+# ---------------------------------------------------------------------------
+#
+# The problem matrix renders its document background as a WHITE
+# ``class="background"`` rect; the answer sheet renders it BLACK. Answer cells
+# carry their own ``class="cell-bg"`` white rects, so a bare ``fill="white"`` is
+# NOT a discriminator -- the class-tagged document background is. A helper counts
+# document backgrounds of each colour so "problem present" / "answers present" is
+# unambiguous regardless of grid dimensions.
+
+
+def _document_backgrounds(svg: str) -> list[str]:
+    """The fill colour of each ``class="background"`` rect, in document order."""
+    return re.findall(r'<rect class="background"[^>]*fill="(\w+)"', svg)
+
+
+@pytest.fixture
+def matrix() -> Matrix:
+    # A real single-layer shape-repetition matrix (labels "A1"); deterministic.
+    return build_from_code("A1", 0)
+
+
+def test_compose_save_svg_problem_only_has_problem_not_answers(matrix: Matrix) -> None:
+    svg = compose_save_svg(
+        matrix, include_problem=True, include_answers=False, header_fields={}
+    )
+
+    assert _document_backgrounds(svg) == ["white"]  # problem only
+
+
+def test_compose_save_svg_answers_only_has_answers_not_problem(matrix: Matrix) -> None:
+    svg = compose_save_svg(
+        matrix, include_problem=False, include_answers=True, header_fields={}
+    )
+
+    assert _document_backgrounds(svg) == ["black"]  # answers only
+
+
+def test_compose_save_svg_both_has_problem_and_answers(matrix: Matrix) -> None:
+    svg = compose_save_svg(
+        matrix, include_problem=True, include_answers=True, header_fields={}
+    )
+
+    # Problem (white) then answers (black), stacked in that order.
+    assert _document_backgrounds(svg) == ["white", "black"]
+
+
+def test_compose_save_svg_neither_raises(matrix: Matrix) -> None:
+    with pytest.raises(ValueError, match="problem|answers"):
+        compose_save_svg(
+            matrix, include_problem=False, include_answers=False, header_fields={}
+        )
+
+
+def test_compose_save_svg_no_header_when_fields_empty(matrix: Matrix) -> None:
+    svg = compose_save_svg(
+        matrix, include_problem=True, include_answers=False, header_fields={}
+    )
+
+    # No header band: a <text> element only appears when header_fields is given.
+    assert "<text" not in svg
+
+
+def test_compose_save_svg_header_lists_exactly_given_fields(matrix: Matrix) -> None:
+    svg = compose_save_svg(
+        matrix,
+        include_problem=True,
+        include_answers=False,
+        header_fields={"code": "A1", "correct answer": 3, "seed": 0},
+    )
+
+    assert "<text" in svg
+    # Each given key:value pair appears...
+    assert "code" in svg and "A1" in svg
+    assert "correct answer" in svg and "3" in svg
+    assert "seed" in svg
+    # ...and a field NOT passed does not leak in.
+    assert "difficulty" not in svg
+
+
+def test_compose_save_svg_parses_as_well_formed_svg(matrix: Matrix) -> None:
+    svg = compose_save_svg(
+        matrix,
+        include_problem=True,
+        include_answers=True,
+        header_fields={"code": "A1", "seed": 0},
+    )
+
+    root = ET.fromstring(svg)
+    assert root.tag == _SVG_TAG
+
+
+def test_compose_save_svg_each_variant_parses(matrix: Matrix) -> None:
+    for include_problem, include_answers in (
+        (True, False),
+        (False, True),
+        (True, True),
+    ):
+        svg = compose_save_svg(
+            matrix,
+            include_problem=include_problem,
+            include_answers=include_answers,
+            header_fields={},
+        )
+        root = ET.fromstring(svg)
+        assert root.tag == _SVG_TAG

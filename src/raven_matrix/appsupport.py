@@ -16,14 +16,19 @@ surface could not produce, returning a small ``BuildOutcome`` the shell renders.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
+from xml.sax.saxutils import escape
 
 from raven_matrix.builder import build, build_from_code
 from raven_matrix.label import label
 from raven_matrix.model import BaseRelation, Direction, Matrix, Supplemental
+from raven_matrix.render.svg import render_answers_svg, render_matrix_svg
 from raven_matrix.ui_config import LayerControls, config_from_controls
+
+_SVG_NS = "http://www.w3.org/2000/svg"
 
 # ---------------------------------------------------------------------------
 # Option-label -> enum maps (the GUI's fixed pick lists)
@@ -316,3 +321,120 @@ def build_outcome(
     except ValueError as exc:
         return BuildOutcome(matrix=None, error=str(exc), structure_code=None)
     return BuildOutcome(matrix=matrix, error=None, structure_code=label(matrix))
+
+
+# ---------------------------------------------------------------------------
+# Save composition (N3): problem / answers / both, with an optional header band
+# ---------------------------------------------------------------------------
+#
+# SVG is the canonical save format (raster-free, so a save works whether or not
+# the optional ``raster`` extra is installed). ``compose_save_svg`` reuses the
+# existing ``render_matrix_svg`` / ``render_answers_svg`` output verbatim and
+# stacks the requested pieces vertically inside one outer ``<svg>``, with an
+# optional header text band. It is PURE -- no ``label()``, no seed draw, no I/O:
+# the shell decides which header fields to include (it computes the code, the
+# position, the seed) and passes only the toggled ones.
+
+# A rendered sheet opens with ``<svg ... width="W" height="H" viewBox=...>`` and
+# closes with ``</svg>``; this captures the dimensions and the inner body so each
+# sheet can be re-wrapped in a translated ``<g>``.
+_SVG_OPEN_RE = re.compile(
+    r'^<svg\b[^>]*\bwidth="(?P<width>\d+)"[^>]*\bheight="(?P<height>\d+)"[^>]*>'
+)
+
+# Header band geometry (only emitted when header_fields is non-empty).
+_HEADER_HEIGHT = 28
+_HEADER_PAD_X = 8
+_HEADER_TEXT_Y = 19
+_HEADER_FONT_SIZE = 14
+
+
+def _svg_parts(rendered: str) -> tuple[int, int, str]:
+    """Split a rendered ``<svg>`` into ``(width, height, inner_body)``.
+
+    ``inner_body`` is everything between the opening ``<svg ...>`` tag and the
+    closing ``</svg>`` -- the background rect and the cell groups -- ready to drop
+    inside a translated ``<g>``.
+    """
+    match = _SVG_OPEN_RE.match(rendered)
+    if match is None:  # pragma: no cover - guards a render contract change
+        raise ValueError("rendered SVG did not start with a parseable <svg> tag")
+    width = int(match.group("width"))
+    height = int(match.group("height"))
+    inner = rendered[match.end() : rendered.rindex("</svg>")]
+    return width, height, inner
+
+
+def _header_band(header_fields: Mapping[str, object], width: int) -> str:
+    """A header ``<g>`` (background + one ``<text>``) listing the given fields.
+
+    Renders exactly the supplied ``key: value`` pairs, in iteration order, joined
+    on one line. Keys and values are XML-escaped, so arbitrary text is safe inside
+    the ``<text>`` element. The band is ``_HEADER_HEIGHT`` tall and as wide as the
+    composition; callers only invoke it when ``header_fields`` is non-empty.
+    """
+    summary = "   ".join(
+        f"{key}: {value}" for key, value in header_fields.items()
+    )
+    text = escape(summary)
+    return (
+        f'<g class="header">'
+        f'<rect x="0" y="0" width="{width}" height="{_HEADER_HEIGHT}" '
+        f'fill="white"/>'
+        f'<text x="{_HEADER_PAD_X}" y="{_HEADER_TEXT_Y}" '
+        f'font-family="sans-serif" font-size="{_HEADER_FONT_SIZE}" '
+        f'fill="black">{text}</text>'
+        f"</g>"
+    )
+
+
+def compose_save_svg(
+    matrix: Matrix,
+    *,
+    include_problem: bool,
+    include_answers: bool,
+    header_fields: Mapping[str, object],
+) -> str:
+    """Compose a single saveable ``<svg>`` from the chosen pieces of ``matrix``.
+
+    Stacks the requested sheets vertically: the problem (``render_matrix_svg``)
+    and/or the answer sheet (``render_answers_svg``). At least one of
+    ``include_problem`` / ``include_answers`` must be true (``ValueError`` if
+    neither). When ``header_fields`` is non-empty a header band listing exactly
+    those ``key: value`` pairs is prepended; when empty there is NO header.
+
+    The outer ``<svg>`` width is the widest piece and its height the sum of the
+    stacked pieces (plus the header). Each piece is reused verbatim inside a
+    ``<g transform="translate(0 y)">``, so the geometry is unchanged. PURE: no I/O,
+    no ``label()`` -- the caller passes the header fields it wants shown.
+    """
+    if not include_problem and not include_answers:
+        raise ValueError(
+            "compose_save_svg needs at least one of problem or answers"
+        )
+
+    pieces: list[tuple[int, int, str]] = []
+    if include_problem:
+        pieces.append(_svg_parts(render_matrix_svg(matrix)))
+    if include_answers:
+        pieces.append(_svg_parts(render_answers_svg(matrix)))
+
+    total_width = max(width for width, _height, _inner in pieces)
+
+    body: list[str] = []
+    y_offset = 0
+    if header_fields:
+        body.append(_header_band(header_fields, total_width))
+        y_offset = _HEADER_HEIGHT
+
+    for _width, height, inner in pieces:
+        body.append(f'<g transform="translate(0 {y_offset})">{inner}</g>')
+        y_offset += height
+
+    total_height = y_offset
+    return (
+        f'<svg xmlns="{_SVG_NS}" width="{total_width}" height="{total_height}" '
+        f'viewBox="0 0 {total_width} {total_height}">'
+        f"{''.join(body)}"
+        f"</svg>"
+    )

@@ -42,6 +42,7 @@ def _imports():
         RELATION_OPTIONS,
         SUPPLEMENTAL_OPTIONS,
         build_outcome,
+        compose_save_svg,
         layer_controls_from_column,
         option_reference,
     )
@@ -52,6 +53,7 @@ def _imports():
         RELATION_OPTIONS,
         SUPPLEMENTAL_OPTIONS,
         build_outcome,
+        compose_save_svg,
         layer_controls_from_column,
         mo,
         option_reference,
@@ -80,7 +82,22 @@ def _controls(mo):
         start=1, stop=8, step=1, value=1, label="Correct-answer position"
     )
     code_text = mo.ui.text(value="A1", label="Structure code")
-    return code_text, layer_count, mode, new_seed_button, position, seed
+    # Header toggles for the saved SVG: which fields the optional header band
+    # lists. Read in `_build` to assemble header_fields for compose_save_svg.
+    header_code = mo.ui.checkbox(value=True, label="Structure code")
+    header_answer = mo.ui.checkbox(value=True, label="Correct answer")
+    header_seed = mo.ui.checkbox(value=True, label="Seed")
+    return (
+        code_text,
+        header_answer,
+        header_code,
+        header_seed,
+        layer_count,
+        mode,
+        new_seed_button,
+        position,
+        seed,
+    )
 
 
 @app.cell
@@ -256,15 +273,90 @@ def _build(
                 mo.Html(render_answers_svg(outcome.matrix)),
             ]
         )
-    return (output,)
+    return outcome, output
 
 
 @app.cell
-def _layout(controls_panel, mo, output):
+def _save(
+    compose_save_svg,
+    effective_seed,
+    header_answer,
+    header_code,
+    header_seed,
+    mo,
+    outcome,
+):
+    # SAVE: three SVG download buttons (problem · answers · both). Only offered
+    # when the build succeeded -- a failed build has no matrix to save. The shell
+    # computes the header fields (code, correct answer, seed) and passes only the
+    # toggled ones to the pure compose_save_svg; an empty mapping -> no header band.
+    if outcome.matrix is None:
+        save_panel = mo.md("_Save is available once a matrix builds._")
+    else:
+        header_fields: dict[str, object] = {}
+        if header_code.value and outcome.structure_code is not None:
+            header_fields["code"] = outcome.structure_code
+        if header_answer.value:
+            header_fields["correct answer"] = outcome.matrix.correct_answer_position
+        if header_seed.value:
+            header_fields["seed"] = effective_seed
+
+        stem = outcome.structure_code or "matrix"
+
+        def _svg(*, include_problem: bool, include_answers: bool) -> str:
+            return compose_save_svg(
+                outcome.matrix,
+                include_problem=include_problem,
+                include_answers=include_answers,
+                header_fields=header_fields,
+            )
+
+        save_panel = mo.vstack(
+            [
+                mo.md("**Save (SVG)**"),
+                mo.hstack(
+                    [header_code, header_answer, header_seed], justify="start"
+                ),
+                mo.hstack(
+                    [
+                        mo.download(
+                            data=_svg(include_problem=True, include_answers=False),
+                            filename=f"raven_{stem}_problem.svg",
+                            mimetype="image/svg+xml",
+                            label="Save problem",
+                        ),
+                        mo.download(
+                            data=_svg(include_problem=False, include_answers=True),
+                            filename=f"raven_{stem}_answers.svg",
+                            mimetype="image/svg+xml",
+                            label="Save answers",
+                        ),
+                        mo.download(
+                            data=_svg(include_problem=True, include_answers=True),
+                            filename=f"raven_{stem}_problem_answers.svg",
+                            mimetype="image/svg+xml",
+                            label="Save problem + answers",
+                        ),
+                    ],
+                    justify="start",
+                ),
+            ]
+        )
+    return (save_panel,)
+
+
+@app.cell
+def _layout(controls_panel, mo, output, save_panel):
     # Controls on the left, the live render on the right, so a control change and
-    # its effect sit side by side in `marimo edit`. (Reference docs / save controls
-    # are a later dispatch; the layout is left ready for them.)
-    mo.output.replace(mo.hstack([controls_panel, output], justify="start", gap=2))
+    # its effect sit side by side in `marimo edit`. The save panel sits under the
+    # render (it depends on the built matrix).
+    mo.output.replace(
+        mo.hstack(
+            [controls_panel, mo.vstack([output, save_panel])],
+            justify="start",
+            gap=2,
+        )
+    )
     return
 
 
