@@ -152,6 +152,13 @@ _CORNER_OUT_SHAPE_REP_ENTRY = HandDerivedEntry(
 #   horizontal axis -> published digit 1. CSV rows B1 (B1_1..B1_4, "Shading").
 # B2 = FillRep + vertical. PNG B2_1: each COLUMN is one constant shading, 3-level;
 #   constant along the vertical axis -> published digit 2. CSV rows B2.
+# B3 = FillRep + BL->TR diagonal. PNG B3_1: 3-level palette (white/grey/black), the
+#   shading CONSTANT along the BL->TR diagonal (cells of equal row+col share a
+#   shading: grey, then black, then white) -> published digit 3. CSV rows B3
+#   (B3_1..B3_4, "Shading").
+# B4 = FillRep + TL->BR diagonal. PNG B4_1: 3-level palette, the shading CONSTANT
+#   along the TL->BR diagonal (cells of equal row-col share a shading) -> published
+#   digit 4. CSV rows B4 (B4_1..B4_4, "Shading").
 # B5 = ChangeFill + corner-out. PNG B5_1: a 5-level shading gradient darkening
 #   OUTWARD from the top-left corner -> direction 5. Digit 5 can only arise from a
 #   NON-repetition feature laid out corner-out (a repetition feature + corner-out
@@ -162,8 +169,10 @@ _CORNER_OUT_SHAPE_REP_ENTRY = HandDerivedEntry(
 # shading supplemental, so the buildable label is A1 + the published B code. The
 # supplemental layout direction is the axis the shading ADVANCES along:
 #   - FillRep is a repetition relation: it stays constant along its layout axis,
-#     so to be constant horizontally (B1) it is laid out HORIZONTALLY, and to be
-#     constant vertically (B2) it is laid out VERTICALLY (no swap).
+#     so to be constant horizontally (B1) it is laid out HORIZONTALLY, constant
+#     vertically (B2) VERTICALLY, constant along BL->TR (B3) along DIAGONAL_BL_TR,
+#     and constant along TL->BR (B4) along DIAGONAL_TL_BR (a repetition relation,
+#     so no swap — the digit is the layout direction itself).
 #   - ChangeFill is a change relation laid out corner-out; the outward gradient is
 #     the corner-out layout itself -> TOP_LEFT_CORNER_OUT.
 # ===========================================================================
@@ -182,6 +191,26 @@ _SHADING_ENTRIES: tuple[HandDerivedEntry, ...] = (
             supplementals=((Supplemental.FILL_REPETITION, Direction.VERTICAL),),
         ),
         expected_code="A1B2",
+        externally_grounded=True,
+    ),
+    HandDerivedEntry(
+        label_id="A1B3 fill-rep diagonal BL->TR (3-level palette, PNG B3_1)",
+        config=_one_layer(
+            supplementals=(
+                (Supplemental.FILL_REPETITION, Direction.DIAGONAL_BL_TR),
+            ),
+        ),
+        expected_code="A1B3",
+        externally_grounded=True,
+    ),
+    HandDerivedEntry(
+        label_id="A1B4 fill-rep diagonal TL->BR (3-level palette, PNG B4_1)",
+        config=_one_layer(
+            supplementals=(
+                (Supplemental.FILL_REPETITION, Direction.DIAGONAL_TL_BR),
+            ),
+        ),
+        expected_code="A1B4",
         externally_grounded=True,
     ),
     HandDerivedEntry(

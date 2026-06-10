@@ -54,9 +54,22 @@ def test_table_has_expected_coverage() -> None:
     expected_codes = {entry.expected_code for entry in HAND_DERIVED_LABELS}
     # ShapeRep on each published direction + the labeller-internal corner-out.
     assert {"A1", "A2", "A3", "A4", "A6"} <= expected_codes
-    # Image-grounded shading: FillRep H/V and ChangeFill corner-out.
-    assert {"A1B1", "A1B2", "A1B5"} <= expected_codes
+    # Image-grounded shading: FillRep H/V + both diagonals, and ChangeFill
+    # corner-out (B3/B4 grounded in the 3-level palettes of PNG B3_1/B4_1).
+    assert {"A1B1", "A1B2", "A1B3", "A1B4", "A1B5"} <= expected_codes
     # The three supplementals (each grounded in a published C*/D*/E* code).
     assert {"A1C2", "A1D4", "A1E5"} <= expected_codes
     # Logic relations, pre-normalisation (the Logic transform emits the '7').
     assert {"X7", "Y7", "Z7"} <= expected_codes
+
+
+def test_exactly_one_entry_is_not_externally_grounded() -> None:
+    """The DR6 contract: exactly one entry (``A6``) is labeller-internal only.
+
+    Every other entry must be anchored to a published stimulus (CSV row / PNG).
+    Making the count a hard assertion stops a future entry from silently slipping
+    in with ``externally_grounded=False`` and quietly weakening the independent
+    reference frame.
+    """
+    not_grounded = [e for e in HAND_DERIVED_LABELS if not e.externally_grounded]
+    assert [e.expected_code for e in not_grounded] == ["A6"]
