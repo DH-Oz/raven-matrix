@@ -18,7 +18,7 @@ cli = ["typer"]        # Phase 7 CLI
 difficulty = []        # reserved — Phase-later difficulty classifier
 
 [project.scripts]
-# raven-matrix CLI entry point is wired in Phase 7 (cli extra)
+raven-matrix = "raven_matrix.cli:app"
 
 [build-system]
 requires = ["hatchling"]
