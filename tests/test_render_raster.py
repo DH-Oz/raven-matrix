@@ -38,9 +38,10 @@ PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 
 
 def _feat(shape: Shape, fill: Fill) -> SurfaceFeature:
+    # Absolute pre-scale pixels (7-arg model); centre/size valid for a 100px cell.
     return SurfaceFeature(
         shape=shape, fill=fill, scale=1.0, rotation=0.0,
-        position=Point(128.0, 128.0),
+        position=Point(50.0, 50.0), width=50.0, height=50.0,
     )
 
 

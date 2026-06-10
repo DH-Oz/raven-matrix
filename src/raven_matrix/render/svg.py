@@ -21,12 +21,20 @@ Geometry is ported verbatim from the SGMT surface sources
   (``quarterWidth = halfWidth/2``);
 - ``TriangleSGMSurfaceFeature.makePath`` — 3-vertex triangle.
 
-The Phase-2 ``SurfaceFeature`` carries no width/height: in Java those derive
-from ``sgmCellImagePixelSize`` at generation time (``SGMSurfaceFeatureGenerator``
-picks 1/4..3/4 of the cell size).  The renderer pins a fixed base size of
-``cell_pixel_size / 2`` (the midpoint of that range); ``feature.scale``
-multiplies it through the affine transform, exactly as Java applies scale inside
-the transform (``SGMCellImage.setSGMCell``) rather than baking it into the path.
+Shape geometry comes from ``feature.width`` / ``feature.height`` (pre-scale
+absolute pixels the generator drew the feature at, 1/4..3/4 of the cell size in
+Java's ``SGMSurfaceFeatureGenerator``); ``feature.scale`` is a separate
+multiplier applied through the affine transform, exactly as Java applies scale
+inside the transform (``SGMCellImage.setSGMCell``) rather than baking it into the
+path.  For a LINE, ``feature.width`` is the length and ``feature.height`` is
+unused.
+
+Cell-size contract: the renderer's ``cell_pixel_size`` must equal the cell size
+the matrix was generated at (``builder.CELL_PIXEL_SIZE``, currently 100), because
+``feature.position`` and ``feature.width`` / ``feature.height`` are absolute
+pixels in that generation space.  Render at a different cell size and features
+land in the wrong place.  The renderer does not import ``builder`` (it stays
+dependency-light); the contract is honoured by the matching default below.
 
 Transform order matches ``SGMCellImage.setSGMCell``:
 ``translate(pos) -> rotate -> scale -> translate(-pos)``.  The model stores
@@ -67,19 +75,17 @@ class RasterSettings:
 
     Upstream SGMT carries no hardcoded defaults (``RasterSettings`` is always
     constructed explicitly); the port supplies sensible defaults so callers can
-    render without ceremony.
+    render without ceremony.  ``cell_pixel_size`` defaults to ``100`` to match
+    ``builder.CELL_PIXEL_SIZE`` — the cell size ``build()`` always generates at —
+    so a feature's absolute ``position`` / ``width`` / ``height`` pixels land in
+    the right place (the cell-size contract; see the module docstring).
     """
 
-    cell_pixel_size: int = 256
+    cell_pixel_size: int = 100
     pixels_between_cells: int = 10
 
 
 DEFAULT_RASTER = RasterSettings()
-
-
-def _base_size(settings: RasterSettings) -> float:
-    """Base shape side length: the midpoint of the Java 1/4..3/4 cell range."""
-    return settings.cell_pixel_size / 2.0
 
 
 # ---------------------------------------------------------------------------
@@ -129,15 +135,19 @@ def _path_d(points: list[tuple[float, float]]) -> str:
     return f"{head} {rest} Z"
 
 
-def _shape_body(shape: Shape, px: float, py: float, base: float) -> str:
+def _shape_body(shape: Shape, px: float, py: float,
+                width: float, height: float) -> str:
     """The bare SVG element (tag + geometry) for one shape, centred on (px, py).
 
-    ``base`` is the base side length; half-width and half-height are both
-    ``base / 2`` (the upstream generator may pick non-square w/h, but the model
-    carries no dimensions, so the port renders a square base modulated by scale).
+    ``width`` / ``height`` are the feature's pre-scale absolute pixel dimensions
+    (``feature.width`` / ``feature.height``); half-width and half-height are
+    ``width / 2`` and ``height / 2``, so shapes are non-square when the generator
+    drew them so.  ``feature.scale`` is NOT applied here — it lives in the affine
+    transform (see ``_feature_transform``).  For a LINE only ``hw`` is used (the
+    length is ``width``); ``height`` does not enter the line's geometry.
     """
-    hw = base / 2.0
-    hh = base / 2.0
+    hw = width / 2.0
+    hh = height / 2.0
 
     match shape:
         case Shape.ELLIPSE:
@@ -218,8 +228,11 @@ def _feature_transform(feature: SurfaceFeature) -> str:
     )
 
 
-def render_feature_svg(feature: SurfaceFeature, settings: RasterSettings) -> str:
+def render_feature_svg(feature: SurfaceFeature) -> str:
     """SVG element for one surface feature: geometry + fill + stroke + transform.
+
+    Geometry comes from ``feature.width`` / ``feature.height`` (pre-scale pixels);
+    ``feature.scale`` is applied separately via ``_feature_transform``.
 
     ``<line>`` has no fill area, so ``fill``/``fill-opacity`` are omitted for
     LINE shapes — they would have no visual effect and would pollute the output.
@@ -227,8 +240,7 @@ def render_feature_svg(feature: SurfaceFeature, settings: RasterSettings) -> str
     """
     px = feature.position.x
     py = feature.position.y
-    base = _base_size(settings)
-    body = _shape_body(feature.shape, px, py, base)
+    body = _shape_body(feature.shape, px, py, feature.width, feature.height)
     fill_part = "" if feature.shape is Shape.LINE else f"{_fill_attrs(feature.fill)} "
     return (
         f"{body} {fill_part}{_STROKE_ATTRS} "
@@ -246,7 +258,7 @@ def render_cell_svg(cell: Cell, settings: RasterSettings = DEFAULT_RASTER) -> st
     A featureless cell yields an empty ``<g></g>`` (AC5.3).
     """
     elements = "".join(
-        render_feature_svg(feature, settings) for feature in cell.surface_features
+        render_feature_svg(feature) for feature in cell.surface_features
     )
     return f"<g>{elements}</g>"
 

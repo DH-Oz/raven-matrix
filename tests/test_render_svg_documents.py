@@ -47,9 +47,14 @@ def _qn(tag: str) -> str:
 
 
 def _feat(shape: Shape, fill: Fill) -> SurfaceFeature:
+    # Absolute pre-scale pixels; width/height are explicit per the 7-arg model.
+    # Position (50, 50) is the centre of a 100px cell (the render cell size); a
+    # 50px feature (¼..¾ of the 100px cell) sits well inside it.  Layout/viewBox
+    # assertions below derive from cell_pixel_size symbolically, so the exact
+    # geometry here only needs to be valid, not pinned.
     return SurfaceFeature(
         shape=shape, fill=fill, scale=1.0, rotation=0.0,
-        position=Point(128.0, 128.0),
+        position=Point(50.0, 50.0), width=50.0, height=50.0,
     )
 
 
@@ -291,7 +296,9 @@ def test_answers_svg_white_fill_shape_has_cell_bg_rect() -> None:
         fill=Fill.WHITE,
         scale=1.0,
         rotation=0.0,
-        position=Point(128.0, 128.0),
+        position=Point(50.0, 50.0),
+        width=50.0,
+        height=50.0,
     )
     white_cell = Cell(surface_features=[white_feature], location=Location(0, 0))
     # Build minimal 3x3 matrix — all grid cells blank, one answer is the white cell.

@@ -10,12 +10,13 @@ the upstream Java2D.  Every test parses the emitted SVG with
   (White -> ``fill-opacity="0"``); every shape carries ``stroke-width="2"``.
 - AC5.3: a featureless cell renders as a valid, empty ``<g>`` (no error).
 
-Geometry note: the Phase-2 ``SurfaceFeature`` carries no width/height (the Java
-model derives them from ``sgmCellImagePixelSize`` at render time).  The renderer
-pins a fixed base size of ``settings.cell_pixel_size / 2`` (the midpoint of the
-Java 1/4..3/4 range); ``feature.scale`` multiplies it via the affine transform,
-exactly as Java applies scale in the transform rather than baking it into the
-path (SGMCellImage.setSGMCell).
+Geometry note: ``SurfaceFeature`` carries explicit ``width`` / ``height``
+(pre-scale absolute pixels the generator drew the feature at).  Geometry derives
+from those: half-width ``hw = width / 2`` and half-height ``hh = height / 2``.
+``feature.scale`` does NOT enter the geometry — it multiplies via the affine
+transform, exactly as Java applies scale in the transform rather than baking it
+into the path (SGMCellImage.setSGMCell).  These tests build features at
+``width = height = 128.0`` (so ``hw = hh = 64.0``) to pin the per-shape geometry.
 """
 
 from __future__ import annotations
@@ -35,12 +36,21 @@ def _qn(tag: str) -> str:
 
 _DEFAULT_POS = Point(100.0, 100.0)
 
+# Per-shape geometry is pinned to width=height=128 (hw=hh=64), independent of the
+# render cell_pixel_size — geometry now comes from feature.width/height, not from
+# the raster settings.  LINE overrides height to 0.0 (height is unused for lines).
+_DEFAULT_WIDTH = 128.0
+_DEFAULT_HEIGHT = 128.0
+
 
 def _feature(shape: Shape, *, fill: Fill = Fill.BLACK,
              scale: float = 1.0, rotation: float = 0.0,
-             position: Point = _DEFAULT_POS) -> SurfaceFeature:
+             position: Point = _DEFAULT_POS,
+             width: float = _DEFAULT_WIDTH,
+             height: float = _DEFAULT_HEIGHT) -> SurfaceFeature:
     return SurfaceFeature(
-        shape=shape, fill=fill, scale=scale, rotation=rotation, position=position
+        shape=shape, fill=fill, scale=scale, rotation=rotation,
+        position=position, width=width, height=height,
     )
 
 
@@ -72,16 +82,18 @@ def test_default_raster_has_documented_sizing() -> None:
     from raven_matrix.render.svg import DEFAULT_RASTER, RasterSettings
 
     assert isinstance(DEFAULT_RASTER, RasterSettings)
-    assert DEFAULT_RASTER.cell_pixel_size == 256
+    # cell_pixel_size defaults to 100 to match builder.CELL_PIXEL_SIZE (the cell
+    # size build() always generates at), so absolute feature pixels land right.
+    assert DEFAULT_RASTER.cell_pixel_size == 100
     assert DEFAULT_RASTER.pixels_between_cells == 10
 
 
 # ---------------------------------------------------------------------------
-# Per-shape geometry (base size = cell_pixel_size / 2 = 128; hw = hh = 64)
+# Per-shape geometry (from feature.width/height = 128; hw = hh = 64)
 # position fixed at (100, 100) -> px=100, py=100
 # ---------------------------------------------------------------------------
 
-# With DEFAULT_RASTER cell_pixel_size=256: base = 128, hw = hh = 64.
+# Features are built at width = height = 128 (see _feature), so hw = hh = 64.
 _HW = 64.0
 _HH = 64.0
 
@@ -105,7 +117,8 @@ def test_rectangle_emits_rect_with_pinned_geometry() -> None:
 
 
 def test_line_emits_horizontal_line_centred_on_position() -> None:
-    el = _render_one(_feature(Shape.LINE))
+    # LINE carries its length in width; height is unused (set 0.0). length=128 -> hw=64.
+    el = _render_one(_feature(Shape.LINE, width=128.0, height=0.0))
     assert el.tag == _qn("line")
     assert isclose(float(el.get("x1")), 100.0 - _HW)
     assert isclose(float(el.get("y1")), 100.0)
@@ -115,7 +128,7 @@ def test_line_emits_horizontal_line_centred_on_position() -> None:
 
 def test_line_has_no_fill_attrs() -> None:
     """<line> has no fill area; fill/fill-opacity must be absent (Issue 1 fix)."""
-    el = _render_one(_feature(Shape.LINE))
+    el = _render_one(_feature(Shape.LINE, width=128.0, height=0.0))
     assert el.get("fill") is None, "LINE element must not carry a fill attribute"
     assert el.get("fill-opacity") is None, "LINE element must not carry fill-opacity"
     # Stroke must still be present.
@@ -402,8 +415,9 @@ def test_scale_lives_in_transform_not_geometry() -> None:
 def test_off_centre_position_drives_geometry_and_transform_pivot() -> None:
     """Test #3 — off-centre position is used coherently in geometry AND transform.
 
-    Render an ELLIPSE at Point(64.0, 192.0) — not the 128,128 cell centre at
-    cell_pixel_size=256.  Assert:
+    Render an ELLIPSE at Point(64.0, 192.0) — an off-centre position, not a cell
+    centre.  Geometry (rx/ry) comes from the feature's width/height (128 -> 64),
+    independent of position.  Assert:
     - The geometry (cx/cy) reflects the non-centred position.
     - The transform starts with translate(64.0 192.0) and ends with
       translate(-64.0 -192.0), proving both the geometry centre and the
@@ -415,7 +429,7 @@ def test_off_centre_position_drives_geometry_and_transform_pivot() -> None:
     # Geometry must reflect the off-centre position
     assert el.get("cx") == "64.0", f"cx should be 64.0; got {el.get('cx')!r}"
     assert el.get("cy") == "192.0", f"cy should be 192.0; got {el.get('cy')!r}"
-    # rx/ry are base-derived, not position-derived — still 64.0
+    # rx/ry come from width/height (128 -> 64), not position — still 64.0
     assert el.get("rx") == "64.0", f"rx should be 64.0; got {el.get('rx')!r}"
     assert el.get("ry") == "64.0", f"ry should be 64.0; got {el.get('ry')!r}"
 
