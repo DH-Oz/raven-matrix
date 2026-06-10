@@ -22,6 +22,7 @@ from raven_matrix.appsupport import (
     SUPPLEMENTAL_OPTIONS,
     build_outcome,
     layer_controls_from_column,
+    option_reference,
 )
 from raven_matrix.model import BaseRelation, Direction, Matrix, Supplemental
 from raven_matrix.ui_config import LayerControls
@@ -257,3 +258,71 @@ def test_build_outcome_malformed_code_is_friendly_error() -> None:
     assert outcome.matrix is None
     assert outcome.structure_code is None
     assert outcome.error is not None
+
+
+# ---------------------------------------------------------------------------
+# option_reference -- completeness (guards doc drift from the controls)
+# ---------------------------------------------------------------------------
+#
+# These tests iterate the ACTUAL enums and the option maps rather than a
+# hardcoded list, so adding a relation / direction / supplemental (or renaming a
+# control) without documenting it fails the build. The reference must mention
+# every option a researcher can pick AND every control label.
+
+
+def test_option_reference_returns_markdown_string() -> None:
+    text = option_reference()
+
+    assert isinstance(text, str)
+    assert text.strip()
+
+
+def test_option_reference_documents_every_base_relation() -> None:
+    text = option_reference()
+
+    # Every BaseRelation member must appear by its enum name AND by the label the
+    # GUI dropdown offers (the key in RELATION_OPTIONS), so neither can drift.
+    for member in BaseRelation:
+        assert member.name in text, f"BaseRelation.{member.name} undocumented"
+    for label_text in RELATION_OPTIONS:
+        assert label_text in text, f"relation label {label_text!r} undocumented"
+
+
+def test_option_reference_documents_every_direction() -> None:
+    text = option_reference()
+
+    for member in Direction:
+        assert member.name in text, f"Direction.{member.name} undocumented"
+        # The Matzen digit code (1-5) for each direction must appear too.
+        assert str(member.value) in text, f"direction digit {member.value} undocumented"
+    for label_text in DIRECTION_OPTIONS:
+        assert label_text in text, f"direction label {label_text!r} undocumented"
+
+
+def test_option_reference_documents_every_supplemental() -> None:
+    text = option_reference()
+
+    for member in Supplemental:
+        assert member.name in text, f"Supplemental.{member.name} undocumented"
+    # Every enabled supplemental label (the "Disabled" sentinel maps to None).
+    for label_text, mapped in SUPPLEMENTAL_OPTIONS.items():
+        if mapped is not None:
+            assert label_text in text, f"supplemental label {label_text!r} undocumented"
+
+
+def test_option_reference_documents_every_control() -> None:
+    text = option_reference()
+
+    # Every control the researcher sees in the panel must be explained.
+    for control_label in (
+        "Mode",
+        "Layers",
+        "Base relation",
+        "Base direction",
+        "Supplemental",
+        "Correct-answer position",
+        "Seed",
+        "New seed",
+        "Structure code",
+    ):
+        assert control_label in text, f"control {control_label!r} undocumented"

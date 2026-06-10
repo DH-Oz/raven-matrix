@@ -43,6 +43,7 @@ def _imports():
         SUPPLEMENTAL_OPTIONS,
         build_outcome,
         layer_controls_from_column,
+        option_reference,
     )
     from raven_matrix.render.svg import render_answers_svg, render_matrix_svg
 
@@ -53,6 +54,7 @@ def _imports():
         build_outcome,
         layer_controls_from_column,
         mo,
+        option_reference,
         render_answers_svg,
         render_matrix_svg,
     )
@@ -150,6 +152,7 @@ def _controls_panel(
     mo,
     mode,
     new_seed_button,
+    option_reference,
     position,
     seed,
 ):
@@ -169,11 +172,17 @@ def _controls_panel(
     else:
         mode_panel = code_text
 
+    # The in-app reference for every control and option, sourced from appsupport
+    # (the completeness test guards it against drift). It sits in a collapsed
+    # accordion so it is on hand without crowding the controls.
+    reference = mo.accordion({"Option reference": mo.md(option_reference())})
+
     controls_panel = mo.vstack(
         [
             mode,
             mode_panel,
             mo.hstack([seed, new_seed_button], justify="start"),
+            reference,
         ]
     )
     return (controls_panel,)
