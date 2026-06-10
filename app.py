@@ -1,4 +1,4 @@
-"""The researcher-facing marimo reactive panel (Phase 7, Task 2).
+"""The researcher-facing marimo reactive panel (Phase 7, Tasks 2 + 3/N1).
 
 # pattern: Imperative Shell
 
@@ -15,15 +15,21 @@ A faithful, live-reactive mirror of the upstream Swing ``SGMBuilderFrame``:
 - output -- the problem and answer-sheet SVGs inline (``mo.Html``), plus the
   resulting Structure code (``label``) and the configured correct-answer position.
 
-This is a thin EDGE layer (FCIS). It gathers the control values, then defers every
-decision to the pure core: ``config_from_controls`` / ``build_from_code`` /
-``build`` / ``label`` / ``render_*_svg``. The core never imports this module. Build
-and parse errors (``ValueError``) are caught in the build cell and shown as a
-friendly message rather than a raw traceback.
+The final cell lays the controls and the live render side by side
+(``mo.hstack([controls, output])``) so they sit adjacent in ``marimo edit``.
+
+This is a thin EDGE layer (FCIS). It defines the UI elements (marimo needs them in
+cells to track ``.value`` reactively), then defers every decision to the pure
+``raven_matrix.appsupport`` seam: ``layer_controls_from_column`` and
+``build_outcome`` (which themselves call ``config_from_controls`` /
+``build_from_code`` / ``build`` / ``label``). The core never imports this module.
+Build and parse errors (``ValueError``) are turned into a friendly message inside
+``build_outcome`` and rendered as text rather than a raw traceback.
 """
 
 import marimo
 
+__generated_with = "0.23.8"
 app = marimo.App(width="medium")
 
 
@@ -31,21 +37,21 @@ app = marimo.App(width="medium")
 def _imports():
     import marimo as mo
 
-    from raven_matrix.builder import build, build_from_code
-    from raven_matrix.label import label
-    from raven_matrix.model import BaseRelation, Direction, Supplemental
+    from raven_matrix.appsupport import (
+        DIRECTION_OPTIONS,
+        RELATION_OPTIONS,
+        SUPPLEMENTAL_OPTIONS,
+        build_outcome,
+        layer_controls_from_column,
+    )
     from raven_matrix.render.svg import render_answers_svg, render_matrix_svg
-    from raven_matrix.ui_config import LayerControls, config_from_controls
 
     return (
-        BaseRelation,
-        Direction,
-        LayerControls,
-        Supplemental,
-        build,
-        build_from_code,
-        config_from_controls,
-        label,
+        DIRECTION_OPTIONS,
+        RELATION_OPTIONS,
+        SUPPLEMENTAL_OPTIONS,
+        build_outcome,
+        layer_controls_from_column,
         mo,
         render_answers_svg,
         render_matrix_svg,
@@ -53,38 +59,11 @@ def _imports():
 
 
 @app.cell
-def _option_maps(BaseRelation, Direction, Supplemental):
-    # Option label -> enum maps, mirroring the GUI's fixed pick lists. The
-    # "Disabled" supplemental slot maps to None so the edge layer can drop it
-    # before constructing LayerControls.
-    RELATION_OPTIONS = {
-        "ShapeRep": BaseRelation.SHAPE_REPETITION,
-        "OR": BaseRelation.LOGICAL_OR,
-        "AND": BaseRelation.LOGICAL_AND,
-        "XOR": BaseRelation.LOGICAL_XOR,
-    }
-    DIRECTION_OPTIONS = {
-        "H": Direction.HORIZONTAL,
-        "V": Direction.VERTICAL,
-        "DiagTL": Direction.DIAGONAL_TL_BR,
-        "DiagBL": Direction.DIAGONAL_BL_TR,
-        "CornerOut": Direction.TOP_LEFT_CORNER_OUT,
-    }
-    SUPPLEMENTAL_OPTIONS = {
-        "Disabled": None,
-        "Scaling": Supplemental.SCALING,
-        "Rotation": Supplemental.ROTATION,
-        "FillRep": Supplemental.FILL_REPETITION,
-        "ChangeFill": Supplemental.CHANGE_FILL,
-        "Numerosity": Supplemental.NUMEROSITY,
-    }
-    return DIRECTION_OPTIONS, RELATION_OPTIONS, SUPPLEMENTAL_OPTIONS
-
-
-@app.cell
-def _mode_and_seed(mo):
-    # The mode toggle and the seed controls are shared by both modes. The "new
-    # seed" run button bumps the seed (read reactively in the build cell).
+def _controls(mo):
+    # The mode/seed/layer-count/position/code UI elements. These are defined here
+    # so marimo tracks their `.value` reactively; the cells BELOW read those values
+    # (a marimo cell may not both create an element and read its `.value`). The
+    # "new seed" run button bumps the seed (read in `_effective_seed`).
     mode = mo.ui.dropdown(
         options=["Build from controls", "Build from code"],
         value="Build from controls",
@@ -92,25 +71,31 @@ def _mode_and_seed(mo):
     )
     seed = mo.ui.number(start=0, stop=2**31 - 1, step=1, value=0, label="Seed")
     new_seed_button = mo.ui.run_button(label="New seed")
-    return mode, new_seed_button, seed
-
-
-@app.cell
-def _layer_count(mo):
     layer_count = mo.ui.dropdown(
         options={"1": 1, "2": 2}, value="1", label="Layers"
     )
-    return (layer_count,)
+    position = mo.ui.number(
+        start=1, stop=8, step=1, value=1, label="Correct-answer position"
+    )
+    code_text = mo.ui.text(value="A1", label="Structure code")
+    return code_text, layer_count, mode, new_seed_button, position, seed
 
 
 @app.cell
-def _layer_factory(DIRECTION_OPTIONS, RELATION_OPTIONS, SUPPLEMENTAL_OPTIONS, mo):
-    def make_layer_controls(index: int):
+def _layer_factory(
+    DIRECTION_OPTIONS,
+    RELATION_OPTIONS,
+    SUPPLEMENTAL_OPTIONS,
+    mo,
+):
+    def make_layer_controls(slot: int):
         """Build one layer's control column: base + 3 supplemental slots.
 
         Returns an ``mo.ui.dictionary`` so the whole column reads back through a
         single ``.value``. Each supplemental slot is itself a (type, direction)
-        pair, mirroring the GUI's three fixed rows.
+        pair, mirroring the GUI's three fixed rows. The dropdown ``options`` are
+        the appsupport label->enum maps, so each slot's read-back value is already
+        the enum (or ``None`` for "Disabled").
         """
         return mo.ui.dictionary(
             {
@@ -125,21 +110,21 @@ def _layer_factory(DIRECTION_OPTIONS, RELATION_OPTIONS, SUPPLEMENTAL_OPTIONS, mo
                     label="Base direction",
                 ),
                 **{
-                    f"supp{slot}": mo.ui.dictionary(
+                    f"supp{index}": mo.ui.dictionary(
                         {
                             "type": mo.ui.dropdown(
                                 options=SUPPLEMENTAL_OPTIONS,
                                 value="Disabled",
-                                label=f"Supplemental {slot}",
+                                label=f"Supplemental {index}",
                             ),
                             "direction": mo.ui.dropdown(
                                 options=DIRECTION_OPTIONS,
                                 value="H",
-                                label=f"Direction {slot}",
+                                label=f"Direction {index}",
                             ),
                         }
                     )
-                    for slot in (1, 2, 3)
+                    for index in (1, 2, 3)
                 },
             }
         )
@@ -150,28 +135,14 @@ def _layer_factory(DIRECTION_OPTIONS, RELATION_OPTIONS, SUPPLEMENTAL_OPTIONS, mo
 @app.cell
 def _layer_controls(layer_count, make_layer_controls):
     # One control column per active layer. Layer 2 exists only when the layer
-    # count is 2, so its controls render (below) only then.
+    # count is 2, so its controls render (in the panel below) only then.
     layer1 = make_layer_controls(1)
     layer2 = make_layer_controls(2) if layer_count.value == 2 else None
     return layer1, layer2
 
 
 @app.cell
-def _position(mo):
-    position = mo.ui.number(
-        start=1, stop=8, step=1, value=1, label="Correct-answer position"
-    )
-    return (position,)
-
-
-@app.cell
-def _code_controls(mo):
-    code_text = mo.ui.text(value="A1", label="Structure code")
-    return (code_text,)
-
-
-@app.cell
-def _render_controls(
+def _controls_panel(
     code_text,
     layer1,
     layer2,
@@ -182,13 +153,13 @@ def _render_controls(
     position,
     seed,
 ):
-    # Show the panel for the active mode. Layer-2 controls appear only when the
-    # layer count is 2 (layer2 is None otherwise).
+    # Assemble the active mode's control panel. Layer-2 controls appear only when
+    # the layer count is 2 (layer2 is None otherwise).
     if mode.value == "Build from controls":
         layer_columns = [mo.vstack([mo.md("**Layer 1**"), layer1])]
         if layer2 is not None:
             layer_columns.append(mo.vstack([mo.md("**Layer 2**"), layer2]))
-        controls_panel = mo.vstack(
+        mode_panel = mo.vstack(
             [
                 layer_count,
                 mo.hstack(layer_columns, justify="start", gap=2),
@@ -196,19 +167,16 @@ def _render_controls(
             ]
         )
     else:
-        controls_panel = code_text
+        mode_panel = code_text
 
-    panel = mo.vstack(
+    controls_panel = mo.vstack(
         [
             mode,
-            controls_panel,
+            mode_panel,
             mo.hstack([seed, new_seed_button], justify="start"),
         ]
     )
-    # Explicit display (marimo renders the cell's output); a statement, not a bare
-    # trailing expression, so it reads as intentional.
-    mo.output.replace(panel)
-    return
+    return (controls_panel,)
 
 
 @app.cell
@@ -225,83 +193,69 @@ def _effective_seed(new_seed_button, seed):
 
 
 @app.cell
-def _gather_layer_controls(LayerControls, layer1, layer2, layer_count):
-    def to_layer_controls(column_value: dict) -> LayerControls:
-        """Map one GUI column's read-back dict onto a ``LayerControls``.
-
-        Drops every "Disabled" supplemental slot (its type maps to ``None``)
-        before constructing the dataclass, matching the ``ui_config`` contract.
-        """
-        supplementals = [
-            (v["type"], v["direction"])
-            for key in ("supp1", "supp2", "supp3")
-            if (v := column_value[key])["type"] is not None
-        ]
-        return LayerControls(
-            base=column_value["base"],
-            base_direction=column_value["base_direction"],
-            supplementals=supplementals,
-        )
-
+def _gather_layer_controls(layer1, layer2, layer_count, layer_controls_from_column):
+    # GATHER: read each active column's `.value` and map it (via the pure
+    # appsupport seam) to a LayerControls, dropping any "Disabled" supplemental.
     columns = [layer1]
     if layer_count.value == 2 and layer2 is not None:
         columns.append(layer2)
-    gathered_layers = [to_layer_controls(column.value) for column in columns]
+    gathered_layers = [
+        layer_controls_from_column(column.value) for column in columns
+    ]
     return (gathered_layers,)
 
 
 @app.cell
 def _build(
-    build,
-    build_from_code,
+    build_outcome,
     code_text,
-    config_from_controls,
     effective_seed,
     gathered_layers,
-    label,
     mo,
     mode,
     position,
     render_answers_svg,
     render_matrix_svg,
 ):
-    # PROCESS: defer to the pure core. Any option set the upstream surface could
-    # not produce (a logic base with supplementals, >3 supplementals, a position
-    # outside 1-8) or a malformed code raises ValueError; catch it and show a
-    # friendly message instead of a traceback.
-    matrix = None
-    error: str | None = None
-    try:
-        if mode.value == "Build from controls":
-            config = config_from_controls(gathered_layers, int(position.value))
-            matrix = build(config, effective_seed)
-        else:
-            matrix = build_from_code(code_text.value, effective_seed)
-    except ValueError as exc:
-        error = str(exc)
+    # PROCESS: defer to the pure core via build_outcome, which catches every
+    # ValueError (a logic base with supplementals, >3 supplementals, a position
+    # outside 1-8, a malformed code) and returns a friendly error instead of a
+    # traceback. Render the BuildOutcome: friendly message when matrix is None,
+    # else the structure code + both SVGs.
+    outcome = build_outcome(
+        mode=mode.value,
+        gathered_layers=gathered_layers,
+        position=int(position.value),
+        code=code_text.value,
+        seed=effective_seed,
+    )
 
-    # Branch on `matrix` directly (not `error`) so the type narrows from
-    # `Matrix | None` to `Matrix` in the success path -- `label`/`render_*` then
-    # see a non-None matrix without a cast.
-    if matrix is None:
-        output = mo.md(f"**Could not build this matrix:** {error}")
+    if outcome.matrix is None:
+        output = mo.md(f"**Could not build this matrix:** {outcome.error}")
     else:
-        structure_code = label(matrix)
         output = mo.vstack(
             [
                 mo.md(
-                    f"**Structure code:** `{structure_code}`  ·  "
-                    f"**Correct answer:** {matrix.correct_answer_position}  ·  "
+                    f"**Structure code:** `{outcome.structure_code}`  ·  "
+                    f"**Correct answer:** "
+                    f"{outcome.matrix.correct_answer_position}  ·  "
                     f"**Seed:** {effective_seed}"
                 ),
                 mo.md("**Problem**"),
-                mo.Html(render_matrix_svg(matrix)),
+                mo.Html(render_matrix_svg(outcome.matrix)),
                 mo.md("**Answers**"),
-                mo.Html(render_answers_svg(matrix)),
+                mo.Html(render_answers_svg(outcome.matrix)),
             ]
         )
-    # Explicit display (see the controls cell); a statement, not a bare expression.
-    mo.output.replace(output)
+    return (output,)
+
+
+@app.cell
+def _layout(controls_panel, mo, output):
+    # Controls on the left, the live render on the right, so a control change and
+    # its effect sit side by side in `marimo edit`. (Reference docs / save controls
+    # are a later dispatch; the layout is left ready for them.)
+    mo.output.replace(mo.hstack([controls_panel, output], justify="start", gap=2))
     return
 
 
