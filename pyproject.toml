@@ -12,7 +12,7 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.optional-dependencies]
-raster = []            # SVG→PNG backend chosen in Phase 6
+raster = ["resvg-py>=0.3.2"]   # SVG→PNG backend (Phase 6); floor = the version uv resolves
 ui = ["marimo"]        # Phase 7 reactive app
 cli = ["typer"]        # Phase 7 CLI
 difficulty = []        # reserved — Phase-later difficulty classifier
