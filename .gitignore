@@ -12,5 +12,8 @@ wheels/
 # Local throwaway working area (extracted upstream zips, probes, etc.)
 scratch/
 
+# Render previews (generated on demand by tools/render_preview.py)
+previews/
+
 # Rendered/working paper copies (canonical copies live in Zotero/zettelkasten)
 docs/papers/
