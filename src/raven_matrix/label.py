@@ -79,6 +79,39 @@ _TRANSFORM_DIGITS: dict[type, tuple[str, str]] = {
     TopLeftCornerOut: ("6", "5"),
 }
 
+# The 1:1 correspondence between a transform class and the Direction enum the
+# builder realises it from. Lets parse_code invert _TRANSFORM_DIGITS (above)
+# instead of maintaining a second, drift-prone digit->direction table.
+_TRANSFORM_TO_DIRECTION: dict[type, Direction] = {
+    Horizontal: Direction.HORIZONTAL,
+    Vertical: Direction.VERTICAL,
+    DiagonalBottomLeftTopRight: Direction.DIAGONAL_BL_TR,
+    DiagonalTopLeftBottomRight: Direction.DIAGONAL_TL_BR,
+    TopLeftCornerOut: Direction.TOP_LEFT_CORNER_OUT,
+}
+
+
+def _build_digit_inverses() -> tuple[dict[str, Direction], dict[str, Direction]]:
+    """Invert ``_TRANSFORM_DIGITS`` into two digit -> Direction maps.
+
+    A REPETITION feature (ShapeRep, FillRep) keeps the same-direction digit, so
+    its inverse reads the FIRST element of each pair; a NON-repetition feature
+    (Rotation, Scaling, Numerosity, ChangeFill) carries the labeller's ``1<->2``
+    / ``3<->4`` (and ``5/6``) swap, so its inverse reads the SECOND. Deriving both
+    from the single forward table guarantees the parser is the exact inverse of
+    the labeller — they can never drift.
+    """
+    repetition: dict[str, Direction] = {}
+    non_repetition: dict[str, Direction] = {}
+    for transform, (repetition_digit, other_digit) in _TRANSFORM_DIGITS.items():
+        direction = _TRANSFORM_TO_DIRECTION[transform]
+        repetition[repetition_digit] = direction
+        non_repetition[other_digit] = direction
+    return repetition, non_repetition
+
+
+_REP_DIGIT_TO_DIRECTION, _NONREP_DIGIT_TO_DIRECTION = _build_digit_inverses()
+
 
 def _letter(feature: object) -> str:
     """Port the letter ladder (Java l.218-291).
@@ -176,12 +209,15 @@ def label(matrix: Matrix) -> str:
 #   logical OR/AND/XOR (base, logic) and are BARE — they carry no digit in the
 #   published codes. ``B`` = shading, ``C`` = orientation (Rotation), ``D`` =
 #   size (Scaling), ``E`` = number repetition (Numerosity) — all supplementals.
-# - DIGIT -> the transform DIRECTION, read LITERALLY: 1 Horizontal, 2 Vertical,
-#   3 Diagonal BL->TR, 4 Diagonal TL->BR, 5 outward-from-top-left. The published
-#   digit is always the direction the relation runs, so ``Direction(int(digit))``
-#   is the direct inverse. (The labeller's ``1/2`` swap for non-repetition
-#   features means a non-repetition code does NOT relabel to itself — that delta
-#   is a round-trip modeling gap, recorded in Task 4, not a parse concern.)
+# - DIGIT -> transform direction, but the labeller's digit is the axis along
+#   which the feature stays the SAME (the published 1-Layer PNGs confirm this:
+#   A1 repeats the shape along rows, C2_1 CHANGES orientation along rows). For a
+#   REPETITION feature (ShapeRep, FillRep) the constancy axis IS the transform
+#   direction, so the digit maps directly (1 Horizontal, 2 Vertical, 3 BL->TR,
+#   4 TL->BR). For a NON-repetition feature (Rotation/Scaling/Numerosity/
+#   ChangeFill) the labeller swaps 1<->2 and 3<->4, so parse_code inverts that
+#   swap (_NONREP_DIGIT_TO_DIRECTION) to rebuild the SAME stimulus, not its
+#   transpose. Reading the digit literally was a bug (fixed): it built C1 as C2.
 #
 # B aliasing (resolved by the published PNG palettes — DR6 independent frame):
 # both FillRep and ChangeFill label to ``B``. The 1-Layer norming PNGs distinguish
@@ -276,21 +312,43 @@ def _direction_from_digit(digit: str) -> Direction:
 
 
 def _supplemental_from_pair(letter: str, digit: str) -> tuple[Supplemental, Direction]:
-    """Resolve one supplemental (letter, digit) pair, including B aliasing.
+    """Resolve one supplemental (letter, digit) pair, inverting the labeller swap.
 
-    ``B`` with digit 1-4 -> FillRep on the matching transform; ``B5`` -> ChangeFill
-    on corner-out (per the published PNG palettes). ``C``/``D``/``E`` map directly.
+    ``B`` aliases two relations, disambiguated by digit (per the published PNG
+    palettes): ``B5`` -> ChangeFill + corner-out (a non-repetition feature, the
+    5-level outward gradient); ``B1``-``B4`` -> FillRep on the matching transform
+    (a REPETITION feature, so the digit IS the direction directly, 3-level
+    palette). ``C``/``D``/``E`` are NON-repetition supplementals: the labeller
+    emits the swapped (constancy-axis) digit, so we invert it via
+    ``_NONREP_DIGIT_TO_DIRECTION`` to recover the transform direction.
+
+    Ground truth for the swap: ``C2_1.png`` shows orientation CHANGING
+    horizontally (digit 2 -> Rotation on the Horizontal transform); ``C1_1.png``
+    shows it changing vertically (digit 1 -> Vertical). Reading the digit
+    literally would build the transpose of the published stimulus.
     """
-    direction = _direction_from_digit(digit)
     if letter == "B":
-        if direction is Direction.TOP_LEFT_CORNER_OUT:
-            # B5: ChangeFill + corner-out (5-level palette, outward gradient).
-            return Supplemental.CHANGE_FILL, direction
-        # B1-B4: FillRep on the matching transform (3-level palette).
+        if digit == "5":
+            # B5: ChangeFill (non-repetition) + corner-out.
+            return Supplemental.CHANGE_FILL, _NONREP_DIGIT_TO_DIRECTION["5"]
+        direction = _REP_DIGIT_TO_DIRECTION.get(digit)
+        if direction is None or direction is Direction.TOP_LEFT_CORNER_OUT:
+            # FillRep is a repetition feature on directions 1-4 only (corner-out
+            # with fill repetition never appears in the norming codes).
+            raise ValueError(
+                f"digit {digit!r} is not a valid FillRepetition direction in "
+                f"B{digit}"
+            )
         return Supplemental.FILL_REPETITION, direction
     supplemental = _LETTER_TO_SUPPLEMENTAL.get(letter)
     if supplemental is None:
         raise ValueError(f"unknown supplemental relation letter {letter!r}")
+    direction = _NONREP_DIGIT_TO_DIRECTION.get(digit)
+    if direction is None:
+        raise ValueError(
+            f"digit {digit!r} is not a valid direction for non-repetition "
+            f"supplemental {letter!r}"
+        )
     return supplemental, direction
 
 

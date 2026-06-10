@@ -160,15 +160,71 @@ def test_scaling_and_numerosity_build() -> None:
 # ---------------------------------------------------------------------------
 
 def test_explicit_base_plus_supplementals() -> None:
-    # A1B2C4: ShapeRep+H base, FillRep+V, Rotation+TL_BR.
+    # A1B2C4: ShapeRep+H base, FillRep+V (repetition: digit = direction directly),
+    # and Rotation+C4. C4 is a NON-repetition supplemental, so the published digit
+    # is the labeller's swapped (constancy-axis) form: digit 4 inverts to the
+    # BL->TR transform (non-rep digit 4 = DiagonalBottomLeftTopRight in the forward
+    # map). The pre-fix parser read this LITERALLY as TL_BR — the transpose bug.
     config = parse_code("A1B2C4")
     layer = config.layers[0]
     assert layer.base is BaseRelation.SHAPE_REPETITION
     assert layer.base_direction is Direction.HORIZONTAL
     assert layer.supplementals == (
         (Supplemental.FILL_REPETITION, Direction.VERTICAL),
-        (Supplemental.ROTATION, Direction.DIAGONAL_TL_BR),
+        (Supplemental.ROTATION, Direction.DIAGONAL_BL_TR),
     )
+
+
+# ---------------------------------------------------------------------------
+# Non-repetition supplemental digit inversion (the labeller 1<->2, 3<->4 swap).
+#
+# Ground truth: the published 1-Layer PNGs. C2_1.png shows orientation CHANGING
+# horizontally (constant down each column) -> the published digit is 2, which is
+# Rotation on the HORIZONTAL transform. C1_1.png shows it changing vertically ->
+# digit 1 -> Rotation on the VERTICAL transform. A repetition feature keeps the
+# direction digit directly, but a non-repetition feature (C/D/E) carries the
+# labeller's swapped digit, so parse_code MUST invert the swap to rebuild the
+# SAME stimulus rather than its transpose.
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    ("code", "expected_direction"),
+    [
+        ("C1", Direction.VERTICAL),       # C1_1.png: orientation changes vertically.
+        ("C2", Direction.HORIZONTAL),      # C2_1.png: changes horizontally.
+        ("C3", Direction.DIAGONAL_TL_BR),  # non-rep digit 3 -> TL->BR transform.
+        ("C4", Direction.DIAGONAL_BL_TR),  # non-rep digit 4 -> BL->TR transform.
+        ("C5", Direction.TOP_LEFT_CORNER_OUT),  # digit 5 -> corner-out (no swap).
+    ],
+)
+def test_non_repetition_supplemental_inverts_the_swap(
+    code: str, expected_direction: Direction
+) -> None:
+    config = parse_code(code)
+    ((kind, direction),) = config.layers[0].supplementals
+    assert kind is Supplemental.ROTATION
+    assert direction is expected_direction
+
+
+@pytest.mark.parametrize(
+    "code",
+    # Base-named non-repetition codes drawn from data/ravens_oracle.csv: the
+    # explicit A-base removes the base-omission convention gap, so these must
+    # round-trip EXACTLY once the non-repetition swap is inverted. (Before the
+    # fix they relabel to the swapped digit, e.g. A1C2 -> A1C1, A1B2C4 -> A1B2C3.)
+    ["A1C2", "A1C3", "A1C4", "A1C5", "A1B2C4", "A1B2D4", "A1B2E3", "A1B4C2", "A1C2D4"],
+)
+def test_base_named_non_repetition_codes_round_trip(code: str) -> None:
+    assert label(build_from_code(code, seed=0)) == code
+
+
+@pytest.mark.parametrize("digit", ["1", "2", "3", "4", "5"])
+def test_rotation_round_trips_for_every_direction(digit: str) -> None:
+    # With an explicit A1 base (no base-omission gap), Rotation on every direction
+    # must round-trip: the parser inverse is the exact inverse of the labeller's
+    # forward digit map across all five directions.
+    code = f"A1C{digit}"
+    assert label(build_from_code(code, seed=0)) == code
 
 
 def test_two_layer_code_splits_on_underscore() -> None:
