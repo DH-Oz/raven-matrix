@@ -129,6 +129,15 @@ class LayerConfig:
     base: BaseRelation
     base_direction: Direction
     supplementals: tuple[tuple[Supplemental, Direction], ...] = ()
+    base_constant_shape: bool = False
+    """Build the ShapeRepetition base as ONE constant carrier shape (ADR 0002).
+
+    Default ``False`` preserves the faithful 2011-source behaviour (three distinct
+    carrier shapes, ``uniqueShapes=true``) on every config-driven and golden-tested
+    path. ``parse_code`` sets it ``True`` ONLY for supplemental-led codes (no shape
+    relation named), so the built matrix shows one carrier shape with only the
+    named supplemental varying -- matching the published norming PNGs. Ignored for
+    logic bases (they do not use ShapeRepetition)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -183,6 +192,7 @@ def _build_shape_repetition(
     cell_pixel_size: int,
     rng: JavaRandom,
     flags: CompatFlags,
+    constant: bool = False,
 ) -> ShapeRepetition:
     """Port ``createBasicBaseSurfaceFeatures`` (l.266-304): one unique-shape
     feature per base location.
@@ -190,9 +200,27 @@ def _build_shape_repetition(
     For each base location, draw a surface feature; if its shape class is already
     used, redraw until a fresh shape appears (``uniqueShapes`` is always ``true``
     on this path, l.281-300). Each base location holds a single-feature list.
+
+    ``constant=True`` overrides this (ADR 0002, a norming-vs-source divergence):
+    draw ONE feature and place it (value-equal) at EVERY base location, so the
+    ShapeRepetition base is a single constant carrier shape rather than three
+    distinct shapes. Only ``parse_code``'s implicit base for supplemental-led codes
+    sets this; the unconstrained generator and the golden path keep ``False`` and
+    the distinct-shape loop below EXACTLY as-is. See
+    ``docs/architecture/decisions/0002-supplemental-led-constant-carrier.md``.
     """
     transform = make_location_transform(direction, size)
     num_base_locations = len(transform.base_locations())
+    if constant:
+        # ADR 0002: one carrier shape repeated across all base locations. The
+        # 2011 source forces three distinct shapes here (uniqueShapes=true); the
+        # 2008 norming PNGs for supplemental-led codes show ONE shape, and per
+        # CLAUDE.md spec-precedence the paper/norming wins for this path.
+        feature = generate_surface_feature(rng, flags, cell_pixel_size)
+        constant_features: list[list[SurfaceFeature]] = [
+            [feature] for _ in range(num_base_locations)
+        ]
+        return ShapeRepetition(transform, constant_features)
     base_surface_features: list[list[SurfaceFeature]] = []
     shapes_used: set = set()
     for _ in range(num_base_locations):
@@ -258,7 +286,12 @@ def _build_base_relation(
             layer_config.base, size, cell_pixel_size, rng, flags
         )
     return _build_shape_repetition(
-        layer_config.base_direction, size, cell_pixel_size, rng, flags
+        layer_config.base_direction,
+        size,
+        cell_pixel_size,
+        rng,
+        flags,
+        constant=layer_config.base_constant_shape,
     )
 
 

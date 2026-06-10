@@ -367,6 +367,11 @@ def _parse_segment(segment: str) -> LayerConfig:
     if not pairs:
         raise ValueError(f"layer segment {segment!r} has no relations")
 
+    # Default: an EXPLICIT base (A / X / Y / Z) is an active shape relation and
+    # keeps the faithful three-distinct-shape ShapeRepetition. Only the implicit
+    # base injected for supplemental-led codes becomes a constant carrier (ADR
+    # 0002), so it flips this to True below.
+    base_constant_shape = False
     first_letter, first_digit = pairs[0]
     if first_letter in _LETTER_TO_BASE:
         base = _LETTER_TO_BASE[first_letter]
@@ -387,9 +392,14 @@ def _parse_segment(segment: str) -> LayerConfig:
         # Supplemental-led code: inject an implicit ShapeRepetition base. The
         # supplemental relations provide no base surface features of their own
         # (see module note above), so a base must exist for them to act on.
+        # That implicit base is a CONSTANT carrier shape (ADR 0002): the published
+        # norming PNGs for these codes show ONE shape with only the named
+        # supplemental varying, so the base must not introduce three distinct
+        # shapes of its own (which would make a hidden ShapeRepetition relation).
         base = BaseRelation.SHAPE_REPETITION
         base_direction = _IMPLICIT_BASE_DIRECTION
         supplemental_pairs = pairs
+        base_constant_shape = True
 
     supplementals: list[tuple[Supplemental, Direction]] = []
     for letter, digit in supplemental_pairs:
@@ -404,6 +414,7 @@ def _parse_segment(segment: str) -> LayerConfig:
         base=base,
         base_direction=base_direction,
         supplementals=tuple(supplementals),
+        base_constant_shape=base_constant_shape,
     )
 
 
