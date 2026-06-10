@@ -32,6 +32,19 @@ The replication bar is **data/logic equivalence, not pixel reproduction**: the
 port reproduces the upstream relations, directions, layers, and correct-answer
 position, checked against the committed norming oracle.
 
+## Prerequisites
+
+You need [uv](https://docs.astral.sh/uv/) and git — nothing else. uv installs a
+suitable Python and every dependency for you; you do not set up a virtualenv or
+install Python yourself.
+
+## Get the code
+
+```
+git clone https://github.com/DH-Oz/raven-matrix.git
+cd raven-matrix
+```
+
 ## Install
 
 ```
@@ -40,7 +53,8 @@ uv sync --extra ui --extra cli --extra raster
 
 `uv` fetches a suitable Python automatically (the package floor is 3.12; the
 dev pin is 3.14). Pick only the extras you need: `ui` for the app, `cli` for the
-command line, `raster` for PNG output.
+command line, `raster` for PNG output. The first `uv run …` below also syncs on
+demand, so you can skip this step and go straight to running.
 
 The git submodule is **not needed to run** — the norming oracle is committed as a
 CSV. `git submodule update --init` is only required to regenerate that data or to
