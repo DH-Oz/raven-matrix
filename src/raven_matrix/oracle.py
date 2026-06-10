@@ -142,6 +142,11 @@ def round_trip(code: str, *, seed: int = 0) -> RoundTripResult:
     3. fail -- neither; ``reason`` describes the delta. A non-3x3 built matrix is a
        CA1 escalation: ``mode == "fail"`` with an ``ESCALATE`` reason (the Vertical
        fix-to-paper and other divergences are inert only while square-3x3).
+
+    Normalisation sequence: the logic-``7`` strip is applied BEFORE storing
+    ``produced`` (so ``produced`` shows the post-``7`` form for miss inspection);
+    the carrier-``A`` strip is applied ONLY during the comparison and is never
+    stored, so a real miss still surfaces its full produced label.
     """
     config = parse_code(code)
     matrix = build(config, seed=seed)

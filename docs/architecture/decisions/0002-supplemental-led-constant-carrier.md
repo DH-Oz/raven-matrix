@@ -86,6 +86,10 @@ structural, not cosmetic.
   supplemental-led `parse_code` path, whose absolute draw sequence was never
   pinned to an oracle (seeds unpublished); determinism for a fixed seed is
   preserved.
-- This divergence should be back-filled into the
+- **Deferred obligation (tracked):** this divergence must be back-filled into the
   `docs/architecture/constraints.md` spec-precedence divergences table alongside
-  Grey10/40, `loc-vertical-parent-wrap`, etc., once accepted (Status: Proposed).
+  Grey10/40, `loc-vertical-parent-wrap`, etc. Per the plan-and-execute workflow,
+  implementation-time ADRs stay **Proposed** until the post-acceptance stage (after
+  final review + UAT), at which point this ADR flips to **Accepted** and the
+  constraints.md backfill + citation pass happen together. The "Proposed" status is
+  therefore correct in-phase, not an omission; the backfill is scheduled, not lost.
