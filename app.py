@@ -233,10 +233,9 @@ def _gather_layer_controls(LayerControls, layer1, layer2, layer_count):
         before constructing the dataclass, matching the ``ui_config`` contract.
         """
         supplementals = [
-            (slot["type"], slot["direction"])
+            (v["type"], v["direction"])
             for key in ("supp1", "supp2", "supp3")
-            for slot in (column_value[key],)
-            if slot["type"] is not None
+            if (v := column_value[key])["type"] is not None
         ]
         return LayerControls(
             base=column_value["base"],

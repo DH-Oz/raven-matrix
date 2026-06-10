@@ -24,6 +24,7 @@ stderr and exit non-zero; primary output goes to stdout.
 from __future__ import annotations
 
 import csv
+import importlib.resources
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -42,9 +43,21 @@ app = typer.Typer(
     help="Generate Raven-style matrix puzzles (a Python port of Sandia's SGMT)."
 )
 
-# The oracle CSV lives at the repo root (data/ravens_oracle.csv). From this file
-# (src/raven_matrix/cli.py) the root is three parents up.
-_ORACLE_CSV = Path(__file__).resolve().parents[2] / "data" / "ravens_oracle.csv"
+
+def _oracle_csv_path() -> Path:
+    """Return the path to the oracle CSV, working both installed and in a source tree.
+
+    The CSV is shipped as package data in the wheel (pyproject force-include); in an
+    editable/source checkout it lives at the repo-root data/ dir instead.
+    """
+    # Try the packaged copy first (wheel install); fall back to source tree.
+    packaged = (
+        importlib.resources.files("raven_matrix") / "data" / "ravens_oracle.csv"
+    )
+    if packaged.is_file():
+        return Path(str(packaged))
+    # Fall back to the source-tree location (repo root / data/).
+    return Path(__file__).resolve().parents[2] / "data" / "ravens_oracle.csv"
 
 
 def _parse_relation(name: str) -> BaseRelation:
@@ -115,8 +128,8 @@ def build(
     ] = None,
     layers: Annotated[
         int,
-        typer.Option("--layers", help="Number of layers to repeat the explicit "
-                     "relation across (1 or 2). Ignored when --code is given."),
+        typer.Option("--layers", help="Repeat the same relation across N identical "
+                     "layers (1 or 2). Ignored when --code is given."),
     ] = 1,
     position: Annotated[
         int,
@@ -218,7 +231,17 @@ def oracle(
 ) -> None:
     """Print the oracle rows for a Structure code and its round-trip status."""
     # GATHER the CSV rows.
-    with _ORACLE_CSV.open(encoding="utf-8", newline="") as handle:
+    csv_path = _oracle_csv_path()
+    try:
+        handle = csv_path.open(encoding="utf-8", newline="")
+    except FileNotFoundError as exc:
+        typer.echo(
+            f"error: oracle data not found at {csv_path}; "
+            "regenerate it with: uv run python tools/extract_oracle.py",
+            err=True,
+        )
+        raise typer.Exit(code=1) from exc
+    with handle:
         rows = list(csv.DictReader(handle))
 
     matching = [row for row in rows if row["Structure"] == code]
@@ -230,7 +253,7 @@ def oracle(
     pass_map = build_pass_map(rows)
     result = pass_map[code]
     status = (
-        f"{'PASS' if result.passed else 'FAIL'} ({result.mode})"
+        f"PASS ({result.mode})"
         if result.passed
         else f"FAIL ({result.mode}): {result.reason}"
     )

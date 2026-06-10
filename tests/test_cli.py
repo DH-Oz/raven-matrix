@@ -15,6 +15,7 @@ The ``--png`` magic-bytes assertion needs the optional ``raster`` extra
 from __future__ import annotations
 
 import importlib.util
+from pathlib import Path
 
 import pytest
 from typer.testing import CliRunner
@@ -157,3 +158,68 @@ def test_oracle_unknown_code_reports_not_found() -> None:
 
     assert result.exit_code != 0
     assert "not found" in result.stderr.lower()
+
+
+# ---------------------------------------------------------------------------
+# Finding 1: graceful error when the oracle CSV is missing
+# ---------------------------------------------------------------------------
+
+
+def test_oracle_missing_csv_exits_1_with_actionable_message(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """When the oracle CSV cannot be found, exit 1 with an actionable message.
+
+    The resolver (_oracle_csv_path) is monkeypatched to return a path that
+    does not exist so the real data/ravens_oracle.csv is never touched.
+    """
+    import raven_matrix.cli as cli_module
+
+    nonexistent = Path("/tmp/raven_matrix_test_no_such_file_ravens_oracle.csv")
+    monkeypatch.setattr(cli_module, "_oracle_csv_path", lambda: nonexistent)
+
+    result = runner.invoke(app, ["oracle", "--code", "A1"])
+
+    assert result.exit_code == 1
+    assert result.stdout == ""  # stdout must be clean
+    assert "tools/extract_oracle.py" in result.stderr
+
+
+# ---------------------------------------------------------------------------
+# Finding 2: --layers 2 produces a well-formed SVG
+# ---------------------------------------------------------------------------
+
+
+def test_build_two_layers_via_flag() -> None:
+    """--layers 2 repeats the same relation across two identical layers."""
+    result = runner.invoke(
+        app,
+        [
+            "build",
+            "--relation",
+            "shape_repetition",
+            "--direction",
+            "horizontal",
+            "--layers",
+            "2",
+            "--position",
+            "1",
+            "--seed",
+            "0",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "<svg" in result.stdout
+    assert "</svg>" in result.stdout
+    # The Structure code on stderr must reflect two layers: two relation letters.
+    # A1A1 or A1 repeated — either way the code contains "A1" twice, or the
+    # reported Structure line contains at least 4 characters encoding two layers.
+    assert "Structure:" in result.stderr
+    structure_line = next(
+        line for line in result.stderr.splitlines() if line.startswith("Structure:")
+    )
+    code_part = structure_line.split(":", 1)[1].strip()
+    # Two-layer codes are always longer than a single-layer code (>=4 chars,
+    # e.g. "A1A1"); a single-layer code for shape_repetition/horizontal is "A1".
+    assert len(code_part) >= 4, f"expected a two-layer code, got {code_part!r}"
