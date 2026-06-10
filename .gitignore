@@ -9,6 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# marimo session cache (regenerated when the app runs)
+__marimo__/
+
 # Local throwaway working area (extracted upstream zips, probes, etc.)
 scratch/
 

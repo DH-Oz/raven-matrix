@@ -104,6 +104,57 @@ git commit -m "feat(app): marimo reactive panel — full option parity + code mo
 <!-- END_TASK_2 -->
 <!-- END_SUBCOMPONENT_B -->
 
+<!-- START_SUBCOMPONENT_C (task 3): app UX polish — raised in the Phase 7 UAT -->
+
+<!-- START_TASK_3 -->
+### Task 3: app UX polish (N1–N5, from the Phase 7 UAT)
+
+**Verifies:** raven-builder.AC1.* (usability of the parity surface; re-UAT). Additive to Task 2 — **no behaviour change to the generator**. FCIS holds: pure logic moves to a tested module; `app.py` stays a thin reactive shell.
+
+**Why:** the Phase 7 UAT confirmed parity / visual / constant-carrier but surfaced five researcher-usability gaps (Brian, 2026-06-10).
+
+**Files:**
+- Create: `src/raven_matrix/appsupport.py` (pure helpers — the new tested seam)
+- Modify: `app.py` (slim to a reactive shell; controls beside output; reference docs; save controls)
+- Create: `tests/test_appsupport.py`
+- Modify: `README.md` (replace the stale "no code yet" status with real install/run docs)
+- Investigate only (no change this task): `src/raven_matrix/render/svg.py` / `surface.py` (N4)
+
+**N1 — FCIS extract + controls-beside-output.**
+- Move the option-label→enum maps, the column→`LayerControls` mapping (current `to_layer_controls`), and a pure `build_outcome(...)` (calls `config_from_controls`+`build` or `build_from_code`; catches `ValueError`; returns a small result carrying `matrix | None`, `error | None`, and the `label()` code) into `appsupport.py`. `app.py` imports them.
+- Consolidate the control-definition cells; **delete the dead `mo.sql` cell** (current `app.py` ~lines 314–321). The final cell lays out `mo.hstack([controls_panel, output])` — controls left, live render right — so they sit adjacent in `marimo edit`.
+- Reactivity rule: UI elements stay defined in cells (so `.value` is reactive); only the pure mapping/build moves out.
+
+**N2 — reference for every control and option.**
+- `appsupport.option_reference() -> str`: markdown documenting every control and every option (the A/B/C/D/E relation letters, the 1–5 directions incl. corner-out, each supplemental, position, seed, mode), sourced from the Matzen naming scheme in `CLAUDE.md`.
+- `app.py` renders it in a collapsible `mo.accordion` by the controls.
+
+**N3 — save with variants (researcher spec).**
+- `appsupport.compose_save_svg(matrix, *, include_problem: bool, include_answers: bool, header_fields: Sequence[...]) -> str`: composes problem / answers / problem+answers (vertical stack) from `render_matrix_svg` / `render_answers_svg`, with an optional header band showing the toggled fields (Structure code, correct-answer position, seed). SVG is the saved format (canonical; raster-free, so it works regardless of the `raster` extra).
+- `app.py`: three `mo.download` buttons (problem · answers · both) + three header toggles (`mo.ui.checkbox`: code, correct answer, seed) feeding `compose_save_svg`.
+
+**N4 — small-triangle legibility (INVESTIGATE; do not speculatively change).**
+- The squat triangles in the UAT contact sheet were the **2008 norming PNGs**, not the port. First confirm whether the port's own Triangle has any issue: render it at small sizes (a size-relation code yielding a triangle) and assess apex/orientation legibility.
+- The 2px outline is an intentional spec and the Triangle geometry is faithful to upstream; a change would diverge from upstream and churn the Phase-6 goldens (`tests/golden/sgmt_matrices.json`, `test_surface.py`, `test_render_svg_cells.py`). **No renderer change in this task** — produce sample renders + a written assessment, surfaced at the re-UAT for Brian's decision. If he wants a fix, it becomes its own scoped change with a deliberate golden update.
+
+**N5 — README.**
+- Replace the stale `## Status` ("No generator code yet") with accurate content: what works now (generator, CLI, marimo app, SVG/PNG); install (`uv sync --extra ui --extra cli --extra raster`; uv fetches Python); run the app (`uv run --extra ui marimo edit app.py`); run the CLI (`raven-matrix build … / oracle …`); the no-submodule-needed-to-run note; regenerating the oracle CSV; and that online hosting (Phase 8) is optional. Keep BSD-3 / attribution.
+
+**Testing (`tests/test_appsupport.py`):**
+- option maps; `layer_controls_from_column` drops Disabled slots; `build_outcome` success + each `ValueError` path (logic-base+supplemental, >3 supplementals, position ∉ 1–8, malformed code) → friendly error.
+- `option_reference()` is **complete** — every `BaseRelation` / `Direction` / `Supplemental` member and every control label appears (guards doc drift).
+- `compose_save_svg` includes exactly the requested pieces (problem/answers/both) and only the toggled header fields, and emits well-formed SVG.
+- `tests/test_app_importable.py` still passes (smoke). N4 is investigation (no automated test); N5 is docs (no test).
+
+**Verification + commit:**
+```bash
+uv run pytest && uv run --extra ui pytest && uv run ty check . && uv run ruff check .
+# logical commits: (1) appsupport extract + app.py slim + layout (N1); (2) reference docs (N2);
+# (3) save controls (N3); (4) README (N5). N4 = investigation notes only.
+```
+<!-- END_TASK_3 -->
+<!-- END_SUBCOMPONENT_C -->
+
 ---
 
 ## Phase 7 completion check
@@ -114,3 +165,10 @@ git commit -m "feat(app): marimo reactive panel — full option parity + code mo
 - [ ] `app.py` exposes every `SGMBuilderFrame` option + a code mode, re-renders reactively, shows the Structure code; imports cleanly in CI.
 - [ ] UAT entries (option parity, visual correctness) recorded in uat-requirements.md.
 - [ ] `uv run pytest`, `uv run ty check .`, `uv run ruff check .` clean.
+
+### Task 3 (app UX, post-UAT)
+- [ ] Pure logic lives in `appsupport.py` (tested); `app.py` is a thin shell with controls beside the live render; the dead `mo.sql` cell is gone (N1).
+- [ ] In-app reference documents every control and option; a completeness test guards drift (N2).
+- [ ] Save controls: problem / answers / both, with header toggles for code · correct answer · seed (N3).
+- [ ] Port small-triangle legibility investigated; samples + assessment surfaced at re-UAT (no speculative renderer change) (N4).
+- [ ] `README.md` reflects what works now + how to install and run (N5).
