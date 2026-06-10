@@ -1,0 +1,6 @@
+Direct merge to main is allowed for this repository.
+
+Rationale: raven-matrix is a solo research port (Brian, for Mark) with no
+pull-request review team. Each phase is individually code-reviewed and a
+full-branch pre-merge integration review runs before every merge, so a PR
+would add ceremony without adding reviewers. Opted in 2026-06-10.
