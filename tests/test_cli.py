@@ -223,3 +223,60 @@ def test_build_two_layers_via_flag() -> None:
     # Two-layer codes are always longer than a single-layer code (>=4 chars,
     # e.g. "A1A1"); a single-layer code for shape_repetition/horizontal is "A1".
     assert len(code_part) >= 4, f"expected a two-layer code, got {code_part!r}"
+
+
+# ---------------------------------------------------------------------------
+# Coverage gap: packaged-wheel branch of _oracle_csv_path (True branch)
+# ---------------------------------------------------------------------------
+
+
+def test_oracle_csv_path_packaged_branch(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """``_oracle_csv_path`` returns the packaged copy when ``is_file()`` is True.
+
+    In an editable checkout ``src/raven_matrix/data/`` does not exist, so only
+    the fallback (source-tree) branch is exercised by the suite.  This test
+    drives the True branch by patching ``importlib.resources.files`` -- as
+    referenced inside ``cli.py`` -- to return a real ``tmp_path`` directory that
+    contains a real ``data/ravens_oracle.csv`` stub.
+
+    Because ``pathlib.Path`` implements the ``Traversable`` protocol
+    (``__truediv__``, ``is_file()``, ``open()`` …), ``tmp_path`` can stand in
+    directly for the Traversable returned by ``files()``.
+    """
+    import raven_matrix.cli as cli_module
+
+    # Arrange: create the fake packaged data file.
+    packaged_data_dir = tmp_path / "data"
+    packaged_data_dir.mkdir()
+    packaged_csv = packaged_data_dir / "ravens_oracle.csv"
+
+    # Copy three header rows from the real oracle so the stub is a valid CSV.
+    real_csv = Path(__file__).resolve().parents[1] / "data" / "ravens_oracle.csv"
+    with real_csv.open(encoding="utf-8", newline="") as fh:
+        header = fh.readline()
+        first_row = fh.readline()
+    packaged_csv.write_text(header + first_row, encoding="utf-8")
+
+    # Act: patch files() so files("raven_matrix") returns tmp_path (a Traversable).
+    monkeypatch.setattr(cli_module.importlib.resources, "files", lambda _pkg: tmp_path)
+
+    from raven_matrix.cli import _oracle_csv_path
+
+    result = _oracle_csv_path()
+
+    # Assert: the True branch was taken -- result must point at the tmp packaged
+    # copy, not the source-tree fallback.
+    assert result == packaged_csv, (
+        f"expected packaged path {packaged_csv}, got {result}; "
+        "the True branch was not taken"
+    )
+    # And it must be distinct from the source-tree fallback path.
+    source_tree_fallback = (
+        Path(cli_module.__file__).resolve().parents[2] / "data" / "ravens_oracle.csv"
+    )
+    assert result != source_tree_fallback, (
+        "resolver returned the source-tree fallback rather than the packaged copy"
+    )
