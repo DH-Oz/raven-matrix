@@ -1,86 +1,96 @@
 # Code Review Findings — pre-merge
+# Pre-Merge Cross-Phase Integration Review (raven-builder → main)
+# Supersedes earlier per-phase pre-merge file written during Phase 6.
 
 ## Status: APPROVED
 
-**Critical: 0 | Important: 0 | Minor: 1**
+**Critical: 0 | Important: 1 | Minor: 2**
 
 ## Verification
 
 ```
-Tests:  uv run --all-extras pytest -q  → 327 passed in 0.37s
-Lint:   uv run ruff check .            → All checks passed!
-Types:  uv run ty check .              → All checks passed!
+Tests (no extras):        uv run pytest                     → 1029 passed in 1.12s
+Tests (ui extra):         uv run --extra ui pytest           → 1029 passed in 1.11s
+Type check:               uv run ty check .                  → All checks passed!
+Type check (ui extra):    uv run --extra ui ty check .       → All checks passed!
+Lint:                     uv run ruff check .                → All checks passed!
 ```
+
+All five gates green. Zero failures, zero skips, zero type errors, zero lint warnings.
+No TODO/FIXME/type-suppression annotations anywhere in `src/raven_matrix/` or `app.py`.
 
 ## Plan Alignment
 
-- AC5.1 (SVG well-formedness, every shape + fill, correct alpha): ✓ carried over intact
-- AC5.1 rotation fitness (emit degrees directly): ✓ carried over intact
-- AC5.2 (rasterise → PNG): ✓ carried over intact
-- AC5.3 (blank/empty cell renders without error): ✓ carried over intact
-- `render/__init__.py` free of raster imports: ✓
-- `resvg_py` import inside `rasterise` only: ✓
-- `RasterSettings` default 256→100 to match `builder.CELL_PIXEL_SIZE`: ✓ (reconciliation closes ADR-0001 check #3)
-- `_shape_body` now takes `(shape, px, py, width, height)` from `feature.width`/`feature.height`: ✓ (reconciliation closes ADR-0001 check #1)
-- `_base_size` deleted: ✓
-- `settings` param dropped from `render_feature_svg`: ✓
-- model.py / builder.py / surface.py untouched by render commits: ✓
-- Tools/harness in `tools/`, not shipped code, `previews/` gitignored: ✓
+- SVG-canonical render (CLAUDE.md invariant): confirmed — render/svg.py is the canonical path; raster is optional-extra only, never at module scope in core.
+- Core import hygiene / Pyodide-readiness invariant: confirmed — see FCIS section.
+- Data/logic equivalence bar (not pixel reproduction): honoured — oracle.round_trip tests structure + correct-answer position for all 840 oracle rows.
+- Option parity with upstream SGMBuilderFrame: confirmed — ui_config.config_from_controls covers all upstream controls; app.py delegates to appsupport.
+- ADR-0002 constant-carrier: confirmed — see dedicated section.
+- 1029 tests passing across all phases.
 
-## Review by Focus Area
+## FCIS / Import Hygiene
 
-### 1. Reconciliation correctness (d4bcbc9)
+The core is clean. Layering is strictly one-directional:
 
-**BASE→width/height geometry.** `_shape_body` now accepts `(shape, px, py, width, height)` and derives `hw = width / 2.0`, `hh = height / 2.0`. Every per-shape formula then uses `hw`/`hh` identically to the previous `hw = BASE`, `hh = BASE` construction — the only structural change is where the half-extents come from. Diamond's `qh = hh / 2.0`, Tee's `qw = w / 4.0` / `qh = h / 4.0`, Trapezoid's `qw = hw / 2.0` are all preserved verbatim. Line uses `hw` only (`height` is explicitly documented as unused), consistent with the Java `LineSGMSurfaceFeature.createLine` where only the length matters and rotation comes from the transform. The per-shape formulas are faithfully unchanged.
+    model → structure/transforms/surface/fillpattern/rng/compat
+          → builder → label → oracle
+          → ui_config → appsupport → {cli.py, app.py}
+    render/svg (core leaf, imports model only)
+    render/raster (edge leaf, optional extra)
 
-**Cell-size contract.** `builder.CELL_PIXEL_SIZE = 100` (builder.py:88). `RasterSettings.cell_pixel_size` defaults to `100` (svg.py:84). The docstring on `RasterSettings` states the matching rationale explicitly. The renderer does not import `builder` — the contract is honoured by value equality of the two constants, not by a runtime check. This is the stated design (dependency-light renderer); it is sound.
+Verified by grep:
 
-**No cross-dependency.** `grep` of `render/svg.py` and `render/raster.py` for any `builder` import returns no matches. The render subsystem remains import-clean.
+- Zero back-imports of cli into any core module.
+- Zero marimo imports outside app.py.
+- Zero typer imports outside cli.py.
+- raster import in cli.py is a deferred `try/import` inside `_rasterise_or_exit()` (cli.py:194), never at module level. Correct guard pattern.
+- appsupport.py imports `render/svg` directly — correct, svg is a core leaf.
+- render/svg.py imports only `raven_matrix.model`. No builder, no raster, no cli.
 
-### 2. Test-intent preservation
+## ADR-0002 Constant-Carrier Path
 
-All invariant-guard tests from the renderer branch survive the reconciliation and their intent is intact:
+`base_constant_shape` has exactly one write site: `label.py:_parse_segment()`, set only when a supplemental-led code triggers the implicit ShapeRepetition injection (label.py:374 default False, label.py:402 set True). It flows into `LayerConfig.base_constant_shape` (builder.py:132), consumed at builder.py:294 as the `constant=` argument to `_build_shape_repetition`. No other module reads or writes this field. The path is consistent and uncontradicted across the full package.
 
-- **`test_default_raster_has_documented_sizing`** — asserts `cell_pixel_size == 100` and `pixels_between_cells == 10`. This is now a contract test for the reconciliation: it would catch a revert of the 256→100 change.
-- **`test_scale_lives_in_transform_not_geometry`** — renders the same shape at `scale=1.0` and `scale=0.66`; asserts geometry attributes are identical and only the `scale(...)` term in the transform differs. This directly guards the invariant that `feature.scale` is not baked into the path. The test uses concrete `width=height=128` features, so it exercises the new `_shape_body(shape, px, py, width, height)` signature, not a settings-derived BASE.
-- **`test_off_centre_position_drives_geometry_and_transform_pivot`** — renders at `Point(64.0, 192.0)`; asserts `cx/cy` reflect that position and the transform pivots on it. Still asserts its invariant correctly under the 7-arg model: `rx/ry` come from `width/height=128` independent of position.
-- **`test_rotation_degrees_emitted_directly_as_svg_rotate`** / **`test_rotation_45_degrees_emitted_directly`** — unchanged, both still fire on the old double-conversion bug.
-- **`test_answers_svg_has_eight_white_cell_background_rects`** / **`test_answers_svg_white_fill_shape_has_cell_bg_rect`** — the white-answer-cell-bg tests assert the `<rect class="cell-bg">` is the first child of each answer `<g>` (before features). These pass; the implementation (`_positioned_answer_cell`) correctly emits `white_bg` before `render_cell_svg(...)`.
-- **`test_matrix_svg_bottom_right_cell_is_blank`** — asserts the 9th cell group's inner `<g>` has no children. Passes; the blank-bottom-right is hardcoded.
+## API Consistency Across Module Seams
 
-All tests verify emitted SVG structure, not mocks. No test was reduced to a weaker assertion during the reconciliation. The geometry-pinned tests (ellipse/rectangle/line/diamond/triangle/trapezoid/tee) now use `width=height=128` (hw=hh=64) explicitly rather than deriving from a settings-based BASE; the expected coordinate values are recomputed from those dimensions, which is correct.
+All seams are coherent with no signature drift:
 
-One minor observation about the raster test helper (not a fault): `test_rasterise_returns_nontrivial_png` asserts `len(png) > 100`. For a rendered 330×330 matrix PNG this is safe by many orders of magnitude, but the threshold communicates nothing useful about "non-trivial". This is a nit only — the PNG magic + IHDR dimension tests alongside it provide the real semantic coverage.
+- `build()` / `build_from_code()` / `BuilderConfig` (Phase 4): consumed identically by oracle.py, appsupport.py, and cli.py with the same `(config, seed)` / `(code, seed)` signatures.
+- `label()` / `parse_code()` (Phase 5): oracle.py uses both; appsupport.py uses `label` for display; cli.py uses `label` for stderr reporting. All consistent.
+- `render_matrix_svg` / `render_answers_svg` (Phase 6): called by appsupport.py and cli.py with identical `(matrix, settings=DEFAULT_RASTER)` signatures.
+- `oracle.round_trip` / `build_pass_map` (Phase 5/7): cli.py oracle command calls `build_pass_map(rows)` correctly — CLI owns CSV I/O, oracle module stays pure.
+- `config_from_controls` / `LayerControls` (Phase 7): shared between cli.py and appsupport.py via ui_config with no duplication of the mapping logic.
 
-### 3. Merge integrity
+## Packaging Coherence
 
-- No conflict markers in `src/` or `tests/` (grep clean).
-- `model.py` and `builder.py`: not present in the diff at all — untouched by all three commits.
-- `render/__init__.py`: 12-line docstring, zero import statements. Clean.
-- `render/svg.py`: imports `from __future__ import annotations`, `dataclasses.dataclass`, and `from raven_matrix.model import Cell, Fill, Matrix, Shape, SurfaceFeature`. No `resvg_py`, no `builder`, no `raster`.
-- `render/raster.py`: `resvg_py` import is inside `rasterise()` only, wrapped in `try/except ImportError` with a clear hint message. Module-scope is clean.
-- `uv.lock`: `resvg-py==0.3.2` added with full wheel hashes. `pyproject.toml` `raster` extra updated from placeholder to `resvg-py>=0.3.2`. Consistent.
-
-### 4. Tool (05e39bd) — import hygiene and basic quality
-
-`tools/render_preview.py` imports `from raven_matrix.render.raster import rasterise` explicitly — it does not import via `render.__init__`, which would have been a hygiene signal. The `resvg_py` import never reaches the core path. The tool is not on the shipped import path (`tools/` is not a package). No `sys.path` manipulation.
-
-The tool correctly uses `DEFAULT_RASTER` (100px) for the `build` mode previews, which is right — `build()` emits positions in the 100px cell space.
+- `[project.optional-dependencies]`: raster / ui / cli / difficulty extras declared. Clean.
+- `[project.scripts]`: `raven-matrix = "raven_matrix.cli:app"` — correct target. Typer is in the `cli` extra, not base deps; a bare install produces a broken entry point (see Minor issue below).
+- `[tool.hatch.build.targets.wheel.force-include]`: `"data/ravens_oracle.csv" = "raven_matrix/data/ravens_oracle.csv"` — matches `_oracle_csv_path()` (cli.py:55, importlib.resources path). Source-tree fallback at cli.py:60 is consistent. Both paths verified.
+- `requires-python = ">=3.12"`, `ruff target-version = "py312"`, `ty python-version = "3.12"`: consistent Pyodide floor, documented in comments.
+- `exclude-newer = "2026-06-02T00:00:00Z"`: absolute date — correct, overrides any user-level relative span for reproducible CI locks.
 
 ## Issues
 
-### Minor (count: 1)
+### Critical (count: 0)
 
-- **Issue**: In `tools/render_preview.py`, the gallery mode uses `GALLERY = RasterSettings(cell_pixel_size=200)` but `_CENTRE = Point(100.0, 100.0)` is hard-coded as the default feature position. A 200px cell has its centre at `(100.0, 100.0)` — which happens to be numerically correct for a 200px cell. However, the comment on line 47 reads `"centre of the 200px gallery cell"` and `100.0` is indeed half of 200, so the value is right by coincidence of arithmetic. On closer inspection this is not wrong — `100.0 = 200 / 2` is the correct centre — but the feature size defaults (`w=120.0, h=120.0`) and cell size (200px) are independent choices that are nowhere verified to be consistent, and the comment could mislead a future editor into thinking 100.0 is the builder cell size (which it also equals). A clearer constant name such as `_GALLERY_CENTRE = Point(100.0, 100.0)` or deriving it from `GALLERY.cell_pixel_size // 2` would make the intent unambiguous.
-- **Location**: `tools/render_preview.py:47`
-- **Fix**: Rename `_CENTRE` to `_GALLERY_CENTRE`, or derive it: `_GALLERY_CENTRE = Point(GALLERY.cell_pixel_size / 2, GALLERY.cell_pixel_size / 2)`. This is a dev harness; it does not affect any shipped code or test behaviour.
+None.
 
-## Open Contract Items (carry-forward, not review blockers)
+### Important (count: 1)
 
-These are documented in ADR-0001 and are not regressions introduced by this integration. They remain as Phase-7/8 verification tasks:
+- **Issue**: cli.py re-implements the build-and-render orchestration that appsupport.build_outcome already encapsulates. The cli `build` command (cli.py:159-181) performs: parse code or assemble config → call build → call render_*_svg → call label. This is the same four-step sequence as appsupport.build_outcome (appsupport.py:295-320) plus compose_save_svg. The duplication is currently shallow — both delegate immediately to the same core calls with no diverged branching logic — but it creates two maintenance targets for the same operation.
+- **Location**: `src/raven_matrix/cli.py:159-181` vs `src/raven_matrix/appsupport.py:295-320`
+- **Fix**: Have cli.py's build command call `build_outcome()` from appsupport, then extract SVG from `BuildOutcome.matrix`. This collapses the duplication and ensures CLI and app stay in lockstep when orchestration logic evolves. Not a correctness risk at current scope; raise priority if Phase 8 adds complexity to the build path.
 
-1. **Scale/BASE contract** (ADR-0001 check #1, partially closed): the reconciliation establishes that `feature.width`/`feature.height` are the authoritative size source, but `build()` must emit those fields in the same 100px cell space the renderer expects. The `render_preview.py` `build` mode is the first end-to-end exercise of this contract. Visual UAT in Phase 7 provides the human-judgment half.
-2. **Multi-feature paint order** (ADR-0001 check #2): SVG document order = painter's model. Untested with real multi-layer output; deferred to Phase 7.
-3. **Rotation unit cross-phase** (ADR-0001 check #4): renderer emits degrees directly; `build()` must store rotation in degrees. Unverified end-to-end; deferred to Phase 7.
+### Minor (count: 2)
+
+- **Issue**: `[project.scripts]` declares `raven-matrix` pointing at `raven_matrix.cli:app`, but `typer` is only in the optional `cli` extra. A bare `pip install raven-matrix` (without `[cli]`) installs the entry point but it fails at runtime with ImportError. This is a distribution-time footgun for anyone installing from PyPI without reading the extras documentation.
+- **Location**: `pyproject.toml` — `[project.scripts]` block
+- **Fix**: Add a prominent note to the README (or pyproject description) that the entry point requires `pip install raven-matrix[cli]`. Alternatively, move the script declaration so it is only advertised when the extra is present. Not a blocker — the project is not yet on PyPI — but address before any public release.
+
+- **Issue**: `src/raven_matrix/__init__.py` exports nothing beyond `__version__`. All consumers must import from submodules directly. This is valid at v0.1.0, but Phase 8 (Pyodide/WASM) will need a stable browser entry point. Without a declared public API in `__init__.py`, there is no pinned surface for the WASM wrapper to depend on.
+- **Location**: `src/raven_matrix/__init__.py`
+- **Fix**: Before Phase 8, decide which symbols constitute the public API (at minimum: `build`, `build_from_code`, `BuilderConfig`, `render_matrix_svg`, `render_answers_svg`) and re-export them from `__init__.py`. Not blocking for this merge.
 
 ## Decision: APPROVED FOR MERGE
+
+No critical issues. The integration layer is coherent across all seven phases: FCIS boundaries are clean, ADR-0002 constant-carrier is consistently honoured, all five verification gates pass at 1029 tests, and there is no dead code, TODO/FIXME, or type suppression anywhere in the code surface. The one Important finding (cli/appsupport orchestration duplication) is shallow and carries no correctness risk at current scope; it is a Phase 8 prep item.

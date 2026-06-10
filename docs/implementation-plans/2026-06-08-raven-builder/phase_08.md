@@ -230,3 +230,28 @@ git commit -m "ci(pages): deploy WASM bundle to GitHub Pages (stretch)"
 - [ ] (Stretch) Pages workflow deploys; live URL generates a matrix, or the status is recorded and demoted per the fallback (AC7.3).
 - [ ] UAT in-browser check recorded.
 - [ ] Outward publishes were user-triggered (GitHub Releases), not auto-fired.
+
+---
+
+## Deferred from pre-merge review (2026-06-10)
+
+The raven-builder → main pre-merge integration review (APPROVED; full findings in
+`code-review-findings-pre-merge.md`) raised three items, all Phase-8/release-prep
+rather than defects. Deferred here by Brian's decision when merging Phase 7:
+
+- **[Important] Fold the CLI build path through `appsupport.build_outcome`.**
+  `cli.py` `build` (≈cli.py:159-181) repeats the parse/assemble → `build` →
+  render → `label` sequence that `appsupport.build_outcome` (≈appsupport.py:295-320)
+  already encapsulates. Shallow today (both delegate to the same core calls, no
+  diverged logic, no correctness risk), but two maintenance targets for one
+  operation. Tidy before Phase 8 grows the build path — route the CLI through
+  `build_outcome`, extracting the SVG/PNG from `BuildOutcome.matrix`.
+- **[Minor] `[project.scripts]` entry point needs the `cli` extra.** A bare
+  `pip install raven-matrix` installs the `raven-matrix` script but `typer` is in
+  the optional `cli` extra, so it ImportErrors. Only bites once on PyPI (Task 2).
+  Document `pip install raven-matrix[cli]` (the README already steers local users
+  to `--extra cli`).
+- **[Minor] Declare a public API in `src/raven_matrix/__init__.py`.** It exports
+  only `__version__`. Task 1/3 (the WASM wrapper) will want a pinned surface —
+  at minimum re-export `build`, `build_from_code`, `BuilderConfig`,
+  `render_matrix_svg`, `render_answers_svg`.
