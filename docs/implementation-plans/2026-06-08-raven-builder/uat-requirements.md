@@ -51,6 +51,27 @@ Look at the rendered problem and answer choices.
 as a filled (not outline-only) shape, or a non-White fill renders transparent; the greys are
 not visually ordered; or the answer grid / blank cell looks broken.
 
+### Constant-carrier fidelity (ratifies ADR-0002; carried from the Phase 5 coherence review, finding M3)
+
+**This decision assumes:** every supplemental-led code (one with no named shape relation —
+`C1`, `D1`, `E1`, any `B`/`C`/`D`/`E`-led code) builds a SINGLE constant carrier shape with
+only the named supplemental varying, matching the 2008 norming PNGs — NOT the 2011 source's
+three-distinct-shape ShapeRepetition base. This is ADR-0002, inferred by one reader from the
+rendered 2008 PNGs against a 2011 source that explicitly disagrees. The Phase 5 sweep proves
+parser/labeller self-consistency (51% of codes pass only via carrier-normalisation), NOT
+visual fidelity — so this is ADR-0002's independent ratification gate, not a formality.
+
+**To shatter it:** render a spread of supplemental-led stimuli — at least `C1`, `C2`, `C3`,
+`C4` (orientation, all four non-corner-out directions), `D1` (scaling), `E1` (numerosity) —
+and compare each side-by-side with its published norming image (`1 Layer Stim/{code}_1.png`
+in `Matzen_et_al_2010_norming_stim.zip`). Also render an `A`-named code (e.g. `A1C2`) as the
+contrast case.
+
+**It's wrong if:** a built supplemental-led matrix shows MORE THAN ONE distinct shape (an
+extra shape-repetition relation the norming stimulus does not have); or the named supplemental
+varies along a different axis than the PNG shows; or an `A`-named code does NOT show three
+distinct shapes (the active shape relation must remain active precisely when shape is named).
+
 ---
 
 ## Phase 8: Hosted online (concluding)
