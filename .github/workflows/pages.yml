@@ -1,0 +1,64 @@
+name: Deploy WASM app to Pages
+
+# Publishes the marimo app as a static, in-browser WASM bundle to GitHub Pages.
+# No PyPI: the pure `raven-matrix` wheel is built here and bundled into the
+# export's `assets/`, where the app's micropip bootstrap (app.py `_wasm_bootstrap`)
+# fetches it — micropip resolves the bare wheel name relative to the Pyodide
+# worker, which lives under `assets/`, so this also resolves correctly under the
+# Pages project subpath (verified: no `<base href>` needed).
+#
+# Prerequisite (one-time, manual): Settings → Pages → Source = "GitHub Actions".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  pages: write
+  id-token: write
+  contents: read
+
+# One live deploy at a time; a newer push supersedes an in-flight one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        # The upstream/Matrices submodule is read-only reference and is NOT needed
+        # to build the wheel or export the app — skip it for a fast, self-contained build.
+
+      - uses: astral-sh/setup-uv@v6 # verify current major on first run
+
+      - name: Build the pure wheel
+        run: uv build --wheel
+
+      - name: Export the WASM bundle (run mode = auto-run, code hidden)
+        run: uv run --extra ui marimo export html-wasm app.py -o build --mode run
+
+      - name: Bundle the wheel for in-browser micropip (worker-relative → assets/)
+        run: cp dist/raven_matrix-*.whl build/assets/
+
+      - name: Drop repo files the exporter sweeps in (keep the public bundle clean)
+        run: rm -f build/CLAUDE.md
+
+      - name: Pages housekeeping (serve assets/ dotfiles, skip Jekyll)
+        run: touch build/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
