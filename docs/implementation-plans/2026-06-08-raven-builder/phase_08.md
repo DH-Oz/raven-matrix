@@ -1,257 +1,145 @@
 # raven-builder Implementation Plan — Phase 8: Hosted online (concluding)
 
-**Goal:** Publish the pure-Python `raven-matrix` wheel to PyPI and produce a working WASM bundle from the marimo app via `marimo export html-wasm`, with a live GitHub Pages site as the stretch target.
+> **Revised 2026-06-11** after a WASM spike (this session) that changed the plan's
+> spine. The original assumed **PyPI-first** (because marimo #5488 blocks
+> local-wheel bundling) and **SVG-only** in-browser. Both proved unnecessary:
+>
+> - **No PyPI needed.** micropip installs the pure wheel **bundled in the export's
+>   `assets/`**. micropip resolves the bare wheel name relative to the Pyodide
+>   *worker* (which lives under `assets/`), so it also resolves under the Pages
+>   project subpath — verified, no `<base href>` required. #5488 is only about
+>   *automatic* local-package bundling; manual micropip sidesteps it.
+> - **PNG works in-browser** via an HTML `<canvas>` inside `mo.iframe` (marimo's
+>   iframe carries no `sandbox`, so the blob download fires). `resvg-py` is a
+>   compiled Rust wheel that cannot load under Pyodide; it stays the CLI/headless
+>   rasteriser and is never shipped to WASM.
+> - **PyPI is deferred** to an optional future (was AC7.2). The web app no longer
+>   needs it; revisit only if `pip install raven-matrix` becomes a goal in itself.
+>   Doing it later costs no more than doing it now, and would only tempt rewiring
+>   the proven `assets/` bootstrap into a PEP-723-from-PyPI load.
+> - The repo **`DH-Oz/raven-matrix` already exists and is public**; GitHub Pages
+>   is the deploy target.
 
-**Architecture:** The pure, zero-runtime-dep core makes the wheel directly loadable in Pyodide via micropip. `app.py` declares its dependency via a PEP 723 `# /// script` block (`raven-matrix`), which marimo's exporter feeds to micropip in-browser. Because marimo #5488 (local-package import in WASM) is **open**, a *working* export requires the wheel on PyPI — so PyPI publish precedes the export. The release workflow uses Trusted Publishing (OIDC); the Pages workflow exports + deploys. The compiled `raster` extra is never used in-browser (the app renders SVG directly).
+**Goal:** Publish the marimo app as a static, in-browser WASM bundle on GitHub
+Pages — generating matrices and exporting **SVG + PNG entirely client-side**, with
+no server and no PyPI dependency.
 
-**Tech Stack:** uv (`uv build`), `pypa/gh-action-pypi-publish` (OIDC), `marimo export html-wasm` (Pyodide), `actions/upload-pages-artifact` + `actions/deploy-pages`.
+**Architecture:** The pure, zero-runtime-dep core wheel loads in Pyodide via
+micropip. `app.py` carries a guarded `_wasm_bootstrap` cell that, only under
+Pyodide, micropip-installs the wheel bundled in `assets/`; it is a no-op locally.
+PNG export is pure client-side JS (canvas) inside `mo.iframe`. The Pages workflow
+builds the wheel, exports the bundle, drops the wheel into `assets/`, strips the
+stray `CLAUDE.md` the exporter sweeps in, and deploys.
 
-**Scope:** Phase 8 of 8 from `docs/design-plans/2026-06-08-raven-builder.md`. Concluding phase, sequenced last so deploy plumbing never blocks core correctness.
+**Tech stack:** uv (`uv build`), `marimo export html-wasm` (Pyodide, run mode),
+`actions/upload-pages-artifact` + `actions/deploy-pages`.
 
-**Codebase verified:** 2026-06-08 (research). #5488 open → no local-wheel bundling; PEP 723 is the dep mechanism; Trusted Publishing is the publish path; Pages needs `.nojekyll` and likely a `<base href="/raven-matrix/">` for the project subpath. The core's import hygiene (no `ui`/`cli`/`raster` imports) is a standing invariant from Phase 1's layering — re-verified here as a WASM cold-start guard.
-
-**Phase Type:** infrastructure (deploy)
+**Verification:** operational, not unit-tested. Proven this session with headless
+Chrome / Playwright against the served bundle: matrix builds in-browser; SVG and
+PNG both download; the chain survives a `/raven-matrix/` project subpath with zero
+404s. A wheel-name guard test ties `app.py`'s bootstrap to the package version.
 
 ---
 
 ## Acceptance Criteria Coverage
 
 ### raven-builder.AC7: Hosted online (concluding phase)
-- **raven-builder.AC7.1 Success (DoD-met):** the marimo app runs locally and `marimo export html-wasm` produces a working static bundle that generates a matrix in-browser.
-- **raven-builder.AC7.2 Success:** the `raven-matrix` wheel publishes to PyPI and installs via micropip in the WASM environment.
-- **raven-builder.AC7.3 Stretch:** a live GitHub Pages URL loads the app and generates a matrix in-browser (demoted to stretch per the criterion-7 fallback if marimo #5488 or Pages plumbing blocks it).
-
-**Verifies (operational):** wheel resolves on PyPI; export emits a served bundle that generates a matrix; (stretch) the live URL works. **Not unit-tested** — verification is operational, capped by a UAT browser check.
-
----
-
-## Decisions carried into this phase (resolved during planning)
-
-- **Sequencing (forced by open #5488):** PyPI trusted-publisher setup → **dev pre-release** (validate) → real release → `marimo export html-wasm` (working bundle) → Pages deploy (stretch).
-- **First publish = dev pre-release first** (`0.1.0.dev0`) to validate the export+micropip pipeline before burning the immutable real `0.1.0`.
-- **Deps via PEP 723** in `app.py` (`raven-matrix` only; raster excluded in-browser).
-- **Live Pages site is stretch;** AC7.1+AC7.2 (wheel on PyPI + working local-served export) meet the DoD even if Pages is blocked.
-- **Outward actions stay user-gated:** the workflow only publishes when *you* cut a GitHub Release; the one-time PyPI trusted-publisher config is a manual prerequisite.
+- **AC7.1 (DoD-met):** `marimo export html-wasm` produces a static bundle that
+  generates a matrix in-browser, served locally and on Pages. **Met + verified.**
+- **AC7.2 → DEFERRED:** publish the wheel to PyPI. No longer on the critical path;
+  reopened only if package distribution is wanted.
+- **AC7.3:** a live GitHub Pages URL loads the app and generates a matrix
+  in-browser. Now the primary deliverable (not stretch), since no PyPI gate
+  precedes it.
+- **AC7.4 (new):** the app exports PNG client-side (Qualtrics-ingestible), not
+  only SVG. **Met + verified.**
 
 ---
+
+## Tasks
 
 <!-- START_TASK_1 -->
-### Task 1: WASM-ready packaging — PEP 723 deps + core import hygiene
+### Task 1: WASM bootstrap + wheel bundling — DONE
 
-**Files:**
-- Modify: `app.py` (add the PEP 723 script-metadata block)
-- Create: `tests/test_import_hygiene.py` (guards WASM cold-start)
-
-**Step 1: Add the PEP 723 block to `app.py`**
-
-At the very top of `app.py`:
-```python
-# /// script
-# requires-python = ">=3.12"
-# dependencies = [
-#     "raven-matrix",
-# ]
-# ///
-```
-(Marimo's `export html-wasm` reads this and installs `raven-matrix` via micropip. Do NOT list `resvg_py`/`typer` — neither is used in the browser path. The `>=3.12` floor matches the package; see Step 0.)
-
-**Step 0: Confirm the live Pyodide Python version (resolves review finding I3)**
-
-Before exporting, check the Python version the current marimo-WASM/Pyodide runtime ships (it lags CPython). If it is **≥ the package floor (3.12)**, proceed. If marimo's Pyodide is *newer* than 3.12, the floor may be raised to match (optional). If — unexpectedly — it were *below* 3.12, lower the package `requires-python` accordingly and re-confirm the core runs there. Record the observed Pyodide version in `docs/wasm-export.md`. (The `[3.12, 3.14]` CI matrix from Phase 1 already proves the package runs on 3.12.)
-
-**Step 2: Import-hygiene guard**
-
-`tests/test_import_hygiene.py`: import the core entry points (`raven_matrix.builder`, `.label`, `.render.svg`) in a subprocess and assert that `marimo`, `typer`, and `resvg_py` are **not** in `sys.modules` afterwards — proving the core pulls no edge dependency (fast WASM cold-start, and the pure wheel resolves in Pyodide).
-
-**Step 3: Verify the wheel is pure + dep-free**
-
-```bash
-uv build --wheel
-uv run python -c "import zipfile,glob; w=glob.glob('dist/*.whl')[0]; n=zipfile.ZipFile(w).namelist(); print(w); assert not any(x.endswith('.so') or x.endswith('.pyd') for x in n), 'compiled artifact in wheel'"
-```
-Confirm the wheel's `METADATA` lists no mandatory runtime deps (only the extras). 
-
-**Step 4: Verify + commit**
-```bash
-uv run pytest tests/test_import_hygiene.py -v && uv run ty check . && uv run ruff check .
-git add app.py tests/test_import_hygiene.py
-git commit -m "build(wasm): PEP 723 deps in app.py + core import-hygiene guard"
-```
+- `app.py` `_wasm_bootstrap` (hidden cell): under `"pyodide" in sys.modules`,
+  `import micropip` (a `# ty: ignore[unresolved-import]` — Pyodide-provided, no
+  local stub) then `micropip.install("raven_matrix-<ver>-py3-none-any.whl")`.
+  No-op locally. Returns `bootstrapped`, which `_imports` consumes to force this
+  cell to run first (marimo orders by data dependency).
+- The wheel is pure: no compiled artifacts; every `Requires-Dist` is extras-only
+  (`marimo`/`typer`/`resvg-py` all behind extras). The marimo-as-mandatory-dep
+  edit was reverted — a hard dep would make micropip chase marimo from PyPI.
+- **Guard test:** assert `app.py` references `raven_matrix-{__version__}-…whl`, so
+  a version bump that forgets the bootstrap fails CI. *(to add)*
 <!-- END_TASK_1 -->
 
 <!-- START_TASK_2 -->
-### Task 2: PyPI release workflow (Trusted Publishing) + dev pre-release
+### Task 2: In-browser PNG export — DONE
 
-**Files:**
-- Create: `.github/workflows/release.yml`
-- Create/Modify: a short `docs/release.md` (the one-time manual PyPI trusted-publisher steps)
-
-**Step 1: Document the one-time PyPI setup** (manual, user-performed)
-
-`docs/release.md`: on PyPI, add a Trusted Publisher for the `raven-matrix` project — GitHub Actions, owner + repo, workflow `release.yml`, environment `pypi`. (This cannot be scripted; it is the human prerequisite.)
-
-**Step 2: Release workflow** (`.github/workflows/release.yml`)
-```yaml
-name: Publish to PyPI
-on:
-  release:
-    types: [published]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6   # bump to current major
-      - run: uv build
-      - uses: actions/upload-artifact@v4
-        with: { name: dist, path: dist/ }
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write           # OIDC — no API token
-    steps:
-      - uses: actions/download-artifact@v4
-        with: { name: dist, path: dist/ }
-      - uses: pypa/gh-action-pypi-publish@release/v1
-```
-
-**Step 3: Dev pre-release (validate before burning the real version)**
-
-Set the version to `0.1.0.dev0` (in `pyproject.toml`), cut a GitHub **pre-release** tagged `v0.1.0.dev0` → the workflow publishes the dev wheel. Confirm it appears on PyPI and installs:
-```bash
-uv run python -c "import urllib.request,json; print(json.load(urllib.request.urlopen('https://pypi.org/pypi/raven-matrix/json'))['info']['version'])"
-```
-**This publish is an outward, user-triggered act** — the human creates the release; the workflow does the rest.
-
-**Step 4: Commit**
-```bash
-git add .github/workflows/release.yml docs/release.md
-git commit -m "ci(release): PyPI Trusted Publishing workflow + dev pre-release docs"
-```
+- `app.py` `_save` cell: alongside the three SVG `mo.download` buttons, an
+  `mo.iframe` (not `mo.Html`, which strips `<script>`) holding three PNG buttons.
+  Each SVG is handed in as a base64 `data:` URL; a `<canvas>` draws it at 2× on a
+  white ground and triggers a blob download. Works identically locally and in
+  WASM (marimo's frontend is a browser in both).
+- `resvg-py` remains the CLI/headless rasteriser; it is never imported in-browser.
 <!-- END_TASK_2 -->
 
 <!-- START_TASK_3 -->
-### Task 3: WASM export — working bundle (AC7.1, AC7.2)
+### Task 3: GitHub Pages deploy workflow — DONE (needs one manual setting)
 
-**Files:**
-- Create: `docs/wasm-export.md` (the export + local-serve verification recipe)
-
-**Step 1: Export against the dev wheel**
-
-With `0.1.0.dev0` on PyPI and the PEP 723 block in place:
-```bash
-uv run --extra ui marimo export html-wasm app.py -o build --mode run
-touch build/.nojekyll
-```
-Confirm `build/index.html` + `build/assets/` exist.
-
-**Step 2: Serve locally + verify in-browser (UAT)**
-```bash
-uv run python -m http.server -d build 8000
-```
-Open `http://localhost:8000/`, wait for the Pyodide cold-start + micropip install of `raven-matrix`, and confirm the app **generates a matrix** (controls + code mode both render SVG). This is AC7.1 (working bundle) + AC7.2 (micropip install) met.
-
-**Step 3: Cut the real release**
-
-Once the dev bundle works end-to-end, bump the version to `0.1.0`, cut a real GitHub Release `v0.1.0` → the workflow publishes the real wheel. Re-export/verify against `0.1.0`.
-
-**Step 4: Commit**
-```bash
-git add docs/wasm-export.md
-git commit -m "docs(wasm): export + local-serve verification recipe"
-```
+- `.github/workflows/pages.yml`: on push to `main` / dispatch — `uv build --wheel`
+  → `marimo export html-wasm app.py -o build --mode run` → `cp dist/*.whl
+  build/assets/` → `rm build/CLAUDE.md` → `.nojekyll` → upload + deploy.
+- **Manual prerequisite (human):** Settings → Pages → Source = "GitHub Actions".
+- No `<base href>` step: the exporter uses relative asset paths and the wheel is
+  worker-relative, both verified clean under the project subpath.
 <!-- END_TASK_3 -->
 
 <!-- START_TASK_4 -->
-### Task 4: GitHub Pages deploy (AC7.3 — stretch)
+### Task 4: PyPI publish — DEFERRED (optional future)
 
-**Files:**
-- Create: `.github/workflows/pages.yml`
-
-**Step 1: Pages workflow** (`.github/workflows/pages.yml`)
-```yaml
-name: Deploy WASM to Pages
-on:
-  push: { branches: [main] }
-  workflow_dispatch:
-permissions:
-  pages: write
-  id-token: write
-  contents: read
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-      - run: uv run --extra ui marimo export html-wasm app.py -o build --mode run
-      - run: touch build/.nojekyll
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: build/ }
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
-```
-
-**Step 2: Base-path fix (project subpath gotcha)**
-
-If assets 404 on the live `https://<user>.github.io/raven-matrix/` (they load locally but not on Pages), add `<base href="/raven-matrix/">` to the exported `index.html` (a post-export step in the workflow) — the known marimo project-subpath gotcha.
-
-**Step 3: Verify + commit**
-
-Enable Pages (Settings → Pages → GitHub Actions source). After the workflow runs, open the live URL and confirm it generates a matrix in-browser. **If #5488 changes, or Pages plumbing blocks this, demote per the criterion-7 fallback** — AC7.1+AC7.2 already met the DoD; record the live-site status.
-```bash
-git add .github/workflows/pages.yml
-git commit -m "ci(pages): deploy WASM bundle to GitHub Pages (stretch)"
-```
+Only if `pip install raven-matrix` becomes a goal. Then: PyPI Trusted Publisher
+(manual, one-time) + a `release.yml` on GitHub Release (OIDC). The web app does
+not depend on this; it can ship and stay live without it.
 <!-- END_TASK_4 -->
 
 ---
 
-## UAT (persisted to uat-requirements.md)
+## CI hygiene folded in this session
 
-- *In-browser generation:* serve the exported bundle (locally, then the live Pages URL if reached), wait through the Pyodide cold-start, and judge whether the app generates a puzzle responsively and without errors — controls re-render, code mode loads a pasted code, SVG displays. **Wrong if:** the app hangs past a reasonable cold-start, errors on micropip install, or fails to render.
+- Adopted `ruff format` across the repo (the `ruff format --check` gate was red on
+  35 hand-formatted files); CI now green on format.
+- `ty` clean: the one Pyodide-only import (`micropip`) carries a targeted
+  `# ty: ignore[unresolved-import]` (a real platform module the checker's
+  environment cannot have — not a logic suppression).
 
 ---
 
 ## Phase 8 completion check
 
-- [ ] `app.py` declares `raven-matrix` via PEP 723; core import-hygiene guard passes (no `ui`/`cli`/`raster` in the core); wheel is pure (no compiled artifacts).
-- [ ] Release workflow publishes via Trusted Publishing; dev `0.1.0.dev0` validated on PyPI before the real `0.1.0` (AC7.2).
-- [ ] `marimo export html-wasm` yields `index.html`+`assets/`; served locally it generates a matrix in-browser via micropip (AC7.1).
-- [ ] (Stretch) Pages workflow deploys; live URL generates a matrix, or the status is recorded and demoted per the fallback (AC7.3).
-- [ ] UAT in-browser check recorded.
-- [ ] Outward publishes were user-triggered (GitHub Releases), not auto-fired.
+- [x] `app.py` bootstrap installs the bundled wheel under Pyodide; no-op locally.
+- [x] Wheel is pure (no compiled artifacts; deps are extras-only).
+- [x] In-browser SVG **and** PNG export, verified by headless browser download.
+- [x] Bundle survives the Pages project subpath (no 404s, no base-href).
+- [x] `pages.yml` builds + bundles the wheel + strips stray files + deploys.
+- [ ] Pages enabled (Source = GitHub Actions) and the live URL generates a matrix.
+- [ ] Wheel-name guard test added.
+- [ ] UAT: open the live Pages URL, build a matrix, download a PNG.
+- [~] PyPI publish — deferred (AC7.2), not required for the live site.
 
 ---
 
 ## Deferred from pre-merge review (2026-06-10)
 
-The raven-builder → main pre-merge integration review (APPROVED; full findings in
-`code-review-findings-pre-merge.md`) raised three items, all Phase-8/release-prep
-rather than defects. Deferred here by Brian's decision when merging Phase 7:
+Three items from the raven-builder → main pre-merge review remain open (Phase-8/
+release-prep, not defects):
 
 - **[Important] Fold the CLI build path through `appsupport.build_outcome`.**
-  `cli.py` `build` (≈cli.py:159-181) repeats the parse/assemble → `build` →
-  render → `label` sequence that `appsupport.build_outcome` (≈appsupport.py:295-320)
-  already encapsulates. Shallow today (both delegate to the same core calls, no
-  diverged logic, no correctness risk), but two maintenance targets for one
-  operation. Tidy before Phase 8 grows the build path — route the CLI through
-  `build_outcome`, extracting the SVG/PNG from `BuildOutcome.matrix`.
-- **[Minor] `[project.scripts]` entry point needs the `cli` extra.** A bare
-  `pip install raven-matrix` installs the `raven-matrix` script but `typer` is in
-  the optional `cli` extra, so it ImportErrors. Only bites once on PyPI (Task 2).
-  Document `pip install raven-matrix[cli]` (the README already steers local users
-  to `--extra cli`).
-- **[Minor] Declare a public API in `src/raven_matrix/__init__.py`.** It exports
-  only `__version__`. Task 1/3 (the WASM wrapper) will want a pinned surface —
-  at minimum re-export `build`, `build_from_code`, `BuilderConfig`,
-  `render_matrix_svg`, `render_answers_svg`.
+  `cli.py` `build` repeats the parse → build → render → label sequence that
+  `build_outcome` already encapsulates. Shallow today; tidy before the build path
+  grows.
+- **[Minor] `[project.scripts]` entry point needs the `cli` extra** — a bare
+  `pip install raven-matrix` installs the script but `typer` is optional. Only
+  bites if/when PyPI publish (Task 4) happens.
+- **[Minor] Declare a public API in `__init__.py`** — it exports only
+  `__version__`; a pinned surface would help any future packaging.
