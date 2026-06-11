@@ -38,7 +38,27 @@ app = marimo.App(width="medium")
 
 
 @app.cell(hide_code=True)
-def _imports():
+async def _wasm_bootstrap():
+    # WASM bootstrap (Phase 8). In the Pyodide/marimo-WASM runtime the
+    # `raven_matrix` wheel is NOT preinstalled, so micropip fetches the pure wheel
+    # bundled next to index.html. This is a no-op locally (raven_matrix is already
+    # importable and we are not under Pyodide). `bootstrapped` (no leading
+    # underscore, so it is shared across cells) is consumed by `_imports` to force
+    # this cell to run FIRST -- marimo orders by data dependency, not file order.
+    import sys
+
+    if "pyodide" in sys.modules:
+        # micropip is Pyodide-provided (no local stub); the targeted ignore is for a
+        # real platform module the type-checker's environment can't have.
+        import micropip  # ty: ignore[unresolved-import]
+
+        await micropip.install("raven_matrix-0.1.0-py3-none-any.whl")
+    bootstrapped = True
+    return (bootstrapped,)
+
+
+@app.cell(hide_code=True)
+def _imports(bootstrapped):
     import marimo as mo
 
     from raven_matrix.appsupport import (
@@ -125,9 +145,7 @@ def _controls(mo):
     )
     seed = mo.ui.number(start=0, stop=2**31 - 1, step=1, value=0, label="Seed")
     new_seed_button = mo.ui.run_button(label="New seed")
-    layer_count = mo.ui.dropdown(
-        options={"1": 1, "2": 2}, value="1", label="Layers"
-    )
+    layer_count = mo.ui.dropdown(options={"1": 1, "2": 2}, value="1", label="Layers")
     position = mo.ui.number(
         start=1, stop=8, step=1, value=1, label="Correct-answer position"
     )
@@ -274,9 +292,7 @@ def _read_back(
     columns = [layer1]
     if layer_count.value == 2 and layer2 is not None:
         columns.append(layer2)
-    gathered_layers = [
-        layer_controls_from_column(column.value) for column in columns
-    ]
+    gathered_layers = [layer_controls_from_column(column.value) for column in columns]
     return effective_seed, gathered_layers
 
 
@@ -360,28 +376,79 @@ def _save(
                 header_fields=header_fields,
             )
 
+        svg_problem = _svg(include_problem=True, include_answers=False)
+        svg_answers = _svg(include_problem=False, include_answers=True)
+        svg_both = _svg(include_problem=True, include_answers=True)
+
+        # PNG export must run in the BROWSER. resvg-py (the `raster` extra) is a
+        # compiled Rust wheel and cannot load under Pyodide/WASM, so the marimo
+        # frontend rasterises the SVG itself via an HTML <canvas>. This needs
+        # mo.iframe -- mo.Html strips <script>. Each SVG is passed in as a base64
+        # data URL (robust against srcdoc escaping and Unicode), drawn to a 2x
+        # canvas on a white ground (SVGs have no opaque background), then handed to
+        # the user as a PNG blob download. Works identically locally and in WASM,
+        # since marimo's frontend is a browser in both.
+        import base64
+        import json
+
+        def _data_url(svg_text: str) -> str:
+            encoded = base64.b64encode(svg_text.encode()).decode()
+            return "data:image/svg+xml;base64," + encoded
+
+        _png_sources = json.dumps(
+            {
+                "problem": _data_url(svg_problem),
+                "answers": _data_url(svg_answers),
+                "both": _data_url(svg_both),
+            }
+        )
+        _png_names = json.dumps(
+            {
+                "problem": f"raven_{stem}_problem.png",
+                "answers": f"raven_{stem}_answers.png",
+                "both": f"raven_{stem}_problem_answers.png",
+            }
+        )
+        _png_html = (
+            "<!doctype html><meta charset=utf-8>"
+            "<style>body{margin:0;font-family:sans-serif}"
+            "button{margin:0 6px 0 0;padding:6px 10px;cursor:pointer}</style>"
+            "<button onclick=\"dl('problem')\">Save problem</button>"
+            "<button onclick=\"dl('answers')\">Save answers</button>"
+            "<button onclick=\"dl('both')\">Save problem + answers</button>"
+            "<a id=lnk hidden></a>"
+            "<script>const SRC=" + _png_sources + ",NAMES=" + _png_names + ";"
+            "async function dl(k){const i=new Image();"
+            "await new Promise((y,n)=>{i.onload=y;i.onerror=n;i.src=SRC[k];});"
+            "const s=2,w=(i.naturalWidth||800)*s,h=(i.naturalHeight||600)*s;"
+            "const c=document.createElement('canvas');c.width=w;c.height=h;"
+            "const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,w,h);"
+            "g.drawImage(i,0,0,w,h);"
+            "c.toBlob(b=>{const a=document.getElementById('lnk');"
+            "a.href=URL.createObjectURL(b);a.download=NAMES[k];a.click();},"
+            "'image/png');}</script>"
+        )
+
         save_panel = mo.vstack(
             [
                 mo.md("**Save (SVG)**"),
-                mo.hstack(
-                    [header_code, header_answer, header_seed], justify="start"
-                ),
+                mo.hstack([header_code, header_answer, header_seed], justify="start"),
                 mo.hstack(
                     [
                         mo.download(
-                            data=_svg(include_problem=True, include_answers=False),
+                            data=svg_problem,
                             filename=f"raven_{stem}_problem.svg",
                             mimetype="image/svg+xml",
                             label="Save problem",
                         ),
                         mo.download(
-                            data=_svg(include_problem=False, include_answers=True),
+                            data=svg_answers,
                             filename=f"raven_{stem}_answers.svg",
                             mimetype="image/svg+xml",
                             label="Save answers",
                         ),
                         mo.download(
-                            data=_svg(include_problem=True, include_answers=True),
+                            data=svg_both,
                             filename=f"raven_{stem}_problem_answers.svg",
                             mimetype="image/svg+xml",
                             label="Save problem + answers",
@@ -389,6 +456,8 @@ def _save(
                     ],
                     justify="start",
                 ),
+                mo.md("**Save (PNG)**"),
+                mo.iframe(_png_html, height="48px"),
             ]
         )
     return (save_panel,)
