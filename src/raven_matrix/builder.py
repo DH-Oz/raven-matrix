@@ -79,15 +79,15 @@ from raven_matrix.transforms import make_location_transform
 from raven_matrix.transforms.logic import LogicLocationTransform
 
 # Pinned upstream constants (option-surface parity with SGMBuilderFrame).
-MAX_SUPPLEMENTALS_PER_LAYER = 3       # SGMBuilderFrame.java:1030 (max - 1 base).
-NUM_ANSWER_CHOICES = 8                # SGMBuilderFrame.java:1031.
-MATRIX_SIZE = MatrixSize(3, 3)        # SGMBuilderFrame.java:1028 (the only size).
+MAX_SUPPLEMENTALS_PER_LAYER = 3  # SGMBuilderFrame.java:1030 (max - 1 base).
+NUM_ANSWER_CHOICES = 8  # SGMBuilderFrame.java:1031.
+MATRIX_SIZE = MatrixSize(3, 3)  # SGMBuilderFrame.java:1028 (the only size).
 # The GUI's default cell pixel size (SGMBuilderFrame.java:41). Only scales the
 # absolute width/height pixel values; structure and determinism are size-agnostic
 # (the bar is data/logic equivalence, not pixels), so a default suffices.
 CELL_PIXEL_SIZE = 100
-ROTATE_AMOUNT = 45                    # SupplementalGenerator.java:235.
-SCALE_AMOUNT = 0.66                   # SupplementalGenerator.java:213.
+ROTATE_AMOUNT = 45  # SupplementalGenerator.java:235.
+SCALE_AMOUNT = 0.66  # SupplementalGenerator.java:213.
 
 # Distractor dedup cap (SGMMatrix.java:142): stop after this many consecutive
 # duplicate candidates rather than spin forever.
@@ -116,6 +116,7 @@ _LOGIC_OP_CLASS: dict[BaseRelation, type[LogicOperation]] = {
 # ---------------------------------------------------------------------------
 # Config dataclasses (the SGMBuilderFrame option surface, DR1)
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True, slots=True)
 class LayerConfig:
@@ -152,6 +153,7 @@ class BuilderConfig:
 # Validation (AC1.4)
 # ---------------------------------------------------------------------------
 
+
 def validate_config(config: BuilderConfig) -> None:
     """Reject configs the upstream option surface could not produce (AC1.4).
 
@@ -161,9 +163,7 @@ def validate_config(config: BuilderConfig) -> None:
     ``SGMLayerGenerator.java:102-113``).
     """
     if not 1 <= len(config.layers) <= 2:
-        raise ValueError(
-            f"a matrix must have 1 or 2 layers; got {len(config.layers)}"
-        )
+        raise ValueError(f"a matrix must have 1 or 2 layers; got {len(config.layers)}")
     if not 1 <= config.correct_answer_position <= NUM_ANSWER_CHOICES:
         raise ValueError(
             "correct_answer_position must be within 1 to "
@@ -185,6 +185,7 @@ def validate_config(config: BuilderConfig) -> None:
 # ---------------------------------------------------------------------------
 # Base relation construction (BaseSGMStructureFeatureGenerator)
 # ---------------------------------------------------------------------------
+
 
 def _build_shape_repetition(
     direction: Direction,
@@ -266,9 +267,7 @@ def _build_logic_operation(
     return _LOGIC_OP_CLASS[base](transform, pool, rng)
 
 
-def _pool_contains_value(
-    pool: list[SurfaceFeature], candidate: SurfaceFeature
-) -> bool:
+def _pool_contains_value(pool: list[SurfaceFeature], candidate: SurfaceFeature) -> bool:
     """Value membership for the pool dedup (``containsCheck`` l.306-323)."""
     return any(f.value_equals(candidate) for f in pool)
 
@@ -298,6 +297,7 @@ def _build_base_relation(
 # ---------------------------------------------------------------------------
 # Supplemental construction (SupplementalSGMStructureFeatureGenerator)
 # ---------------------------------------------------------------------------
+
 
 def _build_supplemental(
     kind: Supplemental,
@@ -332,6 +332,7 @@ def _build_supplemental(
 # ---------------------------------------------------------------------------
 # Layer build (SGMLayer traversal) and composition
 # ---------------------------------------------------------------------------
+
 
 def build_layer(
     layer_config: LayerConfig,
@@ -462,9 +463,7 @@ def _apply_supplemental_structure(
     transform = relation.location_transform
     for base_index, base_location in enumerate(transform.base_locations()):
         existing_cell = grid[base_location.row][base_location.column]
-        existing = (
-            existing_cell.surface_features if existing_cell is not None else []
-        )
+        existing = existing_cell.surface_features if existing_cell is not None else []
         grid[base_location.row][base_location.column] = Cell(
             surface_features=relation.provide_base_surface_features(
                 base_index, existing
@@ -475,9 +474,7 @@ def _apply_supplemental_structure(
         while current != base_location:
             existing_cell = grid[current.row][current.column]
             existing = (
-                existing_cell.surface_features
-                if existing_cell is not None
-                else []
+                existing_cell.surface_features if existing_cell is not None else []
             )
             parent_location = transform.parent_location(current)
             parent_cell = grid[parent_location.row][parent_location.column]
@@ -515,6 +512,7 @@ def compose_layers(layers: list[Layer], size: MatrixSize) -> list[list[Cell]]:
 # ---------------------------------------------------------------------------
 # Answer + distractor generation (SGMMatrix.java ~242-572)
 # ---------------------------------------------------------------------------
+
 
 def _cell_value_equals(a: Cell, b: Cell) -> bool:
     """Value equality of two cells (port of ``SGMCell.equals``, SGMBaseCell.java:202).
@@ -574,8 +572,7 @@ def _clone_feature(feature: SurfaceFeature) -> SurfaceFeature:
 def _layer_uses_numerosity(layer: Layer) -> bool:
     """True if any of the layer's structure features is a numerosity relation."""
     return any(
-        isinstance(structure, TranslationalNumerosity)
-        for structure in layer.structures
+        isinstance(structure, TranslationalNumerosity) for structure in layer.structures
     )
 
 
@@ -854,6 +851,7 @@ def generate_answer_choices(
 # ---------------------------------------------------------------------------
 # build() — the end-to-end entry point
 # ---------------------------------------------------------------------------
+
 
 def build(
     config: BuilderConfig,

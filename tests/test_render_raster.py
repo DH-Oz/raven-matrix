@@ -40,8 +40,13 @@ PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 def _feat(shape: Shape, fill: Fill) -> SurfaceFeature:
     # Absolute pre-scale pixels (7-arg model); centre/size valid for a 100px cell.
     return SurfaceFeature(
-        shape=shape, fill=fill, scale=1.0, rotation=0.0,
-        position=Point(50.0, 50.0), width=50.0, height=50.0,
+        shape=shape,
+        fill=fill,
+        scale=1.0,
+        rotation=0.0,
+        position=Point(50.0, 50.0),
+        width=50.0,
+        height=50.0,
     )
 
 
@@ -62,8 +67,10 @@ def _sample_matrix() -> Matrix:
             k += 1
         grid.append(grid_row)
     answers = [
-        Cell(surface_features=[_feat(shapes[i % len(shapes)], fills[i % len(fills)])],
-             location=Location(0, 0))
+        Cell(
+            surface_features=[_feat(shapes[i % len(shapes)], fills[i % len(fills)])],
+            location=Location(0, 0),
+        )
         for i in range(8)
     ]
     layer = Layer(cells=grid, structures=[])
@@ -85,6 +92,7 @@ def _png_dimensions(png: bytes) -> tuple[int, int]:
 # ---------------------------------------------------------------------------
 # AC5.2: rasterise produces a real PNG
 # ---------------------------------------------------------------------------
+
 
 def test_rasterise_returns_png_magic() -> None:
     png = rasterise(render_matrix_svg(_sample_matrix()))
@@ -108,6 +116,7 @@ def test_rasterise_png_ihdr_has_positive_dimensions() -> None:
 # ---------------------------------------------------------------------------
 # Import hygiene: the core SVG path must not require the raster extra
 # ---------------------------------------------------------------------------
+
 
 def test_importing_core_svg_does_not_load_resvg_py() -> None:
     """``raven_matrix.render.svg`` must import without pulling in ``resvg_py``.

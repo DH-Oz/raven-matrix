@@ -92,9 +92,7 @@ def test_build_with_supplemental_flag() -> None:
 
 
 def test_build_answers_sheet() -> None:
-    result = runner.invoke(
-        app, ["build", "--code", "A1", "--seed", "0", "--answers"]
-    )
+    result = runner.invoke(app, ["build", "--code", "A1", "--seed", "0", "--answers"])
 
     assert result.exit_code == 0
     # The answer sheet has a black background (render_answers_svg).

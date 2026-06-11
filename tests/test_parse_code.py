@@ -45,6 +45,7 @@ from raven_matrix.structure.supplemental import (
 # Single-relation base codes
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     ("code", "direction"),
     [
@@ -72,6 +73,7 @@ def test_shape_repetition_round_trips() -> None:
 # ---------------------------------------------------------------------------
 # B aliasing — FillRep (B1-B4) vs ChangeFill (B5)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize(
     ("code", "direction"),
@@ -118,6 +120,7 @@ def test_b5_realises_change_fill_structure() -> None:
 # Supplemental-only codes (C/D/E) — implicit ShapeRepetition base injected
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     ("code", "kind"),
     [
@@ -150,14 +153,14 @@ def test_scaling_and_numerosity_build() -> None:
     assert any(isinstance(s, ApplyScaling) for s in d_matrix.layers[0].structures)
     e_matrix = build_from_code("E2", seed=0)
     assert any(
-        isinstance(s, TranslationalNumerosity)
-        for s in e_matrix.layers[0].structures
+        isinstance(s, TranslationalNumerosity) for s in e_matrix.layers[0].structures
     )
 
 
 # ---------------------------------------------------------------------------
 # Multi-supplemental and multi-layer codes
 # ---------------------------------------------------------------------------
+
 
 def test_explicit_base_plus_supplementals() -> None:
     # A1B2C4: ShapeRep+H base, FillRep+V (repetition: digit = direction directly),
@@ -187,11 +190,12 @@ def test_explicit_base_plus_supplementals() -> None:
 # SAME stimulus rather than its transpose.
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     ("code", "expected_direction"),
     [
-        ("C1", Direction.VERTICAL),       # C1_1.png: orientation changes vertically.
-        ("C2", Direction.HORIZONTAL),      # C2_1.png: changes horizontally.
+        ("C1", Direction.VERTICAL),  # C1_1.png: orientation changes vertically.
+        ("C2", Direction.HORIZONTAL),  # C2_1.png: changes horizontally.
         ("C3", Direction.DIAGONAL_TL_BR),  # non-rep digit 3 -> TL->BR transform.
         ("C4", Direction.DIAGONAL_BL_TR),  # non-rep digit 4 -> BL->TR transform.
         ("C5", Direction.TOP_LEFT_CORNER_OUT),  # digit 5 -> corner-out (no swap).
@@ -238,6 +242,7 @@ def test_two_layer_code_splits_on_underscore() -> None:
 # AC2.3 — logic codes (bare X/Y/Z) parse, build, and label
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     ("code", "base", "op_class", "expected_label"),
     [
@@ -263,18 +268,19 @@ def test_logic_codes_parse_build_label(
 # AC2.4 — malformed codes raise ValueError
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     "code",
     [
-        "",          # empty.
-        "A",         # missing digit on a non-logic letter.
-        "Q9",        # unknown letter.
-        "A9",        # digit out of the 1-5 range.
-        "A0",        # zero is not a valid direction digit.
-        "1A",        # leading digit (no letter).
-        "AB",        # letter where a digit is expected.
-        "A1_",       # trailing empty layer segment.
-        "X1",        # logic letter must be bare (no digit).
+        "",  # empty.
+        "A",  # missing digit on a non-logic letter.
+        "Q9",  # unknown letter.
+        "A9",  # digit out of the 1-5 range.
+        "A0",  # zero is not a valid direction digit.
+        "1A",  # leading digit (no letter).
+        "AB",  # letter where a digit is expected.
+        "A1_",  # trailing empty layer segment.
+        "X1",  # logic letter must be bare (no digit).
     ],
 )
 def test_malformed_codes_raise_value_error(code: str) -> None:

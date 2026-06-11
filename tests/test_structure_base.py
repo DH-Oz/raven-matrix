@@ -66,6 +66,7 @@ def _feature(shape: Shape = Shape.ELLIPSE, fill: Fill = Fill.WHITE) -> SurfaceFe
 # ShapeRepetition
 # ---------------------------------------------------------------------------
 
+
 def test_shape_repetition_cycles_base_features_by_index_mod_len() -> None:
     """provide_base_surface_features returns base[idx % len] (l.94-99)."""
     transform = Horizontal(MatrixSize(3, 3))
@@ -97,6 +98,7 @@ def test_shape_repetition_exposes_its_location_transform() -> None:
 # ---------------------------------------------------------------------------
 # Logic ops — base-location assignment (the constructor draws)
 # ---------------------------------------------------------------------------
+
 
 def test_logic_assignment_uses_every_feature_and_populates_every_location() -> None:
     """The assignment loop terminates only when all features used and all
@@ -183,6 +185,7 @@ def test_logic_pool_must_be_value_distinct_or_raises() -> None:
 # ---------------------------------------------------------------------------
 # Logic ops — the two-cell combine (DR7 identity witness)
 # ---------------------------------------------------------------------------
+
 
 def _logic_relation(
     op: type[LogicOperation], features: list[SurfaceFeature]

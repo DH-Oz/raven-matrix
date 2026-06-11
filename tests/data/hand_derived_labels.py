@@ -196,9 +196,7 @@ _SHADING_ENTRIES: tuple[HandDerivedEntry, ...] = (
     HandDerivedEntry(
         label_id="A1B3 fill-rep diagonal BL->TR (3-level palette, PNG B3_1)",
         config=_one_layer(
-            supplementals=(
-                (Supplemental.FILL_REPETITION, Direction.DIAGONAL_BL_TR),
-            ),
+            supplementals=((Supplemental.FILL_REPETITION, Direction.DIAGONAL_BL_TR),),
         ),
         expected_code="A1B3",
         externally_grounded=True,
@@ -206,9 +204,7 @@ _SHADING_ENTRIES: tuple[HandDerivedEntry, ...] = (
     HandDerivedEntry(
         label_id="A1B4 fill-rep diagonal TL->BR (3-level palette, PNG B4_1)",
         config=_one_layer(
-            supplementals=(
-                (Supplemental.FILL_REPETITION, Direction.DIAGONAL_TL_BR),
-            ),
+            supplementals=((Supplemental.FILL_REPETITION, Direction.DIAGONAL_TL_BR),),
         ),
         expected_code="A1B4",
         externally_grounded=True,
@@ -216,9 +212,7 @@ _SHADING_ENTRIES: tuple[HandDerivedEntry, ...] = (
     HandDerivedEntry(
         label_id="A1B5 change-fill corner-out (5-level gradient, PNG B5_1)",
         config=_one_layer(
-            supplementals=(
-                (Supplemental.CHANGE_FILL, Direction.TOP_LEFT_CORNER_OUT),
-            ),
+            supplementals=((Supplemental.CHANGE_FILL, Direction.TOP_LEFT_CORNER_OUT),),
         ),
         expected_code="A1B5",
         externally_grounded=True,

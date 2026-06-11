@@ -17,7 +17,10 @@ from raven_matrix.transforms.logic import LogicLocationTransform
 def test_base_locations_are_the_top_left_2x2_block() -> None:
     transform = LogicLocationTransform(MatrixSize(3, 3))
     assert transform.base_locations() == [
-        Location(0, 0), Location(0, 1), Location(1, 0), Location(1, 1)
+        Location(0, 0),
+        Location(0, 1),
+        Location(1, 0),
+        Location(1, 1),
     ]
 
 

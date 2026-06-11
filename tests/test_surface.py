@@ -85,6 +85,7 @@ def _replay(seed: int, cell: int, *, line_enabled: bool) -> dict:
 # Seed 2 -> width index 1            -> 2 pre-fill draws.
 # ---------------------------------------------------------------------------
 
+
 def test_three_prefill_draws_branch_seed0() -> None:
     """Seed 0: smallest width fires the height draw (3 pre-fill draws)."""
     expected = _replay(0, _CELL, line_enabled=False)
@@ -135,6 +136,7 @@ def test_width_never_equals_height_for_default_shapes() -> None:
 # ---------------------------------------------------------------------------
 # AC6.1 — line_shape_enabled toggle
 # ---------------------------------------------------------------------------
+
 
 def test_default_flags_never_draw_line() -> None:
     """With default flags, Line is never produced across many seeds (bound 6)."""

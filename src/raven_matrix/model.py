@@ -16,6 +16,7 @@ from typing import Any, NamedTuple
 # RGBA palette entry — named access so .a reads cleanly
 # ---------------------------------------------------------------------------
 
+
 class Rgba(NamedTuple):
     r: float
     g: float
@@ -26,6 +27,7 @@ class Rgba(NamedTuple):
 # ---------------------------------------------------------------------------
 # Shape — 7 upstream surface shapes
 # ---------------------------------------------------------------------------
+
 
 class Shape(Enum):
     DIAMOND = auto()
@@ -54,17 +56,19 @@ class Shape(Enum):
 # the Swing label and the bug.
 # ---------------------------------------------------------------------------
 
+
 class Fill(Enum):
-    BLACK  = Rgba(0.0,  0.0,  0.0,  0.75)
-    WHITE  = Rgba(1.0,  1.0,  1.0,  0.0)
-    GREY10 = Rgba(0.1,  0.1,  0.1,  0.6)
-    GREY40 = Rgba(0.4,  0.4,  0.4,  0.5)
+    BLACK = Rgba(0.0, 0.0, 0.0, 0.75)
+    WHITE = Rgba(1.0, 1.0, 1.0, 0.0)
+    GREY10 = Rgba(0.1, 0.1, 0.1, 0.6)
+    GREY40 = Rgba(0.4, 0.4, 0.4, 0.5)
     GREY75 = Rgba(0.75, 0.75, 0.75, 0.4)
 
 
 # ---------------------------------------------------------------------------
 # BaseRelation — four base relation types
 # ---------------------------------------------------------------------------
+
 
 class BaseRelation(Enum):
     SHAPE_REPETITION = auto()
@@ -76,6 +80,7 @@ class BaseRelation(Enum):
 # ---------------------------------------------------------------------------
 # Supplemental — five supplemental relation types
 # ---------------------------------------------------------------------------
+
 
 class Supplemental(Enum):
     ROTATION = auto()
@@ -89,17 +94,19 @@ class Supplemental(Enum):
 # Direction — IntEnum so it can be compared against the Matzen digit codes
 # ---------------------------------------------------------------------------
 
+
 class Direction(IntEnum):
-    HORIZONTAL          = 1
-    VERTICAL            = 2
-    DIAGONAL_BL_TR      = 3
-    DIAGONAL_TL_BR      = 4
+    HORIZONTAL = 1
+    VERTICAL = 2
+    DIAGONAL_BL_TR = 3
+    DIAGONAL_TL_BR = 4
     TOP_LEFT_CORNER_OUT = 5
 
 
 # ---------------------------------------------------------------------------
 # Frozen value dataclasses
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True, slots=True)
 class MatrixSize:
@@ -123,6 +130,7 @@ class Point:
 # SurfaceFeature — plain identity class (no __eq__/__hash__ override)
 # Mirrors upstream's missing hashCode + typed-overload equals pattern.
 # ---------------------------------------------------------------------------
+
 
 class SurfaceFeature:
     """A surface feature drawn in one cell.
@@ -202,6 +210,7 @@ class SurfaceFeature:
 # contains_check — feature-list helper (mirrors SGMBaseCell.containsFeatureCheck)
 # ---------------------------------------------------------------------------
 
+
 def contains_check(
     features: list[SurfaceFeature | None],
     item: SurfaceFeature,
@@ -217,6 +226,7 @@ def contains_check(
 # Containers — minimal data holders; Phase 4 populates them
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class Cell:
     """One cell in a matrix, holding its surface features and grid location.
@@ -225,6 +235,7 @@ class Cell:
     pads), mirroring the upstream ``SGMLocation``-null answer cells
     (``SGMMatrix.java:475,564``); grid cells always carry a real location.
     """
+
     surface_features: list[SurfaceFeature]
     location: Location | None
 
@@ -232,6 +243,7 @@ class Cell:
 @dataclass
 class Layer:
     """One layer of a matrix: a grid of cells plus its structure descriptors."""
+
     cells: list[list[Cell]]
     structures: list[Any]  # placeholder; structure-feature type lands in Phase 4
 
@@ -239,6 +251,7 @@ class Layer:
 @dataclass
 class Matrix:
     """A complete generated matrix with answer choices."""
+
     cells: list[list[Cell]]
     answer_choices: list[Cell]
     correct_answer_position: int

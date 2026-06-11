@@ -227,9 +227,7 @@ class LogicOperation(BaseStructureFeature):
         """Derive features from two prior cells (the two-arg variant, l.177-179)."""
 
 
-def _contains_by_value(
-    features: list[SurfaceFeature], item: SurfaceFeature
-) -> bool:
+def _contains_by_value(features: list[SurfaceFeature], item: SurfaceFeature) -> bool:
     """Value membership for the assignment dedup (upstream distinctness intent).
 
     Mirrors ``BaseSGMStructureFeatureGenerator.containsCheck`` (l.306-323), which
@@ -239,9 +237,7 @@ def _contains_by_value(
     return any(f.value_equals(item) for f in features)
 
 
-def _contains_by_identity(
-    features: list[SurfaceFeature], item: SurfaceFeature
-) -> bool:
+def _contains_by_identity(features: list[SurfaceFeature], item: SurfaceFeature) -> bool:
     """Identity membership for the logic set ops (DR7).
 
     Mirrors Java ``List.contains`` dispatching through ``Object.equals``

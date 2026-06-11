@@ -42,6 +42,7 @@ def _distinct_shape_count(matrix: Matrix) -> int:
 # Supplemental-led codes -> ONE constant carrier shape (matches norming PNGs).
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize("code", ["C1", "D1", "E1"])
 def test_supplemental_led_code_has_one_carrier_shape(code: str) -> None:
     # The implicit ShapeRepetition base is a constant carrier: only the named
@@ -53,6 +54,7 @@ def test_supplemental_led_code_has_one_carrier_shape(code: str) -> None:
 # ---------------------------------------------------------------------------
 # Explicit-base codes -> THREE distinct shapes (active shape relation, UNCHANGED).
 # ---------------------------------------------------------------------------
+
 
 def test_explicit_shape_relation_keeps_three_shapes() -> None:
     # A1 is an EXPLICIT shape relation -> three distinct carrier shapes, as the

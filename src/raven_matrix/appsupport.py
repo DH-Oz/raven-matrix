@@ -71,6 +71,7 @@ SUPPLEMENTAL_OPTIONS: dict[str, Supplemental | None] = {
 # Column read-back -> LayerControls
 # ---------------------------------------------------------------------------
 
+
 def layer_controls_from_column(column_value: Mapping[str, Any]) -> LayerControls:
     """Map one GUI column's read-back dict onto a ``LayerControls``.
 
@@ -96,6 +97,7 @@ def layer_controls_from_column(column_value: Mapping[str, Any]) -> LayerControls
 # ---------------------------------------------------------------------------
 # Build orchestration
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True, slots=True)
 class BuildOutcome:
@@ -383,9 +385,7 @@ def _header_band(header_fields: Mapping[str, object], width: int) -> str:
     the ``<text>`` element. The band is ``_HEADER_HEIGHT`` tall and as wide as the
     composition; callers only invoke it when ``header_fields`` is non-empty.
     """
-    summary = "   ".join(
-        f"{key}: {value}" for key, value in header_fields.items()
-    )
+    summary = "   ".join(f"{key}: {value}" for key, value in header_fields.items())
     text = escape(summary)
     return (
         f'<g class="header">'
@@ -419,9 +419,7 @@ def compose_save_svg(
     no ``label()`` -- the caller passes the header fields it wants shown.
     """
     if not include_problem and not include_answers:
-        raise ValueError(
-            "compose_save_svg needs at least one of problem or answers"
-        )
+        raise ValueError("compose_save_svg needs at least one of problem or answers")
 
     pieces: list[tuple[int, int, str]] = []
     if include_problem:

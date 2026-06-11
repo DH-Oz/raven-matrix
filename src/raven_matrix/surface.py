@@ -46,13 +46,13 @@ from raven_matrix.rng import JavaRandom
 # Live-switch index -> Shape (SGMSurfaceFeatureGenerator.java:165-202). Index 6
 # (Line) is only reachable when line_shape_enabled widens the draw to next_int(7).
 _SHAPE_BY_INDEX: tuple[Shape, ...] = (
-    Shape.ELLIPSE,    # case 0, l.167-171
+    Shape.ELLIPSE,  # case 0, l.167-171
     Shape.RECTANGLE,  # case 1, l.172-176
-    Shape.TRIANGLE,   # case 2, l.177-181
-    Shape.TEE,        # case 3, l.182-186
-    Shape.DIAMOND,    # case 4, l.187-191 (live case 4; NOT the commented Line)
+    Shape.TRIANGLE,  # case 2, l.177-181
+    Shape.TEE,  # case 3, l.182-186
+    Shape.DIAMOND,  # case 4, l.187-191 (live case 4; NOT the commented Line)
     Shape.TRAPEZOID,  # case 5, l.192-196
-    Shape.LINE,       # index 6: re-enabled Line (line_shape_enabled only)
+    Shape.LINE,  # index 6: re-enabled Line (line_shape_enabled only)
 )
 
 

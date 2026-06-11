@@ -74,6 +74,7 @@ def _horizontal() -> Horizontal:
 # ApplyRotation — additive, 45 degrees
 # ---------------------------------------------------------------------------
 
+
 def test_rotation_base_passes_existing_through() -> None:
     """Repetition base hook returns the existing features unchanged (l.82-87)."""
     relation = ApplyRotation(_horizontal(), 45)
@@ -109,6 +110,7 @@ def test_rotation_chain_accumulates() -> None:
 # ApplyScaling — multiplicative, 0.66
 # ---------------------------------------------------------------------------
 
+
 def test_scaling_derived_is_multiplicative_over_parent() -> None:
     """derived.scale = scale_amount * parent.scale (ApplyScaling...java:85)."""
     relation = ApplyScaling(_horizontal(), 0.66)
@@ -134,6 +136,7 @@ def test_scaling_chain_multiplies() -> None:
 # ---------------------------------------------------------------------------
 # ChangeFillPattern — cycle [White,Grey75,Grey40,Grey10,Black]
 # ---------------------------------------------------------------------------
+
 
 def test_change_fill_base_uses_cycle_zero() -> None:
     """Base cells all take cycle[0] = White (ChangeFill...java:83)."""
@@ -190,6 +193,7 @@ def test_change_fill_full_cycle_progression() -> None:
 # FillPatternRepetition — cycle [White,Black,Grey75]
 # ---------------------------------------------------------------------------
 
+
 def test_fill_rep_base_cycles_by_index() -> None:
     """Base cells take cycle[idx % len] (FillRep...java:108-110)."""
     relation = FillPatternRepetition(_horizontal(), FILL_REP_CYCLE)
@@ -214,6 +218,7 @@ def test_fill_rep_derived_inherits_parent_fill() -> None:
 # ---------------------------------------------------------------------------
 # TranslationalNumerosity — count + layout
 # ---------------------------------------------------------------------------
+
 
 def _expected_num_positions(size: MatrixSize, initial: int) -> int:
     """Non-TopLeftCornerOut formula: ceil(sqrt(maxDim + (initial - 1)))."""
@@ -242,9 +247,7 @@ def test_numerosity_empty_existing_returns_empty_fail_safe() -> None:
     could pass an empty list.
     """
     size = MatrixSize(3, 3)
-    relation = TranslationalNumerosity(
-        _horizontal(), _CELL, size, initial_numerosity=2
-    )
+    relation = TranslationalNumerosity(_horizontal(), _CELL, size, initial_numerosity=2)
     assert relation.provide_base_surface_features(0, []) == []
     assert relation.transform_surface_features([_feature()], []) == []
 
@@ -312,9 +315,7 @@ def test_numerosity_topleftcornerout_uses_other_formula() -> None:
     size = MatrixSize(3, 3)
     transform = TopLeftCornerOut(size)
     relation = TranslationalNumerosity(transform, _CELL, size, initial_numerosity=1)
-    expected_num_positions = math.ceil(
-        math.sqrt(size.num_rows + size.num_columns - 1)
-    )
+    expected_num_positions = math.ceil(math.sqrt(size.num_rows + size.num_columns - 1))
     expected_scaling = 0.75 / expected_num_positions
     existing = [_feature(scale=1.0)]
     result = relation.provide_base_surface_features(0, existing)

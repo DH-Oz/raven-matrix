@@ -43,14 +43,24 @@ _DEFAULT_WIDTH = 128.0
 _DEFAULT_HEIGHT = 128.0
 
 
-def _feature(shape: Shape, *, fill: Fill = Fill.BLACK,
-             scale: float = 1.0, rotation: float = 0.0,
-             position: Point = _DEFAULT_POS,
-             width: float = _DEFAULT_WIDTH,
-             height: float = _DEFAULT_HEIGHT) -> SurfaceFeature:
+def _feature(
+    shape: Shape,
+    *,
+    fill: Fill = Fill.BLACK,
+    scale: float = 1.0,
+    rotation: float = 0.0,
+    position: Point = _DEFAULT_POS,
+    width: float = _DEFAULT_WIDTH,
+    height: float = _DEFAULT_HEIGHT,
+) -> SurfaceFeature:
     return SurfaceFeature(
-        shape=shape, fill=fill, scale=scale, rotation=rotation,
-        position=position, width=width, height=height,
+        shape=shape,
+        fill=fill,
+        scale=scale,
+        rotation=rotation,
+        position=position,
+        width=width,
+        height=height,
     )
 
 
@@ -77,6 +87,7 @@ def _render_one(feature: SurfaceFeature):
 # ---------------------------------------------------------------------------
 # RasterSettings
 # ---------------------------------------------------------------------------
+
 
 def test_default_raster_has_documented_sizing() -> None:
     from raven_matrix.render.svg import DEFAULT_RASTER, RasterSettings
@@ -223,6 +234,7 @@ def test_all_seven_shapes_render_without_error() -> None:
 # Fill mapping (fill + fill-opacity) and stroke
 # ---------------------------------------------------------------------------
 
+
 def test_black_fill_maps_to_rgb_and_alpha() -> None:
     el = _render_one(_feature(Shape.RECTANGLE, fill=Fill.BLACK))
     assert el.get("fill") == "rgb(0,0,0)"
@@ -265,6 +277,7 @@ def test_every_fill_yields_two_pixel_black_stroke() -> None:
 # Transform (translate(pos) rotate(deg) scale(s) translate(-pos))
 # ---------------------------------------------------------------------------
 
+
 def test_zero_rotation_unit_scale_transform_is_identity_form() -> None:
     el = _render_one(_feature(Shape.RECTANGLE, scale=1.0, rotation=0.0))
     t = el.get("transform")
@@ -283,9 +296,7 @@ def test_rotation_degrees_emitted_directly_as_svg_rotate() -> None:
     """
     el = _render_one(_feature(Shape.RECTANGLE, scale=2.0, rotation=90.0))
     t = el.get("transform")
-    assert "rotate(90.0)" in t, (
-        f"Expected rotate(90.0) in transform; got: {t!r}"
-    )
+    assert "rotate(90.0)" in t, f"Expected rotate(90.0) in transform; got: {t!r}"
     assert "scale(2.0)" in t
     assert t.startswith("translate(100.0 100.0)")
     assert t.endswith("translate(-100.0 -100.0)")
@@ -295,14 +306,13 @@ def test_rotation_45_degrees_emitted_directly() -> None:
     """45-degree rotation must emit rotate(45.0), not rotate(2578.3...)."""
     el = _render_one(_feature(Shape.RECTANGLE, rotation=45.0))
     t = el.get("transform")
-    assert "rotate(45.0)" in t, (
-        f"Expected rotate(45.0) in transform; got: {t!r}"
-    )
+    assert "rotate(45.0)" in t, f"Expected rotate(45.0) in transform; got: {t!r}"
 
 
 # ---------------------------------------------------------------------------
 # Cell rendering: empty cell -> empty <g> (AC5.3)
 # ---------------------------------------------------------------------------
+
 
 def test_featureless_cell_renders_empty_group() -> None:
     from raven_matrix.model import Cell, Location
@@ -335,6 +345,7 @@ def test_multi_feature_cell_renders_all_features() -> None:
 # Proleptic hardening (Phase 6) — three invariant-guard tests
 # ---------------------------------------------------------------------------
 
+
 def test_rotation_90_transform_exact_full_string() -> None:
     """Test #1 — exact full transform string for the 90-degree rotation case.
 
@@ -347,9 +358,7 @@ def test_rotation_90_transform_exact_full_string() -> None:
     """
     el = _render_one(_feature(Shape.RECTANGLE, scale=2.0, rotation=90.0))
     t = el.get("transform")
-    expected = (
-        "translate(100.0 100.0) rotate(90.0) scale(2.0) translate(-100.0 -100.0)"
-    )
+    expected = "translate(100.0 100.0) rotate(90.0) scale(2.0) translate(-100.0 -100.0)"
     assert t == expected, f"Full transform string did not match; got: {t!r}"
 
 
@@ -435,7 +444,5 @@ def test_off_centre_position_drives_geometry_and_transform_pivot() -> None:
 
     # Full transform string: pivot is position, not cell centre
     t = el.get("transform")
-    expected = (
-        "translate(64.0 192.0) rotate(0.0) scale(1.0) translate(-64.0 -192.0)"
-    )
+    expected = "translate(64.0 192.0) rotate(0.0) scale(1.0) translate(-64.0 -192.0)"
     assert t == expected, f"Off-centre transform string did not match; got: {t!r}"

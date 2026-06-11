@@ -51,9 +51,7 @@ def _oracle_csv_path() -> Path:
     editable/source checkout it lives at the repo-root data/ dir instead.
     """
     # Try the packaged copy first (wheel install); fall back to source tree.
-    packaged = (
-        importlib.resources.files("raven_matrix") / "data" / "ravens_oracle.csv"
-    )
+    packaged = importlib.resources.files("raven_matrix") / "data" / "ravens_oracle.csv"
     if packaged.is_file():
         return Path(str(packaged))
     # Fall back to the source-tree location (repo root / data/).
@@ -108,28 +106,43 @@ def _parse_supplemental(spec: str) -> tuple[Supplemental, Direction]:
 def build(
     code: Annotated[
         str | None,
-        typer.Option("--code", help="A Matzen Structure code (e.g. A1B2). "
-                     "Mutually exclusive with the explicit relation flags."),
+        typer.Option(
+            "--code",
+            help="A Matzen Structure code (e.g. A1B2). "
+            "Mutually exclusive with the explicit relation flags.",
+        ),
     ] = None,
     relation: Annotated[
         str,
-        typer.Option("--relation", help="Base relation for the single explicit "
-                     "layer: shape_repetition, logical_or, logical_and, logical_xor."),
+        typer.Option(
+            "--relation",
+            help="Base relation for the single explicit "
+            "layer: shape_repetition, logical_or, logical_and, logical_xor.",
+        ),
     ] = "shape_repetition",
     direction: Annotated[
         str,
-        typer.Option("--direction", help="Base direction: horizontal, vertical, "
-                     "diagonal_bl_tr, diagonal_tl_br, top_left_corner_out."),
+        typer.Option(
+            "--direction",
+            help="Base direction: horizontal, vertical, "
+            "diagonal_bl_tr, diagonal_tl_br, top_left_corner_out.",
+        ),
     ] = "horizontal",
     supplemental: Annotated[
         list[str] | None,
-        typer.Option("--supplemental", help="A supplemental as TYPE:DIR "
-                     "(e.g. rotation:vertical). Repeatable, up to 3."),
+        typer.Option(
+            "--supplemental",
+            help="A supplemental as TYPE:DIR "
+            "(e.g. rotation:vertical). Repeatable, up to 3.",
+        ),
     ] = None,
     layers: Annotated[
         int,
-        typer.Option("--layers", help="Repeat the same relation across N identical "
-                     "layers (1 or 2). Ignored when --code is given."),
+        typer.Option(
+            "--layers",
+            help="Repeat the same relation across N identical "
+            "layers (1 or 2). Ignored when --code is given.",
+        ),
     ] = 1,
     position: Annotated[
         int,
@@ -145,13 +158,18 @@ def build(
     ] = None,
     answers: Annotated[
         bool,
-        typer.Option("--answers/--no-answers", help="Render the 8-choice answer "
-                     "sheet instead of the problem matrix."),
+        typer.Option(
+            "--answers/--no-answers",
+            help="Render the 8-choice answer sheet instead of the problem matrix.",
+        ),
     ] = False,
     png: Annotated[
         bool,
-        typer.Option("--png", help="Rasterise the SVG to PNG (needs the 'raster' "
-                     "extra). Implies binary --out or binary stdout."),
+        typer.Option(
+            "--png",
+            help="Rasterise the SVG to PNG (needs the 'raster' "
+            "extra). Implies binary --out or binary stdout.",
+        ),
     ] = False,
 ) -> None:
     """Generate a matrix from a Structure code or explicit relation flags."""

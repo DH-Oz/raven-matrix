@@ -96,6 +96,7 @@ def _build_cells_and_layers(
 # _cell_value_equals — direct unit coverage (SGMBaseCell.equals)
 # ---------------------------------------------------------------------------
 
+
 def test_cell_value_equals_value_equal_but_distinct_instances() -> None:
     """Two cells with value-equal (distinct) feature lists are equal."""
     a = _cell([_feature(Shape.ELLIPSE), _feature(Shape.TEE)])
@@ -131,6 +132,7 @@ def test_cell_value_equals_two_empty_cells_equal() -> None:
 # _contains_cell — SGMMatrix.containsCheck (skips None/blank)
 # ---------------------------------------------------------------------------
 
+
 def test_contains_cell_finds_value_equal_choice() -> None:
     candidate = _cell([_feature(Shape.ELLIPSE)])
     choices: list[Cell | None] = [_cell([_feature(Shape.ELLIPSE)])]
@@ -152,6 +154,7 @@ def test_contains_cell_absent_when_no_value_match() -> None:
 # ---------------------------------------------------------------------------
 # generate_answer_choices — shape of the output (part of AC1.1)
 # ---------------------------------------------------------------------------
+
 
 def test_generates_eight_answer_choices() -> None:
     rng = JavaRandom(1)
@@ -253,6 +256,7 @@ def test_fully_empty_matrix_blank_pads_without_hanging() -> None:
 # ---------------------------------------------------------------------------
 # relocate_correct_answer flag (RNG-consumption toggle)
 # ---------------------------------------------------------------------------
+
 
 def _uniform_matrix() -> tuple[list[list[Cell]], list[Layer]]:
     """A matrix whose every cell holds one value-equal feature.

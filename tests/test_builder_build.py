@@ -79,6 +79,7 @@ def _feature_values(matrix: Matrix) -> list:
 # AC1.1 — shape of the result
 # ---------------------------------------------------------------------------
 
+
 def test_build_returns_three_by_three_with_eight_choices() -> None:
     matrix = build(_single(position=4), seed=1)
     assert isinstance(matrix, Matrix)
@@ -141,6 +142,7 @@ def test_build_rejects_invalid_config() -> None:
 # ---------------------------------------------------------------------------
 # AC1.3 — option surface (every base, supplemental, direction)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize(
     "base",
@@ -219,6 +221,7 @@ def test_build_every_direction_realised(direction: Direction) -> None:
 # AC4.1 — determinism
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize("seed", [0, 1, 42, 1234])
 def test_build_is_deterministic_for_a_seed(seed: int) -> None:
     """Same config + seed -> deep-equal matrices (structure + values + answers)."""
@@ -248,6 +251,7 @@ def test_build_logic_config_is_deterministic() -> None:
 # AC4.3 — seed independence (discriminating, not probabilistic)
 # ---------------------------------------------------------------------------
 
+
 def test_build_different_seeds_same_structure_differ_in_pinned_feature() -> None:
     """Two pinned seeds: same relations, but the (0,0) base feature's shape differs.
 
@@ -266,9 +270,8 @@ def test_build_different_seeds_same_structure_differ_in_pinned_feature() -> None
 
     # Structurally equal: same relation type, direction, layer count.
     assert len(matrix_zero.layers) == len(matrix_one.layers) == 1
-    assert (
-        type(matrix_zero.layers[0].structures[0])
-        is type(matrix_one.layers[0].structures[0])
+    assert type(matrix_zero.layers[0].structures[0]) is type(
+        matrix_one.layers[0].structures[0]
     )
     assert (
         matrix_zero.layers[0].structures[0].location_transform.description
@@ -286,6 +289,7 @@ def test_build_different_seeds_same_structure_differ_in_pinned_feature() -> None
 # ---------------------------------------------------------------------------
 # AC6.1 — line_shape_enabled
 # ---------------------------------------------------------------------------
+
 
 def test_build_default_flags_never_draw_line() -> None:
     config = _single(BaseRelation.SHAPE_REPETITION, Direction.HORIZONTAL, (), 1)

@@ -68,7 +68,10 @@ def _cell(row: int, col: int, *features: SurfaceFeature) -> Cell:
 
 def _matrix(rows: list[list[Cell]], answers: list[Cell]) -> Matrix:
     return Matrix(
-        cells=rows, answer_choices=answers, correct_answer_position=1, layers=[],
+        cells=rows,
+        answer_choices=answers,
+        correct_answer_position=1,
+        layers=[],
     )
 
 
@@ -83,29 +86,41 @@ def gallery() -> None:
     """Hand-built coverage: every shape, every fill, a rotation pair, a scale pair."""
     print("gallery:")
     shapes_grid = [
-        [_cell(0, 0, _feat(Shape.DIAMOND, Fill.GREY40)),
-         _cell(0, 1, _feat(Shape.ELLIPSE, Fill.GREY40)),
-         _cell(0, 2, _feat(Shape.LINE, Fill.GREY40, h=0.0))],
-        [_cell(1, 0, _feat(Shape.RECTANGLE, Fill.GREY40)),
-         _cell(1, 1, _feat(Shape.TEE, Fill.GREY40)),
-         _cell(1, 2, _feat(Shape.TRAPEZOID, Fill.GREY40))],
-        [_cell(2, 0, _feat(Shape.TRIANGLE, Fill.GREY40)),
-         _cell(2, 1, _feat(Shape.TRIANGLE, Fill.GREY40, rot=90.0)),  # rotation check
-         _cell(2, 2)],  # forced-blank bottom-right (problem mode)
+        [
+            _cell(0, 0, _feat(Shape.DIAMOND, Fill.GREY40)),
+            _cell(0, 1, _feat(Shape.ELLIPSE, Fill.GREY40)),
+            _cell(0, 2, _feat(Shape.LINE, Fill.GREY40, h=0.0)),
+        ],
+        [
+            _cell(1, 0, _feat(Shape.RECTANGLE, Fill.GREY40)),
+            _cell(1, 1, _feat(Shape.TEE, Fill.GREY40)),
+            _cell(1, 2, _feat(Shape.TRAPEZOID, Fill.GREY40)),
+        ],
+        [
+            _cell(2, 0, _feat(Shape.TRIANGLE, Fill.GREY40)),
+            _cell(2, 1, _feat(Shape.TRIANGLE, Fill.GREY40, rot=90.0)),  # rotation check
+            _cell(2, 2),
+        ],  # forced-blank bottom-right (problem mode)
     ]
     filler = [_cell(0, i, _feat(Shape.ELLIPSE, Fill.GREY40)) for i in range(8)]
     _save("gallery_shapes", render_matrix_svg(_matrix(shapes_grid, filler), GALLERY))
 
     fills_grid = [
-        [_cell(0, 0, _feat(Shape.RECTANGLE, Fill.BLACK)),
-         _cell(0, 1, _feat(Shape.RECTANGLE, Fill.GREY10)),
-         _cell(0, 2, _feat(Shape.RECTANGLE, Fill.GREY40))],
-        [_cell(1, 0, _feat(Shape.RECTANGLE, Fill.GREY75)),
-         _cell(1, 1, _feat(Shape.RECTANGLE, Fill.WHITE)),  # outline-only
-         _cell(1, 2, _feat(Shape.LINE, Fill.BLACK, h=0.0, rot=45.0))],
-        [_cell(2, 0, _feat(Shape.ELLIPSE, Fill.BLACK, scale=0.5)),  # scale check
-         _cell(2, 1, _feat(Shape.ELLIPSE, Fill.BLACK)),
-         _cell(2, 2)],
+        [
+            _cell(0, 0, _feat(Shape.RECTANGLE, Fill.BLACK)),
+            _cell(0, 1, _feat(Shape.RECTANGLE, Fill.GREY10)),
+            _cell(0, 2, _feat(Shape.RECTANGLE, Fill.GREY40)),
+        ],
+        [
+            _cell(1, 0, _feat(Shape.RECTANGLE, Fill.GREY75)),
+            _cell(1, 1, _feat(Shape.RECTANGLE, Fill.WHITE)),  # outline-only
+            _cell(1, 2, _feat(Shape.LINE, Fill.BLACK, h=0.0, rot=45.0)),
+        ],
+        [
+            _cell(2, 0, _feat(Shape.ELLIPSE, Fill.BLACK, scale=0.5)),  # scale check
+            _cell(2, 1, _feat(Shape.ELLIPSE, Fill.BLACK)),
+            _cell(2, 2),
+        ],
     ]
     _save("gallery_fills", render_matrix_svg(_matrix(fills_grid, filler), GALLERY))
 
@@ -113,8 +128,10 @@ def gallery() -> None:
         _cell(0, i, _feat(list(Shape)[i % 7], list(Fill)[i % 5])) for i in range(8)
     ]
     answers_matrix = Matrix(
-        cells=shapes_grid, answer_choices=answer_cells,
-        correct_answer_position=3, layers=[],
+        cells=shapes_grid,
+        answer_choices=answer_cells,
+        correct_answer_position=3,
+        layers=[],
     )
     _save("gallery_answers", render_answers_svg(answers_matrix, GALLERY))
 
@@ -125,10 +142,13 @@ _CONFIGS = {
         correct_answer_position=1,
     ),
     "scaling": BuilderConfig(
-        layers=(LayerConfig(
-            BaseRelation.SHAPE_REPETITION, Direction.HORIZONTAL,
-            supplementals=((Supplemental.SCALING, Direction.HORIZONTAL),),
-        ),),
+        layers=(
+            LayerConfig(
+                BaseRelation.SHAPE_REPETITION,
+                Direction.HORIZONTAL,
+                supplementals=((Supplemental.SCALING, Direction.HORIZONTAL),),
+            ),
+        ),
         correct_answer_position=3,
     ),
     "two_layer": BuilderConfig(
@@ -156,7 +176,10 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "mode", nargs="?", default="all", choices=["all", "gallery", "build"],
+        "mode",
+        nargs="?",
+        default="all",
+        choices=["all", "gallery", "build"],
     )
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()

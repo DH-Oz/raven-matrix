@@ -32,17 +32,22 @@ def _full_next_cycle(transform, start: Location) -> list[Location]:
 # DiagonalBottomLeftTopRight (3x3)
 # ---------------------------------------------------------------------------
 
+
 def test_bl_tr_base_locations_climb_the_main_diagonal() -> None:
     transform = DiagonalBottomLeftTopRight(MatrixSize(3, 3))
     assert transform.base_locations() == [
-        Location(0, 0), Location(1, 1), Location(2, 2)
+        Location(0, 0),
+        Location(1, 1),
+        Location(2, 2),
     ]
 
 
 def test_bl_tr_next_moves_up_and_right_wrapping() -> None:
     transform = DiagonalBottomLeftTopRight(MatrixSize(3, 3))
     assert _full_next_cycle(transform, Location(0, 0)) == [
-        Location(0, 0), Location(2, 1), Location(1, 2)
+        Location(0, 0),
+        Location(2, 1),
+        Location(1, 2),
     ]
 
 
@@ -57,17 +62,22 @@ def test_bl_tr_parent_moves_down_and_left_wrapping() -> None:
 # DiagonalTopLeftBottomRight (3x3)
 # ---------------------------------------------------------------------------
 
+
 def test_tl_br_base_locations_descend_the_anti_diagonal() -> None:
     transform = DiagonalTopLeftBottomRight(MatrixSize(3, 3))
     assert transform.base_locations() == [
-        Location(2, 0), Location(1, 1), Location(0, 2)
+        Location(2, 0),
+        Location(1, 1),
+        Location(0, 2),
     ]
 
 
 def test_tl_br_next_moves_down_and_right_wrapping() -> None:
     transform = DiagonalTopLeftBottomRight(MatrixSize(3, 3))
     assert _full_next_cycle(transform, Location(0, 0)) == [
-        Location(0, 0), Location(1, 1), Location(2, 2)
+        Location(0, 0),
+        Location(1, 1),
+        Location(2, 2),
     ]
 
 
@@ -108,6 +118,7 @@ def test_diagonal_accepts_odd_square(cls, size: MatrixSize) -> None:
 # ---------------------------------------------------------------------------
 # Full next_location cycle from every base — parity with axis / corner-out tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize("cls", DIAGONALS)
 def test_diagonal_full_next_cycle_from_every_base_on_3x3(cls) -> None:

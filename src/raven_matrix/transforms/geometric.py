@@ -104,10 +104,7 @@ class DiagonalBottomLeftTopRight(LocationTransform):
 
     def _populate_base_locations(self) -> list[Location]:
         # Upstream walks row 0..n alongside column 0..n, so row == column.
-        return [
-            Location(column, column)
-            for column in range(self.size.num_columns)
-        ]
+        return [Location(column, column) for column in range(self.size.num_columns)]
 
     def next_location(self, location: Location) -> Location:
         row = location.row - 1

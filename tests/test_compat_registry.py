@@ -45,6 +45,7 @@ def _registry_flag_names() -> set[str]:
 # CompatFlags defaults
 # ---------------------------------------------------------------------------
 
+
 def test_compatflags_defaults_are_both_false() -> None:
     flags = CompatFlags()
     assert flags.line_shape_enabled is False
@@ -75,6 +76,7 @@ def test_compatflags_is_frozen() -> None:
 # ---------------------------------------------------------------------------
 # AC6.2 — registry completeness (self-enforcing)
 # ---------------------------------------------------------------------------
+
 
 def test_registry_exists() -> None:
     assert _REGISTRY_PATH.is_file(), f"missing registry at {_REGISTRY_PATH}"

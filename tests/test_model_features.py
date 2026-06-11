@@ -35,6 +35,7 @@ def _make_feature(
 # AC1.5 — identity semantics
 # ---------------------------------------------------------------------------
 
+
 def test_value_equal_features_are_identity_unequal() -> None:
     """Two SurfaceFeatures with identical field values must not be == (identity)."""
     a = _make_feature()
@@ -60,6 +61,7 @@ def test_value_equals_true_for_value_equal_distinct_instances() -> None:
 
 def test_value_equals_false_when_shape_differs() -> None:
     from raven_matrix.model import Shape
+
     a = _make_feature(shape=Shape.DIAMOND)
     b = _make_feature(shape=Shape.ELLIPSE)
     assert not a.value_equals(b)
@@ -67,6 +69,7 @@ def test_value_equals_false_when_shape_differs() -> None:
 
 def test_value_equals_false_when_fill_differs() -> None:
     from raven_matrix.model import Fill
+
     a = _make_feature(fill=Fill.BLACK)
     b = _make_feature(fill=Fill.WHITE)
     assert not a.value_equals(b)
@@ -82,6 +85,7 @@ def test_value_equals_treats_grey10_and_grey40_as_distinct() -> None:
     re-porting the upstream description-equality.
     """
     from raven_matrix.model import Fill, contains_check
+
     a = _make_feature(fill=Fill.GREY10)
     b = _make_feature(fill=Fill.GREY40)
     assert not a.value_equals(b)
@@ -112,6 +116,7 @@ def test_value_equals_false_when_position_differs() -> None:
 # customEqualsCheck (RectangleSGMSurfaceFeature.java:192-195;
 # AbstractPathBasedSGMSurfaceFeature.java:188-191): width*scale and height*scale.
 # ---------------------------------------------------------------------------
+
 
 def test_value_equals_false_when_width_differs() -> None:
     a = _make_feature(width=64.0)
@@ -168,6 +173,7 @@ def test_value_equals_line_ignores_height_compares_length_only() -> None:
     equal width (length) but differing height are still value-equal.
     """
     from raven_matrix.model import Shape
+
     a = _make_feature(shape=Shape.LINE, width=100.0, height=128.0)
     b = _make_feature(shape=Shape.LINE, width=100.0, height=999.0)
     assert a.value_equals(b)
@@ -175,6 +181,7 @@ def test_value_equals_line_ignores_height_compares_length_only() -> None:
 
 def test_value_equals_line_false_when_length_differs() -> None:
     from raven_matrix.model import Shape
+
     a = _make_feature(shape=Shape.LINE, width=100.0)
     b = _make_feature(shape=Shape.LINE, width=140.0)
     assert not a.value_equals(b)
@@ -184,8 +191,10 @@ def test_value_equals_line_false_when_length_differs() -> None:
 # AC1.5 — contains_check
 # ---------------------------------------------------------------------------
 
+
 def test_contains_check_true_for_value_equal_distinct_instances() -> None:
     from raven_matrix.model import contains_check
+
     a = _make_feature()
     b = _make_feature()
     assert a is not b
@@ -194,6 +203,7 @@ def test_contains_check_true_for_value_equal_distinct_instances() -> None:
 
 def test_contains_check_false_when_no_value_equal_element() -> None:
     from raven_matrix.model import Fill, Shape, contains_check
+
     a = _make_feature(shape=Shape.DIAMOND, fill=Fill.BLACK)
     b = _make_feature(shape=Shape.ELLIPSE, fill=Fill.WHITE)
     assert not contains_check([a], b)
@@ -201,6 +211,7 @@ def test_contains_check_false_when_no_value_equal_element() -> None:
 
 def test_contains_check_skips_none_elements_without_error() -> None:
     from raven_matrix.model import contains_check
+
     a = _make_feature()
     b = _make_feature()
     # None in the list must not raise; value-equal b is still found.
@@ -209,12 +220,14 @@ def test_contains_check_skips_none_elements_without_error() -> None:
 
 def test_contains_check_none_only_list_returns_false() -> None:
     from raven_matrix.model import contains_check
+
     b = _make_feature()
     assert not contains_check([None, None], b)
 
 
 def test_contains_check_empty_list_returns_false() -> None:
     from raven_matrix.model import contains_check
+
     b = _make_feature()
     assert not contains_check([], b)
 
@@ -222,6 +235,7 @@ def test_contains_check_empty_list_returns_false() -> None:
 # ---------------------------------------------------------------------------
 # AC1.5 — hashability by identity (documents the list-based-dedup rule)
 # ---------------------------------------------------------------------------
+
 
 def test_surface_feature_is_hashable_by_identity() -> None:
     """SurfaceFeature must be usable as a dict key / set member."""
@@ -246,8 +260,10 @@ def test_two_value_equal_features_occupy_two_distinct_set_slots() -> None:
 # Container shape checks
 # ---------------------------------------------------------------------------
 
+
 def test_cell_holds_mutable_feature_list() -> None:
     from raven_matrix.model import Cell, Location
+
     loc = Location(0, 0)
     feat = _make_feature()
     cell = Cell(surface_features=[feat], location=loc)
@@ -259,6 +275,7 @@ def test_cell_holds_mutable_feature_list() -> None:
 
 def test_layer_holds_cells_grid_and_structures() -> None:
     from raven_matrix.model import Cell, Layer, Location
+
     cell = Cell(surface_features=[], location=Location(0, 0))
     layer = Layer(cells=[[cell]], structures=[])
     assert layer.cells[0][0] is cell
@@ -267,6 +284,7 @@ def test_layer_holds_cells_grid_and_structures() -> None:
 
 def test_matrix_holds_cells_answer_choices_and_layers() -> None:
     from raven_matrix.model import Cell, Layer, Location, Matrix
+
     cell = Cell(surface_features=[], location=Location(0, 0))
     layer = Layer(cells=[[cell]], structures=[])
     matrix = Matrix(

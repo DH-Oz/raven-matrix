@@ -336,8 +336,7 @@ def _supplemental_from_pair(letter: str, digit: str) -> tuple[Supplemental, Dire
             # FillRep is a repetition feature on directions 1-4 only (corner-out
             # with fill repetition never appears in the norming codes).
             raise ValueError(
-                f"digit {digit!r} is not a valid FillRepetition direction in "
-                f"B{digit}"
+                f"digit {digit!r} is not a valid FillRepetition direction in B{digit}"
             )
         return Supplemental.FILL_REPETITION, direction
     supplemental = _LETTER_TO_SUPPLEMENTAL.get(letter)
@@ -379,8 +378,7 @@ def _parse_segment(segment: str) -> LayerConfig:
             # Bare logic base: it carries no direction and forbids supplementals.
             if len(pairs) > 1:
                 raise ValueError(
-                    f"logic base {first_letter!r} forbids supplementals in "
-                    f"{segment!r}"
+                    f"logic base {first_letter!r} forbids supplementals in {segment!r}"
                 )
             return LayerConfig(
                 base=base, base_direction=_IMPLICIT_BASE_DIRECTION, supplementals=()
@@ -443,6 +441,4 @@ def parse_code(code: str, *, correct_answer_position: int = 1) -> BuilderConfig:
             f"Structure code {code!r} has an empty layer segment (a stray '_')"
         )
     layers = tuple(_parse_segment(segment) for segment in segments)
-    return BuilderConfig(
-        layers=layers, correct_answer_position=correct_answer_position
-    )
+    return BuilderConfig(layers=layers, correct_answer_position=correct_answer_position)

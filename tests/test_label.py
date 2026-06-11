@@ -44,6 +44,7 @@ def _single(
 # ShapeRepetition (A) × each direction — repetition digit, no swap
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     ("direction", "expected"),
     [
@@ -54,9 +55,7 @@ def _single(
         (Direction.TOP_LEFT_CORNER_OUT, "A6"),  # repetition + corner-out -> 6.
     ],
 )
-def test_shape_repetition_each_direction(
-    direction: Direction, expected: str
-) -> None:
+def test_shape_repetition_each_direction(direction: Direction, expected: str) -> None:
     matrix = build(_single(direction=direction), seed=0)
     assert label(matrix) == expected
 
@@ -64,6 +63,7 @@ def test_shape_repetition_each_direction(
 # ---------------------------------------------------------------------------
 # FillRepetition vs ChangeFill — the 1/2 swap distinguishes them at B
 # ---------------------------------------------------------------------------
+
 
 def test_fill_repetition_horizontal_is_b1() -> None:
     # FillRep IS a repetition feature: Horizontal -> '1' (no swap).
@@ -116,6 +116,7 @@ def test_change_fill_corner_out_is_b5() -> None:
 # Rotation (C), Scaling (D), Numerosity (E) — non-repetition, digit swapped
 # ---------------------------------------------------------------------------
 
+
 def test_rotation_horizontal_is_c2() -> None:
     # Rotation is non-repetition: Horizontal -> '2' (swapped).
     matrix = build(
@@ -147,6 +148,7 @@ def test_numerosity_horizontal_is_e2() -> None:
 # Logic relations (X/Y/Z) — the Logic transform always emits '7'
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     ("base", "expected"),
     [
@@ -163,6 +165,7 @@ def test_logic_relations(base: BaseRelation, expected: str) -> None:
 # ---------------------------------------------------------------------------
 # Multi-layer — '_'-joined, trailing '_' deleted
 # ---------------------------------------------------------------------------
+
 
 def test_two_layer_code_is_underscore_joined() -> None:
     config = BuilderConfig(

@@ -9,6 +9,7 @@ AC4.2 edges named explicitly:
 - bound == 2: power-of-two fast path.
 - bound in {3, 5, 6}: rejection-loop path.
 """
+
 from __future__ import annotations
 
 import json
@@ -55,9 +56,7 @@ def test_block_matches_golden(block: dict) -> None:
 
     if actual != expected:
         first_diff = next(
-            i
-            for i, (a, e) in enumerate(zip(actual, expected, strict=True))
-            if a != e
+            i for i, (a, e) in enumerate(zip(actual, expected, strict=True)) if a != e
         )
         pytest.fail(
             f"Mismatch for seed={seed} method={method} "
@@ -67,9 +66,11 @@ def test_block_matches_golden(block: dict) -> None:
 
 # --- Explicit AC4.2 edge assertions ---
 
+
 def _get_blocks(method: str, **filters) -> list[dict]:
     return [
-        b for b in _FIXTURE["vectors"]
+        b
+        for b in _FIXTURE["vectors"]
         if b["method"] == method and all(b.get(k) == v for k, v in filters.items())
     ]
 
@@ -83,7 +84,8 @@ def test_ac4_2_power_of_two_bound_present() -> None:
 def test_ac4_2_non_power_of_two_bound_present() -> None:
     """At least one nextInt block with a non-power-of-two bound (3, 5, or 6) exists."""
     blocks = [
-        b for b in _FIXTURE["vectors"]
+        b
+        for b in _FIXTURE["vectors"]
         if b["method"] == "nextInt" and b.get("bound") in {3, 5, 6}
     ]
     assert blocks, "No fixture block with bound in {3,5,6} (rejection-loop path)"

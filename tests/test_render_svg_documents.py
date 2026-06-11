@@ -53,8 +53,13 @@ def _feat(shape: Shape, fill: Fill) -> SurfaceFeature:
     # assertions below derive from cell_pixel_size symbolically, so the exact
     # geometry here only needs to be valid, not pinned.
     return SurfaceFeature(
-        shape=shape, fill=fill, scale=1.0, rotation=0.0,
-        position=Point(50.0, 50.0), width=50.0, height=50.0,
+        shape=shape,
+        fill=fill,
+        scale=1.0,
+        rotation=0.0,
+        position=Point(50.0, 50.0),
+        width=50.0,
+        height=50.0,
     )
 
 
@@ -66,8 +71,8 @@ def _sample_matrix() -> Matrix:
     Answer choices: 8 cells, each carrying one (shape, fill) so the answer sheet
     also exercises coverage.
     """
-    shapes = list(Shape)   # 7
-    fills = list(Fill)     # 5
+    shapes = list(Shape)  # 7
+    fills = list(Fill)  # 5
 
     # Lay one (shape, fill) pair into each of the 9 grid cells, cycling so that
     # all 7 shapes and all 5 fills appear at least once across the grid.
@@ -88,9 +93,7 @@ def _sample_matrix() -> Matrix:
     answers: list[Cell] = []
     for i in range(8):
         feature = _feat(shapes[i % len(shapes)], fills[i % len(fills)])
-        answers.append(
-            Cell(surface_features=[feature], location=Location(0, 0))
-        )
+        answers.append(Cell(surface_features=[feature], location=Location(0, 0)))
 
     layer = Layer(cells=grid, structures=[])
     return Matrix(
@@ -104,6 +107,7 @@ def _sample_matrix() -> Matrix:
 # ---------------------------------------------------------------------------
 # Matrix document
 # ---------------------------------------------------------------------------
+
 
 def test_matrix_svg_parses_as_wellformed_svg() -> None:
     root = ET.fromstring(render_matrix_svg(_sample_matrix()))
@@ -173,6 +177,7 @@ def test_matrix_svg_covers_every_shape_and_fill() -> None:
 # Answers document
 # ---------------------------------------------------------------------------
 
+
 def test_answers_svg_parses_as_wellformed_svg() -> None:
     root = ET.fromstring(render_answers_svg(_sample_matrix()))
     assert root.tag == _qn("svg")
@@ -223,6 +228,7 @@ def test_answers_svg_cells_translate_to_two_by_four_positions() -> None:
 # AC5.3: blank / empty answer cell renders without error
 # ---------------------------------------------------------------------------
 
+
 def test_answers_svg_with_blank_pad_cell_renders() -> None:
     matrix = _sample_matrix()
     # Replace one answer with a featureless (blank-pad) cell without mutating
@@ -244,6 +250,7 @@ def test_answers_svg_with_blank_pad_cell_renders() -> None:
 # Mirrors SGMAnswerChoicesImage compositing white SGMCellImage cells onto the
 # black backdrop — each SGMCellImage fills itself white before drawing features.
 # ---------------------------------------------------------------------------
+
 
 def test_answers_svg_has_eight_white_cell_background_rects() -> None:
     """Each answer cell must have a white cell-bg rect behind its features.
@@ -268,12 +275,8 @@ def test_answers_svg_has_eight_white_cell_background_rects() -> None:
         assert rect.get("fill") == "white", (
             f"cell-bg rect in answer cell {i} must be fill='white'"
         )
-        assert rect.get("x") == "0", (
-            f"cell-bg rect in answer cell {i} must be at x=0"
-        )
-        assert rect.get("y") == "0", (
-            f"cell-bg rect in answer cell {i} must be at y=0"
-        )
+        assert rect.get("x") == "0", f"cell-bg rect in answer cell {i} must be at x=0"
+        assert rect.get("y") == "0", f"cell-bg rect in answer cell {i} must be at y=0"
         assert rect.get("width") == str(cell_size), (
             f"cell-bg rect width must equal cell_pixel_size={cell_size}"
         )

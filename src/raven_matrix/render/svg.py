@@ -69,6 +69,7 @@ _SVG_NS = "http://www.w3.org/2000/svg"
 # Raster / layout sizing
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True, slots=True)
 class RasterSettings:
     """Cell size and inter-cell spacing for rendering.
@@ -91,6 +92,7 @@ DEFAULT_RASTER = RasterSettings()
 # ---------------------------------------------------------------------------
 # Fill + stroke attributes
 # ---------------------------------------------------------------------------
+
 
 def _fmt(value: float) -> str:
     """Format a float for an SVG attribute.
@@ -128,6 +130,7 @@ _STROKE_ATTRS = 'stroke="black" stroke-width="2"'
 # Per-shape geometry emitters (coordinates relative to feature.position)
 # ---------------------------------------------------------------------------
 
+
 def _path_d(points: list[tuple[float, float]]) -> str:
     """An absolute closed-path ``d`` string from a vertex list."""
     head = f"M {_fmt(points[0][0])} {_fmt(points[0][1])}"
@@ -135,8 +138,7 @@ def _path_d(points: list[tuple[float, float]]) -> str:
     return f"{head} {rest} Z"
 
 
-def _shape_body(shape: Shape, px: float, py: float,
-                width: float, height: float) -> str:
+def _shape_body(shape: Shape, px: float, py: float, width: float, height: float) -> str:
     """The bare SVG element (tag + geometry) for one shape, centred on (px, py).
 
     ``width`` / ``height`` are the feature's pre-scale absolute pixel dimensions
@@ -167,44 +169,52 @@ def _shape_body(shape: Shape, px: float, py: float,
             )
         case Shape.DIAMOND:
             qh = hh / 2.0
-            d = _path_d([
-                (px - hw, py - qh),
-                (px, py + hh),
-                (px + hw, py - qh),
-                (px, py - hh),
-            ])
+            d = _path_d(
+                [
+                    (px - hw, py - qh),
+                    (px, py + hh),
+                    (px + hw, py - qh),
+                    (px, py - hh),
+                ]
+            )
             return f'<path d="{d}"'
         case Shape.TRIANGLE:
-            d = _path_d([
-                (px - hw, py + hh),
-                (px + hw, py + hh),
-                (px, py - hh),
-            ])
+            d = _path_d(
+                [
+                    (px - hw, py + hh),
+                    (px + hw, py + hh),
+                    (px, py - hh),
+                ]
+            )
             return f'<path d="{d}"'
         case Shape.TRAPEZOID:
             qw = hw / 2.0
-            d = _path_d([
-                (px - hw, py + hh),
-                (px + hw, py + hh),
-                (px + qw, py - hh),
-                (px - qw, py - hh),
-            ])
+            d = _path_d(
+                [
+                    (px - hw, py + hh),
+                    (px + hw, py + hh),
+                    (px + qw, py - hh),
+                    (px - qw, py - hh),
+                ]
+            )
             return f'<path d="{d}"'
         case Shape.TEE:
             w = 2 * hw
             h = 2 * hh
             qw = w / 4.0
             qh = h / 4.0
-            d = _path_d([
-                (px - hw, py - hh),
-                (px + hw, py - hh),
-                (px + hw, py - qh),
-                (px + qw, py - qh),
-                (px + qw, py + hh),
-                (px - qw, py + hh),
-                (px - qw, py - qh),
-                (px - hw, py - qh),
-            ])
+            d = _path_d(
+                [
+                    (px - hw, py - hh),
+                    (px + hw, py - hh),
+                    (px + hw, py - qh),
+                    (px + qw, py - qh),
+                    (px + qw, py + hh),
+                    (px - qw, py + hh),
+                    (px - qw, py - qh),
+                    (px - hw, py - qh),
+                ]
+            )
             return f'<path d="{d}"'
 
 
@@ -243,8 +253,7 @@ def render_feature_svg(feature: SurfaceFeature) -> str:
     body = _shape_body(feature.shape, px, py, feature.width, feature.height)
     fill_part = "" if feature.shape is Shape.LINE else f"{_fill_attrs(feature.fill)} "
     return (
-        f"{body} {fill_part}{_STROKE_ATTRS} "
-        f'transform="{_feature_transform(feature)}"/>'
+        f'{body} {fill_part}{_STROKE_ATTRS} transform="{_feature_transform(feature)}"/>'
     )
 
 
@@ -252,20 +261,20 @@ def render_feature_svg(feature: SurfaceFeature) -> str:
 # Cell rendering
 # ---------------------------------------------------------------------------
 
+
 def render_cell_svg(cell: Cell, settings: RasterSettings = DEFAULT_RASTER) -> str:
     """A ``<g>`` holding one SVG element per surface feature.
 
     A featureless cell yields an empty ``<g></g>`` (AC5.3).
     """
-    elements = "".join(
-        render_feature_svg(feature) for feature in cell.surface_features
-    )
+    elements = "".join(render_feature_svg(feature) for feature in cell.surface_features)
     return f"<g>{elements}</g>"
 
 
 # ---------------------------------------------------------------------------
 # Document layouts
 # ---------------------------------------------------------------------------
+
 
 def _cell_origin(row: int, col: int, settings: RasterSettings) -> tuple[int, int]:
     """Top-left pixel origin of cell (row, col), matching ``SGMMatrixImage``.
@@ -277,8 +286,7 @@ def _cell_origin(row: int, col: int, settings: RasterSettings) -> tuple[int, int
     return gap + col * step, gap + row * step
 
 
-def _positioned_cell(cell: Cell, row: int, col: int,
-                     settings: RasterSettings) -> str:
+def _positioned_cell(cell: Cell, row: int, col: int, settings: RasterSettings) -> str:
     """A ``<g class="cell">`` translated to cell (row, col), holding the cell SVG."""
     x, y = _cell_origin(row, col, settings)
     return (
@@ -293,8 +301,9 @@ def _blank_cell(row: int, col: int, settings: RasterSettings) -> str:
     return f'<g class="cell" transform="translate({x} {y})"><g></g></g>'
 
 
-def _positioned_answer_cell(cell: Cell, row: int, col: int,
-                             settings: RasterSettings) -> str:
+def _positioned_answer_cell(
+    cell: Cell, row: int, col: int, settings: RasterSettings
+) -> str:
     """A ``<g class="cell">`` for an answer choice, with a white cell background.
 
     Mirrors ``SGMCellImage.setSGMCell`` (lines 167-174): each cell image fills
@@ -354,8 +363,9 @@ def render_matrix_svg(matrix: Matrix, settings: RasterSettings = DEFAULT_RASTER)
     return "".join(parts)
 
 
-def render_answers_svg(matrix: Matrix, settings: RasterSettings = DEFAULT_RASTER,
-                       *, columns: int = 4) -> str:
+def render_answers_svg(
+    matrix: Matrix, settings: RasterSettings = DEFAULT_RASTER, *, columns: int = 4
+) -> str:
     """Full ``<svg>`` for the answer sheet (black bg, 2x4 grid of 8 choices).
 
     Layout mirrors ``SGMAnswerChoicesImage``: the choices fill a grid

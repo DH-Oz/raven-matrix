@@ -57,6 +57,7 @@ def _layer(
 # Config dataclasses
 # ---------------------------------------------------------------------------
 
+
 def test_layer_config_carries_parsed_enums() -> None:
     """LayerConfig holds Direction/BaseRelation/Supplemental enums, not digits."""
     layer = _layer(
@@ -81,6 +82,7 @@ def test_builder_config_is_frozen() -> None:
 # ---------------------------------------------------------------------------
 # Validation (AC1.4)
 # ---------------------------------------------------------------------------
+
 
 def test_validate_accepts_a_minimal_single_layer_config() -> None:
     validate_config(BuilderConfig(layers=(_layer(),), correct_answer_position=1))
@@ -137,9 +139,7 @@ def test_validate_rejects_logic_base_with_supplementals(
         ((Supplemental.ROTATION, Direction.HORIZONTAL),),
     )
     with pytest.raises(ValueError, match="logic"):
-        validate_config(
-            BuilderConfig(layers=(layer,), correct_answer_position=1)
-        )
+        validate_config(BuilderConfig(layers=(layer,), correct_answer_position=1))
 
 
 def test_validate_allows_logic_base_without_supplementals() -> None:
@@ -150,6 +150,7 @@ def test_validate_allows_logic_base_without_supplementals() -> None:
 # ---------------------------------------------------------------------------
 # build_layer — geometric (ShapeRepetition)
 # ---------------------------------------------------------------------------
+
 
 def test_build_layer_fills_every_cell_shape_repetition() -> None:
     """A ShapeRepetition layer populates all 9 cells of a 3x3 grid."""
@@ -169,9 +170,7 @@ def test_build_layer_horizontal_repeats_features_along_rows() -> None:
         base_features = row[0].surface_features
         for cell in row[1:]:
             assert len(cell.surface_features) == len(base_features)
-            for got, want in zip(
-                cell.surface_features, base_features, strict=True
-            ):
+            for got, want in zip(cell.surface_features, base_features, strict=True):
                 assert got.value_equals(want)
 
 
@@ -191,6 +190,7 @@ def test_build_layer_is_deterministic_for_a_seed() -> None:
 # ---------------------------------------------------------------------------
 # build_layer — supplementals stacked on a geometric base
 # ---------------------------------------------------------------------------
+
 
 def test_build_layer_applies_rotation_supplemental() -> None:
     """A ROTATION supplemental over a horizontal base accumulates +45 per step."""
@@ -216,6 +216,7 @@ def test_build_layer_applies_rotation_supplemental() -> None:
 # ---------------------------------------------------------------------------
 # build_layer — logic base (MANDATORY termination + value-distinct pool)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize(
     "logic_base",
@@ -294,6 +295,7 @@ def test_build_layer_logic_never_calls_next_or_parent_on_logic_transform() -> No
 # ---------------------------------------------------------------------------
 # compose_layers (AC1.2 — concatenation)
 # ---------------------------------------------------------------------------
+
 
 def test_compose_single_layer_passes_features_through() -> None:
     layer = build_layer(_layer(), _SIZE, _CELL, JavaRandom(7), DEFAULT_FLAGS)

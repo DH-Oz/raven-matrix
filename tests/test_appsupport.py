@@ -40,6 +40,7 @@ _SVG_TAG = "{http://www.w3.org/2000/svg}svg"
 # Option maps
 # ---------------------------------------------------------------------------
 
+
 def test_relation_options_map_labels_to_base_relations() -> None:
     assert RELATION_OPTIONS == {
         "ShapeRep": BaseRelation.SHAPE_REPETITION,
@@ -73,6 +74,7 @@ def test_supplemental_options_map_labels_with_disabled_to_none() -> None:
 # ---------------------------------------------------------------------------
 # layer_controls_from_column
 # ---------------------------------------------------------------------------
+
 
 def _disabled_slot() -> dict[str, object]:
     return {"type": None, "direction": Direction.HORIZONTAL}
@@ -122,6 +124,7 @@ def test_layer_controls_from_column_keeps_enabled_drops_disabled() -> None:
 # ---------------------------------------------------------------------------
 # build_outcome -- success paths
 # ---------------------------------------------------------------------------
+
 
 def test_build_outcome_from_controls_returns_matrix_and_code() -> None:
     layers = [
@@ -180,6 +183,7 @@ def test_build_outcome_is_deterministic_for_a_seed() -> None:
 # ---------------------------------------------------------------------------
 # build_outcome -- friendly error paths (matrix None)
 # ---------------------------------------------------------------------------
+
 
 def test_build_outcome_logic_base_with_supplemental_is_friendly_error() -> None:
     layers = [
