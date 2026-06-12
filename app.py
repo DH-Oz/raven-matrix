@@ -120,10 +120,12 @@ def _intro(mo, option_reference):
             "",
             "## Saving",
             "",
-            "Once a matrix builds, three **Save (SVG)** buttons download the problem,",
-            "the answers, or both. The three header toggles (**Structure code**,",
-            "**Correct answer**, **Seed**) choose which fields the saved file's",
-            "header band lists.",
+            "Once a matrix builds, **Save** buttons download the problem, the",
+            "answers, or both, as SVG or PNG. A quiet row of toggles below them",
+            "chooses which fields appear in BOTH a subtle readout under the live",
+            "render and an optional header band on the saved file (**Structure",
+            "code**, **Correct answer**, **Seed**). **Correct answer** is off by",
+            "default, so neither the screen nor a printed problem reveals it.",
             "",
             "The full option reference follows.",
         ]
@@ -150,10 +152,12 @@ def _controls(mo):
         start=1, stop=8, step=1, value=1, label="Correct-answer position"
     )
     code_text = mo.ui.text(value="A1", label="Structure code")
-    # Header toggles for the saved SVG: which fields the optional header band
-    # lists. Read in `_build` to assemble header_fields for compose_save_svg.
+    # Header toggles: which fields appear in BOTH the on-screen readout (under the
+    # live render, `_build`) and the optional header band on saved files (`_save`).
     header_code = mo.ui.checkbox(value=True, label="Structure code")
-    header_answer = mo.ui.checkbox(value=True, label="Correct answer")
+    # Default OFF: a printed problem must not reveal its own answer (the
+    # test-taking ergonomic). Code/Seed stay on -- they aid filing, not cheating.
+    header_answer = mo.ui.checkbox(value=False, label="Correct answer")
     header_seed = mo.ui.checkbox(value=True, label="Seed")
     return (
         code_text,
@@ -302,6 +306,9 @@ def _build(
     code_text,
     effective_seed,
     gathered_layers,
+    header_answer,
+    header_code,
+    header_seed,
     mo,
     mode,
     position,
@@ -312,7 +319,7 @@ def _build(
     # ValueError (a logic base with supplementals, >3 supplementals, a position
     # outside 1-8, a malformed code) and returns a friendly error instead of a
     # traceback. Render the BuildOutcome: friendly message when matrix is None,
-    # else the structure code + both SVGs.
+    # else both SVGs, then a subtle, toggle-gated grey readout at the bottom.
     outcome = build_outcome(
         mode=mode.value,
         gathered_layers=gathered_layers,
@@ -324,18 +331,36 @@ def _build(
     if outcome.matrix is None:
         output = mo.md(f"**Could not build this matrix:** {outcome.error}")
     else:
+        # On-screen readout, FAITHFUL TO THE SAME header toggles as export
+        # (header_code / header_answer / header_seed -- identical guards to
+        # `_save`). Correct answer defaults OFF, so a screenshot of the live view
+        # cannot leak it. Rendered LAST and grey-on-white: deliberately subtle,
+        # because this is reproduction/debug info, not part of the puzzle.
+        readout_parts: list[str] = []
+        if header_code.value and outcome.structure_code is not None:
+            readout_parts.append(f"Structure code: {outcome.structure_code}")
+        if header_answer.value:
+            readout_parts.append(
+                f"Correct answer: {outcome.matrix.correct_answer_position}"
+            )
+        if header_seed.value:
+            readout_parts.append(f"Seed: {effective_seed}")
+        readout = (
+            mo.Html(
+                "<div style='color:#999;font-size:0.8rem;margin-top:0.75rem'>"
+                + "  ·  ".join(readout_parts)
+                + "</div>"
+            )
+            if readout_parts
+            else mo.md("")
+        )
         output = mo.vstack(
             [
-                mo.md(
-                    f"**Structure code:** `{outcome.structure_code}`  ·  "
-                    f"**Correct answer:** "
-                    f"{outcome.matrix.correct_answer_position}  ·  "
-                    f"**Seed:** {effective_seed}"
-                ),
                 mo.md("**Problem**"),
                 mo.Html(render_matrix_svg(outcome.matrix)),
                 mo.md("**Answers**"),
                 mo.Html(render_answers_svg(outcome.matrix)),
+                readout,
             ]
         )
     return outcome, output
@@ -432,7 +457,6 @@ def _save(
         save_panel = mo.vstack(
             [
                 mo.md("**Save (SVG)**"),
-                mo.hstack([header_code, header_answer, header_seed], justify="start"),
                 mo.hstack(
                     [
                         mo.download(
@@ -458,6 +482,14 @@ def _save(
                 ),
                 mo.md("**Save (PNG)**"),
                 mo.iframe(_png_html, height="48px"),
+                # Subtle, self-explaining header-band toggles. They sit LAST,
+                # below the primary save actions, under a quiet italic caption --
+                # they govern an optional header on every saved file (SVG and
+                # PNG alike), so they belong here, not nested under "Save (SVG)".
+                mo.md(
+                    "_Optional header band on saved files. Tick a field to print it:_"
+                ),
+                mo.hstack([header_code, header_answer, header_seed], justify="start"),
             ]
         )
     return (save_panel,)
